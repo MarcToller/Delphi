@@ -14,14 +14,17 @@ object Form1: TForm1
   TextHeight = 15
   object cxGrid1: TcxGrid
     Left = 0
-    Top = 0
+    Top = 65
     Width = 742
-    Height = 501
+    Height = 436
     Align = alClient
     TabOrder = 0
-    object cxGrid1DBTableView1: TcxGridDBTableView
+    ExplicitLeft = -8
+    ExplicitTop = 152
+    ExplicitHeight = 405
+    object cxGridViewMaster: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
-      DataController.DataSource = DataSource1
+      DataController.DataSource = DataSourceGridMaster
       DataController.DetailKeyFieldNames = 'aluno_id'
       DataController.KeyFieldNames = 'aluno_id'
       DataController.MasterKeyFieldNames = 'aluno_id'
@@ -32,35 +35,42 @@ object Form1: TForm1
       DataController.OnDetailExpanding = cxGrid1DBTableView1DataControllerDetailExpanding
       OptionsSelection.CellSelect = False
       OptionsView.ColumnAutoWidth = True
-      object cxGrid1DBTableView1aluno_id: TcxGridDBColumn
+      object cxGridViewMasteraluno_id: TcxGridDBColumn
         DataBinding.FieldName = 'aluno_id'
+        Width = 61
       end
-      object cxGrid1DBTableView1nome: TcxGridDBColumn
+      object cxGridViewMasternome: TcxGridDBColumn
         DataBinding.FieldName = 'nome'
+        Width = 153
       end
-      object cxGrid1DBTableView1sobrenome: TcxGridDBColumn
+      object cxGridViewMastersobrenome: TcxGridDBColumn
         DataBinding.FieldName = 'sobrenome'
+        Width = 78
       end
-      object cxGrid1DBTableView1email: TcxGridDBColumn
+      object cxGridViewMasteremail: TcxGridDBColumn
         DataBinding.FieldName = 'email'
+        Width = 175
       end
-      object cxGrid1DBTableView1idade: TcxGridDBColumn
+      object cxGridViewMasteridade: TcxGridDBColumn
         DataBinding.FieldName = 'idade'
+        Width = 86
       end
-      object cxGrid1DBTableView1peso: TcxGridDBColumn
+      object cxGridViewMasterpeso: TcxGridDBColumn
         DataBinding.FieldName = 'peso'
+        Width = 85
       end
-      object cxGrid1DBTableView1altura: TcxGridDBColumn
+      object cxGridViewMasteraltura: TcxGridDBColumn
         DataBinding.FieldName = 'altura'
+        Width = 87
       end
-      object cxGrid1DBTableView1Fotos: TcxGridDBColumn
+      object cxGridViewMasterFotos: TcxGridDBColumn
         DataBinding.FieldName = 'Fotos'
         Visible = False
       end
     end
-    object cxGrid1DBLayoutView1: TcxGridDBLayoutView
+    object cxLayoutViewDetail: TcxGridDBLayoutView
       Navigator.Buttons.CustomButtons = <>
-      DataController.DataSource = DataSource2
+      DataController.DataSource = DataSourceGridDetail
       DataController.DetailKeyFieldNames = 'aluno_id'
       DataController.KeyFieldNames = 'id'
       DataController.MasterKeyFieldNames = 'aluno_id'
@@ -75,15 +85,15 @@ object Form1: TForm1
       OptionsView.ViewMode = lvvmSingleRow
       object cxGrid1DBLayoutViewItemUrl: TcxGridDBLayoutViewItem
         DataBinding.FieldName = 'url'
-        LayoutItem = cxGrid1DBLayoutView1LayoutItem1
+        LayoutItem = cxLayoutViewDetailLayoutItem1
       end
       object cxGrid1DBLayoutViewItemImagem: TcxGridDBLayoutViewItem
         Caption = 'Foto'
         DataBinding.FieldName = 'imagem'
         RepositoryItem = cxEditRepository1ImageItem1
-        LayoutItem = cxGrid1DBLayoutView1LayoutItem2
+        LayoutItem = cxLayoutViewDetailLayoutItem2
       end
-      object cxGrid1DBLayoutView1Group_Root: TdxLayoutGroup
+      object cxLayoutViewDetailGroup_Root: TdxLayoutGroup
         AlignHorz = ahLeft
         AlignVert = avTop
         CaptionOptions.Text = 'Template Card'
@@ -96,12 +106,12 @@ object Form1: TForm1
         ShowBorder = False
         Index = -1
       end
-      object cxGrid1DBLayoutView1LayoutItem1: TcxGridLayoutItem
-        Parent = cxGrid1DBLayoutView1Group_Root
+      object cxLayoutViewDetailLayoutItem1: TcxGridLayoutItem
+        Parent = cxLayoutViewDetailGroup_Root
         Index = 0
       end
-      object cxGrid1DBLayoutView1LayoutItem2: TcxGridLayoutItem
-        Parent = cxGrid1DBLayoutView1Group_Root
+      object cxLayoutViewDetailLayoutItem2: TcxGridLayoutItem
+        Parent = cxLayoutViewDetailGroup_Root
         AlignHorz = ahCenter
         AlignVert = avTop
         SizeOptions.Height = 300
@@ -110,9 +120,9 @@ object Form1: TForm1
       end
     end
     object cxGrid1Level1: TcxGridLevel
-      GridView = cxGrid1DBTableView1
+      GridView = cxGridViewMaster
       object cxGrid1Level3: TcxGridLevel
-        GridView = cxGrid1DBLayoutView1
+        GridView = cxLayoutViewDetail
       end
     end
   end
@@ -125,35 +135,68 @@ object Form1: TForm1
     TabOrder = 1
     OnClick = BitBtn1Click
   end
-  object RESTClient1: TRESTClient
+  object PanelManutencao: TPanel
+    Left = 0
+    Top = 0
+    Width = 742
+    Height = 65
+    Align = alTop
+    TabOrder = 2
+    object BitBtnIncluir: TBitBtn
+      Left = 23
+      Top = 24
+      Width = 75
+      Height = 25
+      Caption = 'Incluir'
+      TabOrder = 0
+    end
+    object BitBtnAlterar: TBitBtn
+      Left = 127
+      Top = 24
+      Width = 75
+      Height = 25
+      Caption = 'Alterar'
+      TabOrder = 1
+    end
+    object BitBtnExcluir: TBitBtn
+      Left = 232
+      Top = 24
+      Width = 75
+      Height = 25
+      Caption = 'Excluir'
+      TabOrder = 2
+      OnClick = BitBtnExcluirClick
+    end
+  end
+  object RESTClientConsultaGrid: TRESTClient
     Accept = 'application/json, text/plain; q=0.9, text/html;q=0.8,'
     AcceptCharset = 'utf-8, *;q=0.8'
     BaseURL = 'http://localhost:3001/alunos'
     Params = <>
-    Left = 120
-    Top = 24
+    Left = 112
+    Top = 256
   end
-  object RESTRequest1: TRESTRequest
-    Client = RESTClient1
+  object RESTRequestGridMaster: TRESTRequest
+    Client = RESTClientConsultaGrid
     Params = <>
-    Response = RESTResponse1
+    Response = RESTResponseGridMaster
     Left = 32
-    Top = 104
+    Top = 296
   end
-  object RESTResponse1: TRESTResponse
+  object RESTResponseGridMaster: TRESTResponse
     Left = 32
-    Top = 216
+    Top = 360
   end
-  object RESTResponseDataSetAdapter1: TRESTResponseDataSetAdapter
-    Dataset = FDMemTable1
+  object RESTResponseDataSetAdapterMaster: TRESTResponseDataSetAdapter
+    Dataset = FDMemTableGridMaster
     FieldDefs = <>
-    Response = RESTResponse1
+    Response = RESTResponseGridMaster
     TypesMode = JSONOnly
     NestedElements = True
     Left = 32
-    Top = 160
+    Top = 328
   end
-  object FDMemTable1: TFDMemTable
+  object FDMemTableGridMaster: TFDMemTable
     FieldDefs = <>
     IndexDefs = <>
     FetchOptions.AssignedValues = [evMode]
@@ -166,59 +209,59 @@ object Form1: TForm1
     UpdateOptions.CheckRequired = False
     StoreDefs = True
     Left = 32
-    Top = 296
-    object FDMemTable1aluno_id: TFloatField
+    Top = 392
+    object FDMemTableGridMasteraluno_id: TFloatField
       DisplayLabel = 'ID do Aluno'
       FieldName = 'aluno_id'
     end
-    object FDMemTable1nome: TWideStringField
+    object FDMemTableGridMasternome: TWideStringField
       DisplayLabel = 'Nome'
       FieldName = 'nome'
       Size = 10
     end
-    object FDMemTable1sobrenome: TWideStringField
+    object FDMemTableGridMastersobrenome: TWideStringField
       DisplayLabel = 'Sobrenome'
       FieldName = 'sobrenome'
       Size = 9
     end
-    object FDMemTable1email: TWideStringField
+    object FDMemTableGridMasteremail: TWideStringField
       DisplayLabel = 'Email'
       FieldName = 'email'
       Size = 21
     end
-    object FDMemTable1idade: TFloatField
+    object FDMemTableGridMasteridade: TFloatField
       DisplayLabel = 'Idade'
       FieldName = 'idade'
     end
-    object FDMemTable1peso: TFloatField
+    object FDMemTableGridMasterpeso: TFloatField
       DisplayLabel = 'Peso'
       FieldName = 'peso'
     end
-    object FDMemTable1altura: TFloatField
+    object FDMemTableGridMasteraltura: TFloatField
       DisplayLabel = 'Altura'
       FieldName = 'altura'
     end
-    object FDMemTable1Fotos: TWideStringField
+    object FDMemTableGridMasterFotos: TWideStringField
       FieldName = 'Fotos'
       Size = 255
     end
   end
-  object RESTResponse2: TRESTResponse
+  object RESTResponseGridDetail: TRESTResponse
     RootElement = '[5].Fotos'
-    Left = 200
-    Top = 232
+    Left = 192
+    Top = 360
   end
-  object RESTResponseDataSetAdapter2: TRESTResponseDataSetAdapter
-    Dataset = FDMemTable2
+  object RESTResponseDataSetAdapterDetail: TRESTResponseDataSetAdapter
+    Dataset = FDMemTableGridDetail
     FieldDefs = <>
-    Response = RESTResponse2
+    Response = RESTResponseGridDetail
     TypesMode = JSONOnly
     NestedElements = True
-    Left = 200
-    Top = 152
+    Left = 192
+    Top = 328
   end
-  object FDMemTable2: TFDMemTable
-    BeforePost = FDMemTable2BeforePost
+  object FDMemTableGridDetail: TFDMemTable
+    BeforePost = FDMemTableGridDetailBeforePost
     FieldDefs = <>
     IndexDefs = <>
     FetchOptions.AssignedValues = [evMode]
@@ -231,45 +274,45 @@ object Form1: TForm1
     UpdateOptions.CheckRequired = False
     StoreDefs = True
     Left = 192
-    Top = 288
-    object FDMemTable2url: TWideStringField
+    Top = 392
+    object FDMemTableGridDetailurl: TWideStringField
       FieldName = 'url'
       Size = 100
     end
-    object FDMemTable2aluno_id: TFloatField
+    object FDMemTableGridDetailaluno_id: TFloatField
       FieldName = 'aluno_id'
     end
-    object FDMemTable2id: TFloatField
+    object FDMemTableGridDetailid: TFloatField
       FieldName = 'id'
     end
-    object FDMemTable2filename: TWideStringField
+    object FDMemTableGridDetailfilename: TWideStringField
       FieldName = 'filename'
       Size = 23
     end
-    object FDMemTable2originalname: TWideStringField
+    object FDMemTableGridDetailoriginalname: TWideStringField
       FieldName = 'originalname'
       Size = 38
     end
-    object FDMemTable2Imagem: TBlobField
+    object FDMemTableGridDetailImagem: TBlobField
       FieldName = 'Imagem'
     end
   end
-  object RESTRequest2: TRESTRequest
-    Client = RESTClient1
+  object RESTRequestGridDetail: TRESTRequest
+    Client = RESTClientConsultaGrid
     Params = <>
-    Response = RESTResponse2
-    Left = 200
-    Top = 96
-  end
-  object DataSource1: TDataSource
-    DataSet = FDMemTable1
-    Left = 32
-    Top = 360
-  end
-  object DataSource2: TDataSource
-    DataSet = FDMemTable2
+    Response = RESTResponseGridDetail
     Left = 192
-    Top = 360
+    Top = 296
+  end
+  object DataSourceGridMaster: TDataSource
+    DataSet = FDMemTableGridMaster
+    Left = 32
+    Top = 424
+  end
+  object DataSourceGridDetail: TDataSource
+    DataSet = FDMemTableGridDetail
+    Left = 192
+    Top = 424
   end
   object IdHTTP1: TIdHTTP
     HandleRedirects = True
@@ -288,12 +331,12 @@ object Form1: TForm1
     Request.Ranges.Units = 'bytes'
     Request.Ranges = <>
     HTTPOptions = [hoForceEncodeParams]
-    Left = 336
-    Top = 160
+    Left = 352
+    Top = 240
   end
-  object cxEditRepository1: TcxEditRepository
-    Left = 336
-    Top = 96
+  object cxEditRepositoryImagens: TcxEditRepository
+    Left = 352
+    Top = 192
     PixelsPerInch = 96
     object cxEditRepository1ImageItem1: TcxEditRepositoryImageItem
       Properties.GraphicClassName = 'TdxSmartImage'
@@ -301,24 +344,15 @@ object Form1: TForm1
       Properties.ShowFocusRect = False
     end
   end
-  object RESTClient2: TRESTClient
+  object RESTClientManutencao: TRESTClient
     BaseURL = 'http://localhost:3001/alunos'
-    Params = <
-      item
-        Kind = pkHTTPHEADER
-        Name = 'authorization'
-        Options = [poDoNotEncode]
-        Value = 
-          'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwi' +
-          'OiJtYXJjZWxvMUB5YWhvby5jb20uYnIiLCJpYXQiOjE2NTk5OTM2MTcsImV4cCI6' +
-          'MTY2MDU5ODQxN30.QnIczn8IPj4sPuXegpTkqH_jV7mVXU6ceMpgM10i18I'
-      end>
+    Params = <>
     Left = 488
-    Top = 128
+    Top = 232
   end
-  object RESTRequest3: TRESTRequest
+  object RESTRequestManutencao: TRESTRequest
     AssignedValues = [rvConnectTimeout, rvReadTimeout]
-    Client = RESTClient2
+    Client = RESTClientManutencao
     Method = rmPOST
     Params = <
       item
@@ -331,11 +365,11 @@ object Form1: TForm1
         ContentTypeStr = 'application/json'
       end>
     Response = RESTResponse3
-    Left = 552
-    Top = 88
+    Left = 488
+    Top = 280
   end
   object RESTResponse3: TRESTResponse
-    Left = 648
-    Top = 120
+    Left = 488
+    Top = 328
   end
 end

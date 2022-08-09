@@ -2,7 +2,8 @@ program api_master_detail;
 
 uses
   Vcl.Forms,
-  Unit1 in 'Unit1.pas' {Form1};
+  Unit1 in 'Unit1.pas' {Form1},
+  uConstantesRest in 'uConstantesRest.pas';
 
 {$R *.res}
 

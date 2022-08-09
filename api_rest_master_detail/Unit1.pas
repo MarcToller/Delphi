@@ -18,98 +18,75 @@ uses
   cxGridDBLayoutView, pngimage, jpeg, cxGridViewLayoutContainer,
   IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, cxImage, cxDataUtils,
   cxEditRepositoryItems, Vcl.StdCtrls, Vcl.Buttons, REST.Json,
-  REST.Authenticator.OAuth, REST.Authenticator.Basic;
+  REST.Authenticator.OAuth, REST.Authenticator.Basic, uConstantesRest,
+  Vcl.ExtCtrls;
 
 type
-  TAluno = class(TObject)
-  private
-    Fpeso: Real;
-    Fsobrenome: string;
-    Femail: string;
-    Faltura: Real;
-    Fidade: integer;
-    Fnome: string;
-  public
-    property nome: string read Fnome write Fnome;
-    property sobrenome: string read Fsobrenome write Fsobrenome;
-    property email: string read Femail write Femail;
-    property idade: integer read Fidade write Fidade;
-    property peso: Real read Fpeso write Fpeso;
-    property altura: Real read Faltura write Faltura;
-  end;
-
-
-  TRetornoAPI = class(TObject)
-  private
-    Ferrors: TArray<string>;
-    Fid: Integer;
-    function GetSucesso: Boolean;
-  public
-    property errors: TArray<string> read Ferrors write Ferrors;
-    property id: Integer read Fid write Fid;
-    property sucesso: Boolean read GetSucesso;
-  end;
-
-
   TForm1 = class(TForm)
-    cxGrid1DBTableView1: TcxGridDBTableView;
+    cxGridViewMaster: TcxGridDBTableView;
     cxGrid1Level1: TcxGridLevel;
     cxGrid1: TcxGrid;
-    RESTClient1: TRESTClient;
-    RESTRequest1: TRESTRequest;
-    RESTResponse1: TRESTResponse;
-    RESTResponseDataSetAdapter1: TRESTResponseDataSetAdapter;
-    FDMemTable1: TFDMemTable;
-    RESTResponse2: TRESTResponse;
-    RESTResponseDataSetAdapter2: TRESTResponseDataSetAdapter;
-    FDMemTable2: TFDMemTable;
-    RESTRequest2: TRESTRequest;
-    FDMemTable2url: TWideStringField;
-    FDMemTable2aluno_id: TFloatField;
-    FDMemTable2id: TFloatField;
-    FDMemTable2filename: TWideStringField;
-    FDMemTable2originalname: TWideStringField;
-    FDMemTable1aluno_id: TFloatField;
-    FDMemTable1nome: TWideStringField;
-    FDMemTable1sobrenome: TWideStringField;
-    FDMemTable1email: TWideStringField;
-    FDMemTable1idade: TFloatField;
-    FDMemTable1peso: TFloatField;
-    FDMemTable1altura: TFloatField;
-    FDMemTable1Fotos: TWideStringField;
-    DataSource1: TDataSource;
-    DataSource2: TDataSource;
-    cxGrid1DBTableView1aluno_id: TcxGridDBColumn;
-    cxGrid1DBTableView1nome: TcxGridDBColumn;
-    cxGrid1DBTableView1sobrenome: TcxGridDBColumn;
-    cxGrid1DBTableView1email: TcxGridDBColumn;
-    cxGrid1DBTableView1idade: TcxGridDBColumn;
-    cxGrid1DBTableView1peso: TcxGridDBColumn;
-    cxGrid1DBTableView1altura: TcxGridDBColumn;
-    cxGrid1DBTableView1Fotos: TcxGridDBColumn;
+    RESTClientConsultaGrid: TRESTClient;
+    RESTRequestGridMaster: TRESTRequest;
+    RESTResponseGridMaster: TRESTResponse;
+    RESTResponseDataSetAdapterMaster: TRESTResponseDataSetAdapter;
+    FDMemTableGridMaster: TFDMemTable;
+    RESTResponseGridDetail: TRESTResponse;
+    RESTResponseDataSetAdapterDetail: TRESTResponseDataSetAdapter;
+    FDMemTableGridDetail: TFDMemTable;
+    RESTRequestGridDetail: TRESTRequest;
+    FDMemTableGridDetailurl: TWideStringField;
+    FDMemTableGridDetailaluno_id: TFloatField;
+    FDMemTableGridDetailid: TFloatField;
+    FDMemTableGridDetailfilename: TWideStringField;
+    FDMemTableGridDetailoriginalname: TWideStringField;
+    FDMemTableGridMasteraluno_id: TFloatField;
+    FDMemTableGridMasternome: TWideStringField;
+    FDMemTableGridMastersobrenome: TWideStringField;
+    FDMemTableGridMasteremail: TWideStringField;
+    FDMemTableGridMasteridade: TFloatField;
+    FDMemTableGridMasterpeso: TFloatField;
+    FDMemTableGridMasteraltura: TFloatField;
+    FDMemTableGridMasterFotos: TWideStringField;
+    DataSourceGridMaster: TDataSource;
+    DataSourceGridDetail: TDataSource;
+    cxGridViewMasteraluno_id: TcxGridDBColumn;
+    cxGridViewMasternome: TcxGridDBColumn;
+    cxGridViewMastersobrenome: TcxGridDBColumn;
+    cxGridViewMasteremail: TcxGridDBColumn;
+    cxGridViewMasteridade: TcxGridDBColumn;
+    cxGridViewMasterpeso: TcxGridDBColumn;
+    cxGridViewMasteraltura: TcxGridDBColumn;
+    cxGridViewMasterFotos: TcxGridDBColumn;
     cxGrid1Level3: TcxGridLevel;
-    cxGrid1DBLayoutView1Group_Root: TdxLayoutGroup;
-    cxGrid1DBLayoutView1: TcxGridDBLayoutView;
-    cxGrid1DBLayoutView1LayoutItem1: TcxGridLayoutItem;
+    cxLayoutViewDetailGroup_Root: TdxLayoutGroup;
+    cxLayoutViewDetail: TcxGridDBLayoutView;
+    cxLayoutViewDetailLayoutItem1: TcxGridLayoutItem;
     cxGrid1DBLayoutViewItemUrl: TcxGridDBLayoutViewItem;
     IdHTTP1: TIdHTTP;
-    cxGrid1DBLayoutView1LayoutItem2: TcxGridLayoutItem;
+    cxLayoutViewDetailLayoutItem2: TcxGridLayoutItem;
     cxGrid1DBLayoutViewItemImagem: TcxGridDBLayoutViewItem;
-    FDMemTable2Imagem: TBlobField;
-    cxEditRepository1: TcxEditRepository;
+    FDMemTableGridDetailImagem: TBlobField;
+    cxEditRepositoryImagens: TcxEditRepository;
     cxEditRepository1ImageItem1: TcxEditRepositoryImageItem;
     BitBtn1: TBitBtn;
-    RESTClient2: TRESTClient;
-    RESTRequest3: TRESTRequest;
+    RESTClientManutencao: TRESTClient;
+    RESTRequestManutencao: TRESTRequest;
     RESTResponse3: TRESTResponse;
+    PanelManutencao: TPanel;
+    BitBtnIncluir: TBitBtn;
+    BitBtnAlterar: TBitBtn;
+    BitBtnExcluir: TBitBtn;
     procedure FormShow(Sender: TObject);
-    procedure cxGrid1DBTableView1DataControllerDetailExpanding(
-      ADataController: TcxCustomDataController; ARecordIndex: Integer;
-      var AAllow: Boolean);
-    procedure FDMemTable2BeforePost(DataSet: TDataSet);
+    procedure cxGrid1DBTableView1DataControllerDetailExpanding(ADataController: TcxCustomDataController; ARecordIndex: Integer;  var AAllow: Boolean);
+    procedure FDMemTableGridDetailBeforePost(DataSet: TDataSet);
     procedure BitBtn1Click(Sender: TObject);
+    procedure BitBtnExcluirClick(Sender: TObject);
   private
     FListaIndexAlunoId: IDictionary<Integer, integer>;
+    procedure Manutencao(ATipoManutencao: TRESTRequestMethod);
+    procedure CriarAutenticacaoToken;
+    function RetornaDadosAlunoSelecionado: TAluno;
     { Private declarations }
   public
     procedure AfterConstruction; override;
@@ -131,7 +108,11 @@ uses
 procedure TForm1.AfterConstruction;
 begin
   inherited;
-  FListaIndexAlunoId := TCollections.CreateDictionary<integer,integer>;
+  FListaIndexAlunoId             := TCollections.CreateDictionary<integer,integer>;
+  RESTClientConsultaGrid.BaseURL := cBaseURL;
+  RESTClientManutencao.BaseURL   := cBaseURL;
+
+  CriarAutenticacaoToken;
 end;
 
 
@@ -140,39 +121,59 @@ var
   vAluno: TAluno;
   vJSON: string;
   vRetornoAPI : TRetornoAPI;
-const
-  cbaseURL = 'http://localhost:3001/alunos';
 begin
   vAluno := TAluno.Create;
   vAluno.peso := 68.6;
-  vAluno.sobrenome := 'uuuuuuuuuuuuu';
-  vAluno.email := 'uuuuuuuuuuuu@yahoo.com.br';
+  vAluno.sobrenome := 'eeeeuuuuuuuuuu';
+  vAluno.email := 'eeeeuuuuuuuuuu@yahoo.com.br';
   vAluno.altura := 1.73;
   vAluno.idade := 43;
-  vAluno.nome := 'uuuuuuuuuuuuuu';
+  vAluno.nome := 'eeeeuuuuuuuuuu';
 
   vJSON := TJson.ObjectToJsonString(vAluno);
 
-  RESTRequest3.Params[0].Value := vJSON;
+  //RESTRequest3.Params[0].Value := vJSON;
 
-  RESTRequest3.Resource := FDMemTable1aluno_id.AsString;
-//  RESTRequest3.Method := rmDELETE;
-  RESTRequest3.Method := rmPUT;
+  //RESTRequest3.Method := rmPOST;
 
-  RESTRequest3.Execute;
+  RESTRequestManutencao.Resource := FDMemTableGridMasteraluno_id.AsString;
+  RESTRequestManutencao.Method := rmDELETE;
+//  RESTRequest3.Method := rmPUT;
 
-  vRetornoAPI := TJson.JsonToObject<TRetornoAPI>(RESTRequest3.Response.JSONText);
+  RESTRequestManutencao.Execute;
+
+  vRetornoAPI := TJson.JsonToObject<TRetornoAPI>(RESTRequestManutencao.Response.JSONText);
 
   if vRetornoAPI.sucesso then
   begin
     ShowMessage('Sucesso');
-    RESTRequest1.Execute;
+    RESTRequestGridMaster.Execute;
   end
   else
     ShowMessage(vRetornoAPI.errors[0]);
 
 
+  if FDMemTableGridMaster.Locate('aluno_id', vRetornoAPI.aluno.id, []) then
+  begin
+    FListaIndexAlunoId.AddOrSetValue(vRetornoAPI.aluno.id, cxGridViewMaster.DataController.FocusedRecordIndex);
+    RESTRequestGridDetail.Execute;
+  end;
+end;
 
+procedure TForm1.BitBtnExcluirClick(Sender: TObject);
+begin
+  Manutencao(rmDELETE);
+end;
+
+procedure TForm1.CriarAutenticacaoToken;
+var
+  vRESTRequestParameter: TRESTRequestParameter;
+begin
+  vRESTRequestParameter         := RESTClientManutencao.Params.AddItem;
+  vRESTRequestParameter.Kind    := pkHTTPHEADER;
+  vRESTRequestParameter.Name    := 'authorization';
+  vRESTRequestParameter.Options := [poDoNotEncode];
+  vRESTRequestParameter.Value   := cToken;
 end;
 
 procedure TForm1.cxGrid1DBTableView1DataControllerDetailExpanding(ADataController: TcxCustomDataController;
@@ -182,35 +183,37 @@ var
   vAlunoId: Integer;
   vIndex: integer;
 begin
-  cxGrid1DBTableView1.DataController.CollapseDetails;
-
   vAlunoId := ADataController.GetValue(ARecordIndex, 0);
 
   if FListaIndexAlunoId.TryGetValue(vAlunoId, vIndex) then
-    RESTResponse2.RootElement := '['+vIndex.ToString+'].Fotos';
+  begin
+    RESTResponseGridDetail.RootElement := Format(cRootElementFotos, [vIndex]);
+  end;
 
-  AAllow := FDMemTable2.RecordCount > 0;
+  AAllow := FDMemTableGridDetail.RecordCount > 0;
 
   if not AAllow then
-    ShowMessage('Não há imagens para mostrar.')
+    ShowMessage('Aluno não possui imagens para exibir.')
   else
   begin
-    if FDMemTable2.RecordCount = 1 then
-      cxGrid1DBLayoutView1.OptionsView.ViewMode := lvvmSingleRow
+    cxGridViewMaster.DataController.CollapseDetails;
+
+    if FDMemTableGridDetail.RecordCount = 1 then
+      cxLayoutViewDetail.OptionsView.ViewMode := lvvmSingleRow
     else
-      cxGrid1DBLayoutView1.OptionsView.ViewMode := lvvmCarousel;
+      cxLayoutViewDetail.OptionsView.ViewMode := lvvmCarousel;
   end;
 
 end;
 
-procedure TForm1.FDMemTable2BeforePost(DataSet: TDataSet);
+procedure TForm1.FDMemTableGridDetailBeforePost(DataSet: TDataSet);
 var
   MS : TMemoryStream;
   APath: String;
 begin
   MS := nil;
   try
-    APath := FDMemTable2url.AsString;
+    APath := FDMemTableGridDetailurl.AsString;
 
     MS := TMemoryStream.Create;
     try
@@ -218,7 +221,7 @@ begin
     except
     end;
     MS.Position := 0;
-    FDMemTable2Imagem.LoadFromStream(MS);
+    FDMemTableGridDetailImagem.LoadFromStream(MS);
   finally
     MS.Free;
   end;
@@ -228,22 +231,21 @@ procedure TForm1.FormShow(Sender: TObject);
 var
   vIndex: Integer;
 begin
-  RESTClient1.BaseURL := 'http://168.138.248.33:3001/alunos';
   try
-    RESTRequest1.execute;
-    RESTRequest2.execute;
+    RESTRequestGridMaster.execute;
+    RESTRequestGridDetail.execute;
 
     vIndex := 0;
-    FDMemTable1.First;
+    FDMemTableGridMaster.First;
 
-    while not FDMemTable1.Eof do
+    while not FDMemTableGridMaster.Eof do
     begin
-      FListaIndexAlunoId.Add(FDMemTable1aluno_id.AsInteger, vIndex);
+      FListaIndexAlunoId.Add(FDMemTableGridMasteraluno_id.AsInteger, vIndex);
       Inc(vIndex);
-      FDMemTable1.Next;
+      FDMemTableGridMaster.Next;
     end;
 
-    FDMemTable1.First;
+    FDMemTableGridMaster.First;
   except
     on e: ERESTException do
     begin
@@ -254,11 +256,84 @@ begin
 end;
 
 
-{ TRetornoAPI }
+procedure TForm1.Manutencao(ATipoManutencao: TRESTRequestMethod);
+var
+  vAluno      : TAluno;
+  vJSON       : string;
+  vRetornoAPI : TRetornoAPI;
 
-function TRetornoAPI.GetSucesso: Boolean;
+  function RetornaMensagemSucesso: string;
+  const
+    cInclusao  = 'incluído';
+    cExclusao  = 'excluído';
+    cAlteracao = 'alterado';
+    cMensagem  = 'Aluno %s %s com sucesso';
+  begin
+    case ATipoManutencao of
+      rmPOST   : result := format(cMensagem, [vAluno.nome, cInclusao]);
+      rmPUT    : result := format(cMensagem, [vAluno.nome, cAlteracao]);
+      rmDELETE : result := format(cMensagem, [vAluno.nome, cExclusao]);
+    end;
+  end;
+
 begin
-  Result := (Length(errors) = 0) and (id > 0);
+  vAluno := nil;
+
+  if ATipoManutencao in [rmDELETE, rmPUT] then
+    vAluno := RetornaDadosAlunoSelecionado
+  else
+    vAluno := TAluno.Create;
+
+
+  if ATipoManutencao = rmDELETE then
+  begin
+    RESTRequestManutencao.Resource := vAluno.id.ToString;
+  end
+  else
+  begin
+    // criar form manutencao
+    // passar para o form o vAluno caso seja alteracao
+    // recuperar os dados do aluno do form
+
+    //vJSON := TJson.ObjectToJsonString(vAluno);
+
+    //RESTRequestManutencao.Params[0].Value := vJSON;
+
+  end;
+
+
+  RESTRequestManutencao.Method := ATipoManutencao;
+
+  try
+    RESTRequestManutencao.Execute;
+  except
+  end;
+
+  vRetornoAPI := TJson.JsonToObject<TRetornoAPI>(RESTRequestManutencao.Response.JSONText);
+
+  if vRetornoAPI.sucesso then
+  begin
+    ShowMessage(RetornaMensagemSucesso);
+    RESTRequestGridMaster.Execute;
+  end
+  else
+    ShowMessage(vRetornoAPI.errors[0]);
+
+
+  FreeAndNil(vAluno);
+//
+end;
+
+function TForm1.RetornaDadosAlunoSelecionado: TAluno;
+begin
+  Result           := TAluno.Create;
+  Result.id        := FDMemTableGridMasteraluno_id.AsInteger;
+  Result.peso      := FDMemTableGridMasterpeso.AsFloat;
+  Result.sobrenome := FDMemTableGridMastersobrenome.AsString;
+  Result.email     := FDMemTableGridMasteremail.AsString;
+  Result.altura    := FDMemTableGridMasteraltura.AsFloat;
+  Result.idade     := FDMemTableGridMasteridade.AsInteger;
+  Result.nome      := FDMemTableGridMasternome.AsString;
 end;
 
 end.
