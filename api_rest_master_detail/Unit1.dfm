@@ -149,6 +149,7 @@ object Form1: TForm1
       Height = 25
       Caption = 'Incluir'
       TabOrder = 0
+      OnClick = BitBtnIncluirClick
     end
     object BitBtnAlterar: TBitBtn
       Left = 127
@@ -157,6 +158,7 @@ object Form1: TForm1
       Height = 25
       Caption = 'Alterar'
       TabOrder = 1
+      OnClick = BitBtnAlterarClick
     end
     object BitBtnExcluir: TBitBtn
       Left = 232

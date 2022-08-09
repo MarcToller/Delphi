@@ -105,6 +105,10 @@
             <Form>Form1</Form>
         </DCCReference>
         <DCCReference Include="uConstantesRest.pas"/>
+        <DCCReference Include="uFormManutencaoAluno.pas">
+            <Form>FormManutencaoAluno</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

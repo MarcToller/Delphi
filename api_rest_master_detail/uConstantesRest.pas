@@ -2,6 +2,9 @@ unit uConstantesRest;
 
 interface
 
+uses
+  REST.Types;
+
 Type
   TAluno = class(TObject)
   private
@@ -32,6 +35,8 @@ Type
     property sucesso: Boolean read GetSucesso;
     property aluno: TAluno read Faluno write Faluno;
   end;
+
+  TMetodoExecutaManutencao = procedure(ATipoManutencao: TRESTRequestMethod; ADadosAluno: TAluno = nil) of object;
 
 
 const

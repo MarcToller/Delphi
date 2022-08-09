@@ -82,8 +82,11 @@ type
     procedure FDMemTableGridDetailBeforePost(DataSet: TDataSet);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtnExcluirClick(Sender: TObject);
+    procedure BitBtnAlterarClick(Sender: TObject);
+    procedure BitBtnIncluirClick(Sender: TObject);
   private
     FListaIndexAlunoId: IDictionary<Integer, integer>;
+    procedure ExecutaManutencao(ATipoManutencao: TRESTRequestMethod; ADadosAluno: TAluno = nil);
     procedure Manutencao(ATipoManutencao: TRESTRequestMethod);
     procedure CriarAutenticacaoToken;
     function RetornaDadosAlunoSelecionado: TAluno;
@@ -100,7 +103,7 @@ var
 implementation
 
 uses
-  System.Net.HttpClient;
+  System.Net.HttpClient, uFormManutencaoAluno;
 
 
 {$R *.dfm}
@@ -160,9 +163,19 @@ begin
   end;
 end;
 
+procedure TForm1.BitBtnAlterarClick(Sender: TObject);
+begin
+  Manutencao(rmPUT);
+end;
+
 procedure TForm1.BitBtnExcluirClick(Sender: TObject);
 begin
   Manutencao(rmDELETE);
+end;
+
+procedure TForm1.BitBtnIncluirClick(Sender: TObject);
+begin
+  Manutencao(rmPOST);
 end;
 
 procedure TForm1.CriarAutenticacaoToken;
@@ -204,6 +217,56 @@ begin
       cxLayoutViewDetail.OptionsView.ViewMode := lvvmCarousel;
   end;
 
+end;
+
+procedure TForm1.ExecutaManutencao(ATipoManutencao: TRESTRequestMethod; ADadosAluno: TAluno = nil);
+var
+  vRetornoAPI : TRetornoAPI;
+
+  function RetornaMensagemSucesso: string;
+  const
+    cInclusao  = 'incluído';
+    cExclusao  = 'excluído';
+    cAlteracao = 'alterado';
+    cMensagem  = 'Aluno %s %s com sucesso';
+  begin
+    case ATipoManutencao of
+      rmPOST   : result := format(cMensagem, [ADadosAluno.nome, cInclusao]);
+      rmPUT    : result := format(cMensagem, [ADadosAluno.nome, cAlteracao]);
+      rmDELETE : result := format(cMensagem, [ADadosAluno.nome, cExclusao]);
+    end;
+  end;
+
+begin
+  if ATipoManutencao in [rmDELETE, rmPUT] then
+    RESTRequestManutencao.Resource := ADadosAluno.id.ToString;
+
+  if ATipoManutencao in [rmPOST, rmPUT] then
+    RESTRequestManutencao.Params[0].Value := TJson.ObjectToJsonString(ADadosAluno);
+
+  RESTRequestManutencao.Method := ATipoManutencao;
+
+  try
+    RESTRequestManutencao.Execute;
+  except
+  end;
+
+  vRetornoAPI := TJson.JsonToObject<TRetornoAPI>(RESTRequestManutencao.Response.JSONText);
+
+  if vRetornoAPI.sucesso then
+  begin
+    ShowMessage(RetornaMensagemSucesso);
+    RESTRequestGridMaster.Execute;
+
+    if (ATipoManutencao = rmPOST) and FDMemTableGridMaster.Locate('aluno_id', vRetornoAPI.aluno.id, []) then
+    begin
+      FListaIndexAlunoId.AddOrSetValue(vRetornoAPI.aluno.id, cxGridViewMaster.DataController.FocusedRecordIndex);
+    end
+    else if (ATipoManutencao <> rmDELETE) then
+      RESTRequestGridDetail.Execute;
+  end
+  else
+    ShowMessage(vRetornoAPI.errors[0]);
 end;
 
 procedure TForm1.FDMemTableGridDetailBeforePost(DataSet: TDataSet);
@@ -258,70 +321,30 @@ end;
 
 procedure TForm1.Manutencao(ATipoManutencao: TRESTRequestMethod);
 var
-  vAluno      : TAluno;
-  vJSON       : string;
-  vRetornoAPI : TRetornoAPI;
-
-  function RetornaMensagemSucesso: string;
-  const
-    cInclusao  = 'incluído';
-    cExclusao  = 'excluído';
-    cAlteracao = 'alterado';
-    cMensagem  = 'Aluno %s %s com sucesso';
-  begin
-    case ATipoManutencao of
-      rmPOST   : result := format(cMensagem, [vAluno.nome, cInclusao]);
-      rmPUT    : result := format(cMensagem, [vAluno.nome, cAlteracao]);
-      rmDELETE : result := format(cMensagem, [vAluno.nome, cExclusao]);
-    end;
-  end;
-
+  vAluno : TAluno;
+  vFormManutencao: TFormManutencaoAluno;
 begin
   vAluno := nil;
+  vFormManutencao := nil;
 
   if ATipoManutencao in [rmDELETE, rmPUT] then
     vAluno := RetornaDadosAlunoSelecionado
   else
     vAluno := TAluno.Create;
 
-
-  if ATipoManutencao = rmDELETE then
+  if ATipoManutencao in [rmPOST, rmPUT] then
   begin
-    RESTRequestManutencao.Resource := vAluno.id.ToString;
+    vFormManutencao                         := TFormManutencaoAluno.create(self);
+    vFormManutencao.DadosAluno              := vAluno;
+    vFormManutencao.TipoManutencao          := ATipoManutencao;
+    vFormManutencao.MetodoExecutaManutencao := ExecutaManutencao;
+    vFormManutencao.ShowModal;
   end
   else
-  begin
-    // criar form manutencao
-    // passar para o form o vAluno caso seja alteracao
-    // recuperar os dados do aluno do form
-
-    //vJSON := TJson.ObjectToJsonString(vAluno);
-
-    //RESTRequestManutencao.Params[0].Value := vJSON;
-
-  end;
-
-
-  RESTRequestManutencao.Method := ATipoManutencao;
-
-  try
-    RESTRequestManutencao.Execute;
-  except
-  end;
-
-  vRetornoAPI := TJson.JsonToObject<TRetornoAPI>(RESTRequestManutencao.Response.JSONText);
-
-  if vRetornoAPI.sucesso then
-  begin
-    ShowMessage(RetornaMensagemSucesso);
-    RESTRequestGridMaster.Execute;
-  end
-  else
-    ShowMessage(vRetornoAPI.errors[0]);
-
+    ExecutaManutencao(ATipoManutencao, vAluno);
 
   FreeAndNil(vAluno);
-//
+  FreeAndNil(vFormManutencao);
 end;
 
 function TForm1.RetornaDadosAlunoSelecionado: TAluno;
