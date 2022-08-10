@@ -69,7 +69,6 @@ type
     FDMemTableGridDetailImagem: TBlobField;
     cxEditRepositoryImagens: TcxEditRepository;
     cxEditRepository1ImageItem1: TcxEditRepositoryImageItem;
-    BitBtn1: TBitBtn;
     RESTClientManutencao: TRESTClient;
     RESTRequestManutencao: TRESTRequest;
     RESTResponse3: TRESTResponse;
@@ -80,10 +79,11 @@ type
     procedure FormShow(Sender: TObject);
     procedure cxGrid1DBTableView1DataControllerDetailExpanding(ADataController: TcxCustomDataController; ARecordIndex: Integer;  var AAllow: Boolean);
     procedure FDMemTableGridDetailBeforePost(DataSet: TDataSet);
-    procedure BitBtn1Click(Sender: TObject);
     procedure BitBtnExcluirClick(Sender: TObject);
     procedure BitBtnAlterarClick(Sender: TObject);
     procedure BitBtnIncluirClick(Sender: TObject);
+    procedure cxGridViewMasterDataControllerDetailExpanded(
+      ADataController: TcxCustomDataController; ARecordIndex: Integer);
   private
     FListaIndexAlunoId: IDictionary<Integer, integer>;
     procedure ExecutaManutencao(ATipoManutencao: TRESTRequestMethod; ADadosAluno: TAluno = nil);
@@ -119,50 +119,6 @@ begin
 end;
 
 
-procedure TForm1.BitBtn1Click(Sender: TObject);
-var
-  vAluno: TAluno;
-  vJSON: string;
-  vRetornoAPI : TRetornoAPI;
-begin
-  vAluno := TAluno.Create;
-  vAluno.peso := 68.6;
-  vAluno.sobrenome := 'eeeeuuuuuuuuuu';
-  vAluno.email := 'eeeeuuuuuuuuuu@yahoo.com.br';
-  vAluno.altura := 1.73;
-  vAluno.idade := 43;
-  vAluno.nome := 'eeeeuuuuuuuuuu';
-
-  vJSON := TJson.ObjectToJsonString(vAluno);
-
-  //RESTRequest3.Params[0].Value := vJSON;
-
-  //RESTRequest3.Method := rmPOST;
-
-  RESTRequestManutencao.Resource := FDMemTableGridMasteraluno_id.AsString;
-  RESTRequestManutencao.Method := rmDELETE;
-//  RESTRequest3.Method := rmPUT;
-
-  RESTRequestManutencao.Execute;
-
-  vRetornoAPI := TJson.JsonToObject<TRetornoAPI>(RESTRequestManutencao.Response.JSONText);
-
-  if vRetornoAPI.sucesso then
-  begin
-    ShowMessage('Sucesso');
-    RESTRequestGridMaster.Execute;
-  end
-  else
-    ShowMessage(vRetornoAPI.errors[0]);
-
-
-  if FDMemTableGridMaster.Locate('aluno_id', vRetornoAPI.aluno.id, []) then
-  begin
-    FListaIndexAlunoId.AddOrSetValue(vRetornoAPI.aluno.id, cxGridViewMaster.DataController.FocusedRecordIndex);
-    RESTRequestGridDetail.Execute;
-  end;
-end;
-
 procedure TForm1.BitBtnAlterarClick(Sender: TObject);
 begin
   Manutencao(rmPUT);
@@ -192,6 +148,12 @@ end;
 procedure TForm1.cxGrid1DBTableView1DataControllerDetailExpanding(ADataController: TcxCustomDataController;
                                                                   ARecordIndex: Integer;
                                                                   var AAllow: Boolean);
+begin
+  cxGridViewMaster.DataController.CollapseDetails;
+end;
+
+procedure TForm1.cxGridViewMasterDataControllerDetailExpanded(
+  ADataController: TcxCustomDataController; ARecordIndex: Integer);
 var
   vAlunoId: Integer;
   vIndex: integer;
@@ -203,14 +165,13 @@ begin
     RESTResponseGridDetail.RootElement := Format(cRootElementFotos, [vIndex]);
   end;
 
-  AAllow := FDMemTableGridDetail.RecordCount > 0;
-
-  if not AAllow then
-    ShowMessage('Aluno não possui imagens para exibir.')
-  else
+  if FDMemTableGridDetail.RecordCount = 0 then
   begin
     cxGridViewMaster.DataController.CollapseDetails;
-
+    ShowMessage('Aluno não possui imagens para exibir.')
+  end
+  else
+  begin
     if FDMemTableGridDetail.RecordCount = 1 then
       cxLayoutViewDetail.OptionsView.ViewMode := lvvmSingleRow
     else

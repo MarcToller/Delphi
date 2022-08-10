@@ -4,10 +4,13 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uConstantesRest, REST.Types;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uConstantesRest, REST.Types,
+  Vcl.StdCtrls, Vcl.Buttons;
 
 type
   TFormManutencaoAluno = class(TForm)
+    BitBtn1: TBitBtn;
+    procedure BitBtn1Click(Sender: TObject);
   private
     FMetodoExecutaManutencao: TMetodoExecutaManutencao;
     FDadosAluno: TAluno;
@@ -28,5 +31,14 @@ implementation
 
 
 {$R *.dfm}
+
+procedure TFormManutencaoAluno.BitBtn1Click(Sender: TObject);
+begin
+  FDadosAluno.nome := 'ttttttttttttttt';
+
+  FMetodoExecutaManutencao(FTipoManutencao, FDadosAluno);
+
+//
+end;
 
 end.

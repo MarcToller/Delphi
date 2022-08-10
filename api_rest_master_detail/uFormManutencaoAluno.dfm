@@ -11,4 +11,13 @@ object FormManutencaoAluno: TFormManutencaoAluno
   Font.Name = 'Segoe UI'
   Font.Style = []
   TextHeight = 15
+  object BitBtn1: TBitBtn
+    Left = 160
+    Top = 136
+    Width = 75
+    Height = 25
+    Caption = 'BitBtn1'
+    TabOrder = 0
+    OnClick = BitBtn1Click
+  end
 end

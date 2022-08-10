@@ -19,9 +19,6 @@ object Form1: TForm1
     Height = 436
     Align = alClient
     TabOrder = 0
-    ExplicitLeft = -8
-    ExplicitTop = 152
-    ExplicitHeight = 405
     object cxGridViewMaster: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.DataSource = DataSourceGridMaster
@@ -33,6 +30,7 @@ object Form1: TForm1
       DataController.Summary.FooterSummaryItems = <>
       DataController.Summary.SummaryGroups = <>
       DataController.OnDetailExpanding = cxGrid1DBTableView1DataControllerDetailExpanding
+      DataController.OnDetailExpanded = cxGridViewMasterDataControllerDetailExpanded
       OptionsSelection.CellSelect = False
       OptionsView.ColumnAutoWidth = True
       object cxGridViewMasteraluno_id: TcxGridDBColumn
@@ -126,22 +124,13 @@ object Form1: TForm1
       end
     end
   end
-  object BitBtn1: TBitBtn
-    Left = 536
-    Top = 296
-    Width = 75
-    Height = 25
-    Caption = 'BitBtn1'
-    TabOrder = 1
-    OnClick = BitBtn1Click
-  end
   object PanelManutencao: TPanel
     Left = 0
     Top = 0
     Width = 742
     Height = 65
     Align = alTop
-    TabOrder = 2
+    TabOrder = 1
     object BitBtnIncluir: TBitBtn
       Left = 23
       Top = 24
@@ -229,7 +218,7 @@ object Form1: TForm1
     object FDMemTableGridMasteremail: TWideStringField
       DisplayLabel = 'Email'
       FieldName = 'email'
-      Size = 21
+      Size = 100
     end
     object FDMemTableGridMasteridade: TFloatField
       DisplayLabel = 'Idade'
@@ -249,7 +238,7 @@ object Form1: TForm1
     end
   end
   object RESTResponseGridDetail: TRESTResponse
-    RootElement = '[5].Fotos'
+    RootElement = '[0].Fotos'
     Left = 192
     Top = 360
   end
