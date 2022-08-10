@@ -86,7 +86,7 @@ type
       ADataController: TcxCustomDataController; ARecordIndex: Integer);
   private
     FListaIndexAlunoId: IDictionary<Integer, integer>;
-    procedure ExecutaManutencao(ATipoManutencao: TRESTRequestMethod; ADadosAluno: TAluno = nil);
+    function ExecutaManutencao(ATipoManutencao: TRESTRequestMethod; ADadosAluno: TAluno = nil):TRetornoAPI;
     procedure Manutencao(ATipoManutencao: TRESTRequestMethod);
     procedure CriarAutenticacaoToken;
     function RetornaDadosAlunoSelecionado: TAluno;
@@ -140,7 +140,7 @@ var
 begin
   vRESTRequestParameter         := RESTClientManutencao.Params.AddItem;
   vRESTRequestParameter.Kind    := pkHTTPHEADER;
-  vRESTRequestParameter.Name    := 'authorization';
+  vRESTRequestParameter.Name    := cNomeParamAutenticacao;
   vRESTRequestParameter.Options := [poDoNotEncode];
   vRESTRequestParameter.Value   := cToken;
 end;
@@ -180,9 +180,7 @@ begin
 
 end;
 
-procedure TForm1.ExecutaManutencao(ATipoManutencao: TRESTRequestMethod; ADadosAluno: TAluno = nil);
-var
-  vRetornoAPI : TRetornoAPI;
+function TForm1.ExecutaManutencao(ATipoManutencao: TRESTRequestMethod; ADadosAluno: TAluno = nil):TRetornoAPI;
 
   function RetornaMensagemSucesso: string;
   const
@@ -199,6 +197,7 @@ var
   end;
 
 begin
+  RESTRequestManutencao.Resource := '';
   if ATipoManutencao in [rmDELETE, rmPUT] then
     RESTRequestManutencao.Resource := ADadosAluno.id.ToString;
 
@@ -212,22 +211,23 @@ begin
   except
   end;
 
-  vRetornoAPI := TJson.JsonToObject<TRetornoAPI>(RESTRequestManutencao.Response.JSONText);
+  Result := TJson.JsonToObject<TRetornoAPI>(RESTRequestManutencao.Response.JSONText);
 
-  if vRetornoAPI.sucesso then
+  if Result.sucesso then
   begin
     ShowMessage(RetornaMensagemSucesso);
     RESTRequestGridMaster.Execute;
 
-    if (ATipoManutencao = rmPOST) and FDMemTableGridMaster.Locate('aluno_id', vRetornoAPI.aluno.id, []) then
-    begin
-      FListaIndexAlunoId.AddOrSetValue(vRetornoAPI.aluno.id, cxGridViewMaster.DataController.FocusedRecordIndex);
-    end
-    else if (ATipoManutencao <> rmDELETE) then
+    if ATipoManutencao = rmPOST then
       RESTRequestGridDetail.Execute;
+
+    if (ATipoManutencao = rmPOST) and FDMemTableGridMaster.Locate('aluno_id', Result.aluno.id, []) then
+    begin
+      FListaIndexAlunoId.AddOrSetValue(Result.aluno.id, cxGridViewMaster.DataController.FocusedRecordIndex);
+    end;
   end
   else
-    ShowMessage(vRetornoAPI.errors[0]);
+    ShowMessage(Result.errors[0]);
 end;
 
 procedure TForm1.FDMemTableGridDetailBeforePost(DataSet: TDataSet);

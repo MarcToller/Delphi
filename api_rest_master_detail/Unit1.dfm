@@ -208,12 +208,12 @@ object Form1: TForm1
     object FDMemTableGridMasternome: TWideStringField
       DisplayLabel = 'Nome'
       FieldName = 'nome'
-      Size = 10
+      Size = 50
     end
     object FDMemTableGridMastersobrenome: TWideStringField
       DisplayLabel = 'Sobrenome'
       FieldName = 'sobrenome'
-      Size = 9
+      Size = 50
     end
     object FDMemTableGridMasteremail: TWideStringField
       DisplayLabel = 'Email'
