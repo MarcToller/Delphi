@@ -41,6 +41,7 @@ Type
 
 const
   cBaseURL               = 'http://168.138.248.33:3001/alunos';
+  cBaseURLFotos          = 'http://168.138.248.33:3001/fotos';
   cRootElementFotos      = '[%d].Fotos';
   cToken                 = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJtYXJjZWxvMUB5YWhvby5jb20uYnIiLCJpYXQiOjE2NTk5OTM2MTcsImV4cCI6MTY2MDU5ODQxN30.QnIczn8IPj4sPuXegpTkqH_jV7mVXU6ceMpgM10i18I';
   cNomeParamAutenticacao = 'authorization';

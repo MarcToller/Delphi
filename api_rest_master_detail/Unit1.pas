@@ -73,9 +73,13 @@ type
     RESTRequestManutencao: TRESTRequest;
     RESTResponse3: TRESTResponse;
     PanelManutencao: TPanel;
-    BitBtnIncluir: TBitBtn;
     BitBtnAlterar: TBitBtn;
     BitBtnExcluir: TBitBtn;
+    BitBtnIncluir: TBitBtn;
+    RESTClientFotos: TRESTClient;
+    RESTRequestFotos: TRESTRequest;
+    RESTResponseFotos: TRESTResponse;
+    FDMemTableGridDetailCaminhoFotoUpload: TStringField;
     procedure FormShow(Sender: TObject);
     procedure cxGrid1DBTableView1DataControllerDetailExpanding(ADataController: TcxCustomDataController; ARecordIndex: Integer;  var AAllow: Boolean);
     procedure FDMemTableGridDetailBeforePost(DataSet: TDataSet);
@@ -86,6 +90,8 @@ type
       ADataController: TcxCustomDataController; ARecordIndex: Integer);
   private
     FListaIndexAlunoId: IDictionary<Integer, integer>;
+    procedure GravarImagens(AAlunoID: integer);
+    procedure CarregarFotosDetail(AAlunoId: integer);
     function ExecutaManutencao(ATipoManutencao: TRESTRequestMethod; ADadosAluno: TAluno = nil):TRetornoAPI;
     procedure Manutencao(ATipoManutencao: TRESTRequestMethod);
     procedure CriarAutenticacaoToken;
@@ -114,6 +120,7 @@ begin
   FListaIndexAlunoId             := TCollections.CreateDictionary<integer,integer>;
   RESTClientConsultaGrid.BaseURL := cBaseURL;
   RESTClientManutencao.BaseURL   := cBaseURL;
+  RESTClientFotos.BaseURL        := cBaseURLFotos;
 
   CriarAutenticacaoToken;
 end;
@@ -134,6 +141,16 @@ begin
   Manutencao(rmPOST);
 end;
 
+procedure TForm1.CarregarFotosDetail(AAlunoId: integer);
+var
+  vIndex: integer;
+begin
+  if FListaIndexAlunoId.TryGetValue(AAlunoId, vIndex) then
+  begin
+    RESTResponseGridDetail.RootElement := Format(cRootElementFotos, [vIndex]);
+  end;
+end;
+
 procedure TForm1.CriarAutenticacaoToken;
 var
   vRESTRequestParameter: TRESTRequestParameter;
@@ -143,6 +160,13 @@ begin
   vRESTRequestParameter.Name    := cNomeParamAutenticacao;
   vRESTRequestParameter.Options := [poDoNotEncode];
   vRESTRequestParameter.Value   := cToken;
+
+  vRESTRequestParameter         := RESTClientFotos.Params.AddItem;
+  vRESTRequestParameter.Kind    := pkHTTPHEADER;
+  vRESTRequestParameter.Name    := cNomeParamAutenticacao;
+  vRESTRequestParameter.Options := [poDoNotEncode];
+  vRESTRequestParameter.Value   := cToken;
+
 end;
 
 procedure TForm1.cxGrid1DBTableView1DataControllerDetailExpanding(ADataController: TcxCustomDataController;
@@ -152,18 +176,13 @@ begin
   cxGridViewMaster.DataController.CollapseDetails;
 end;
 
-procedure TForm1.cxGridViewMasterDataControllerDetailExpanded(
-  ADataController: TcxCustomDataController; ARecordIndex: Integer);
+procedure TForm1.cxGridViewMasterDataControllerDetailExpanded(ADataController: TcxCustomDataController; ARecordIndex: Integer);
 var
   vAlunoId: Integer;
-  vIndex: integer;
 begin
   vAlunoId := ADataController.GetValue(ARecordIndex, 0);
 
-  if FListaIndexAlunoId.TryGetValue(vAlunoId, vIndex) then
-  begin
-    RESTResponseGridDetail.RootElement := Format(cRootElementFotos, [vIndex]);
-  end;
+  CarregarFotosDetail(vAlunoId);
 
   if FDMemTableGridDetail.RecordCount = 0 then
   begin
@@ -181,6 +200,8 @@ begin
 end;
 
 function TForm1.ExecutaManutencao(ATipoManutencao: TRESTRequestMethod; ADadosAluno: TAluno = nil):TRetornoAPI;
+var
+  vOcorreuFalha: Boolean;
 
   function RetornaMensagemSucesso: string;
   const
@@ -197,6 +218,7 @@ function TForm1.ExecutaManutencao(ATipoManutencao: TRESTRequestMethod; ADadosAlu
   end;
 
 begin
+  vOcorreuFalha := false;
   RESTRequestManutencao.Resource := '';
   if ATipoManutencao in [rmDELETE, rmPUT] then
     RESTRequestManutencao.Resource := ADadosAluno.id.ToString;
@@ -209,25 +231,37 @@ begin
   try
     RESTRequestManutencao.Execute;
   except
+    vOcorreuFalha := True;
   end;
 
   Result := TJson.JsonToObject<TRetornoAPI>(RESTRequestManutencao.Response.JSONText);
 
-  if Result.sucesso then
+  if Result.sucesso and not vOcorreuFalha then
   begin
-    ShowMessage(RetornaMensagemSucesso);
+    GravarImagens(Result.aluno.id);
+
     RESTRequestGridMaster.Execute;
 
     if ATipoManutencao = rmPOST then
       RESTRequestGridDetail.Execute;
 
-    if (ATipoManutencao = rmPOST) and FDMemTableGridMaster.Locate('aluno_id', Result.aluno.id, []) then
+    if (ATipoManutencao in [rmPOST, rmPUT]) then
     begin
-      FListaIndexAlunoId.AddOrSetValue(Result.aluno.id, cxGridViewMaster.DataController.FocusedRecordIndex);
+      if (ATipoManutencao = rmPOST) and FDMemTableGridMaster.Locate('aluno_id', Result.aluno.id, []) then
+      begin
+        FListaIndexAlunoId.AddOrSetValue(Result.aluno.id, cxGridViewMaster.DataController.FocusedRecordIndex);
+      end;
+
+      CarregarFotosDetail(Result.aluno.id);
     end;
+
+    ShowMessage(RetornaMensagemSucesso);
   end
+  else if Length(Result.errors) > 0 then
+    ShowMessage(Result.errors[0])
   else
-    ShowMessage(Result.errors[0]);
+    ShowMessage('falha desconhecida');
+
 end;
 
 procedure TForm1.FDMemTableGridDetailBeforePost(DataSet: TDataSet);
@@ -237,15 +271,18 @@ var
 begin
   MS := nil;
   try
-    APath := FDMemTableGridDetailurl.AsString;
+    if FDMemTableGridDetailid.AsInteger > 0  then
+    begin
+      APath := FDMemTableGridDetailurl.AsString;
 
-    MS := TMemoryStream.Create;
-    try
-      IdHTTP1.Get(APath, MS);
-    except
+      MS := TMemoryStream.Create;
+      try
+        IdHTTP1.Get(APath, MS);
+      except
+      end;
+      MS.Position := 0;
+      FDMemTableGridDetailImagem.LoadFromStream(MS);
     end;
-    MS.Position := 0;
-    FDMemTableGridDetailImagem.LoadFromStream(MS);
   finally
     MS.Free;
   end;
@@ -257,7 +294,11 @@ var
 begin
   try
     RESTRequestGridMaster.execute;
-    RESTRequestGridDetail.execute;
+
+    if FDMemTableGridMaster.RecordCount > 0 then
+      RESTRequestGridDetail.execute
+    else
+      FDMemTableGridDetail.Open;
 
     vIndex := 0;
     FDMemTableGridMaster.First;
@@ -280,6 +321,26 @@ begin
 end;
 
 
+procedure TForm1.GravarImagens(AAlunoID: integer);
+begin
+  FDMemTableGridDetail.DisableControls;
+
+  FDMemTableGridDetail.First;
+
+  while not FDMemTableGridDetail.Eof do
+  begin
+    if FDMemTableGridDetailid.AsInteger = 0 then
+    begin
+      RESTRequestFotos.Params[0].Value := FDMemTableGridDetailCaminhoFotoUpload.AsString;
+      RESTRequestFotos.Params[1].Value := AAlunoID.ToString;
+      RESTRequestFotos.Execute;
+    end;
+    FDMemTableGridDetail.Next;
+  end;
+
+  FDMemTableGridDetail.EnableControls;
+end;
+
 procedure TForm1.Manutencao(ATipoManutencao: TRESTRequestMethod);
 var
   vAluno : TAluno;
@@ -288,6 +349,8 @@ begin
   vAluno := nil;
   vFormManutencao := nil;
 
+  cxGridViewMaster.DataController.CollapseDetails;
+
   if ATipoManutencao in [rmDELETE, rmPUT] then
     vAluno := RetornaDadosAlunoSelecionado
   else
@@ -295,10 +358,17 @@ begin
 
   if ATipoManutencao in [rmPOST, rmPUT] then
   begin
+    if ATipoManutencao = rmPUT then
+      CarregarFotosDetail(FDMemTableGridMasteraluno_id.AsInteger)
+    else if FDMemTableGridDetail.Active then
+      FDMemTableGridDetail.EmptyDataSet;
+
     vFormManutencao                         := TFormManutencaoAluno.create(self);
     vFormManutencao.DadosAluno              := vAluno;
     vFormManutencao.TipoManutencao          := ATipoManutencao;
     vFormManutencao.MetodoExecutaManutencao := ExecutaManutencao;
+    vFormManutencao.DataSource1.DataSet     := FDMemTableGridDetail;
+
     vFormManutencao.ShowModal;
   end
   else

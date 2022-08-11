@@ -21,6 +21,8 @@ object Form1: TForm1
     TabOrder = 0
     object cxGridViewMaster: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
+      DataController.DataModeController.GridMode = True
+      DataController.DataModeController.SyncMode = False
       DataController.DataSource = DataSourceGridMaster
       DataController.DetailKeyFieldNames = 'aluno_id'
       DataController.KeyFieldNames = 'aluno_id'
@@ -31,8 +33,15 @@ object Form1: TForm1
       DataController.Summary.SummaryGroups = <>
       DataController.OnDetailExpanding = cxGrid1DBTableView1DataControllerDetailExpanding
       DataController.OnDetailExpanded = cxGridViewMasterDataControllerDetailExpanded
+      OptionsBehavior.ExpandMasterRowOnDblClick = False
+      OptionsData.Deleting = False
+      OptionsData.Editing = False
+      OptionsData.Inserting = False
       OptionsSelection.CellSelect = False
+      OptionsView.NoDataToDisplayInfoText = 'Nenhum aluno cadastrado'
       OptionsView.ColumnAutoWidth = True
+      OptionsView.GroupByBox = False
+      OptionsView.Indicator = True
       object cxGridViewMasteraluno_id: TcxGridDBColumn
         DataBinding.FieldName = 'aluno_id'
         Width = 61
@@ -131,22 +140,13 @@ object Form1: TForm1
     Height = 65
     Align = alTop
     TabOrder = 1
-    object BitBtnIncluir: TBitBtn
-      Left = 23
-      Top = 24
-      Width = 75
-      Height = 25
-      Caption = 'Incluir'
-      TabOrder = 0
-      OnClick = BitBtnIncluirClick
-    end
     object BitBtnAlterar: TBitBtn
       Left = 127
       Top = 24
       Width = 75
       Height = 25
       Caption = 'Alterar'
-      TabOrder = 1
+      TabOrder = 0
       OnClick = BitBtnAlterarClick
     end
     object BitBtnExcluir: TBitBtn
@@ -155,8 +155,17 @@ object Form1: TForm1
       Width = 75
       Height = 25
       Caption = 'Excluir'
-      TabOrder = 2
+      TabOrder = 1
       OnClick = BitBtnExcluirClick
+    end
+    object BitBtnIncluir: TBitBtn
+      Left = 23
+      Top = 24
+      Width = 75
+      Height = 25
+      Caption = 'Incluir'
+      TabOrder = 2
+      OnClick = BitBtnIncluirClick
     end
   end
   object RESTClientConsultaGrid: TRESTClient
@@ -287,6 +296,11 @@ object Form1: TForm1
     object FDMemTableGridDetailImagem: TBlobField
       FieldName = 'Imagem'
     end
+    object FDMemTableGridDetailCaminhoFotoUpload: TStringField
+      FieldName = 'CaminhoFotoUpload'
+      Visible = False
+      Size = 300
+    end
   end
   object RESTRequestGridDetail: TRESTRequest
     Client = RESTClientConsultaGrid
@@ -349,10 +363,7 @@ object Form1: TForm1
       item
         Kind = pkREQUESTBODY
         Name = 'bodyF903FD868CF9498A8484E4E1A0071B7B'
-        Value = 
-          '{"nome": "Marcelo 123456",'#13#10' "sobrenome": "Toller 123456",'#13#10' "em' +
-          'ail": "marcelo123456@yahoo.com.br",'#13#10' "idade": 99,'#13#10' "peso": 99.' +
-          '9,'#13#10' "altura": 99.7}'
+        Value = '{}'
         ContentTypeStr = 'application/json'
       end>
     Response = RESTResponse3
@@ -362,5 +373,37 @@ object Form1: TForm1
   object RESTResponse3: TRESTResponse
     Left = 488
     Top = 328
+  end
+  object RESTClientFotos: TRESTClient
+    Accept = 'application/json, text/plain; q=0.9, text/html;q=0.8,'
+    AcceptCharset = 'utf-8, *;q=0.8'
+    BaseURL = 'http://168.138.248.33:3001/fotos'
+    Params = <>
+    Left = 632
+    Top = 224
+  end
+  object RESTRequestFotos: TRESTRequest
+    AssignedValues = [rvConnectTimeout, rvReadTimeout]
+    Client = RESTClientFotos
+    Method = rmPOST
+    Params = <
+      item
+        Kind = pkFILE
+        Name = 'foto'
+        Value = 
+          'D:\Marcelo\ScreenShotCaptor\Screenshot - 20_07_2022 , 20_45_33.p' +
+          'ng'
+      end
+      item
+        Name = 'aluno_id'
+        Value = '10'
+      end>
+    Response = RESTResponseFotos
+    Left = 632
+    Top = 160
+  end
+  object RESTResponseFotos: TRESTResponse
+    Left = 544
+    Top = 152
   end
 end
