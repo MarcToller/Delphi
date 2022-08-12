@@ -242,11 +242,10 @@ begin
 
     RESTRequestGridMaster.Execute;
 
-    if ATipoManutencao = rmPOST then
-      RESTRequestGridDetail.Execute;
-
     if (ATipoManutencao in [rmPOST, rmPUT]) then
     begin
+      RESTRequestGridDetail.Execute;
+
       if (ATipoManutencao = rmPOST) and FDMemTableGridMaster.Locate('aluno_id', Result.aluno.id, []) then
       begin
         FListaIndexAlunoId.AddOrSetValue(Result.aluno.id, cxGridViewMaster.DataController.FocusedRecordIndex);
