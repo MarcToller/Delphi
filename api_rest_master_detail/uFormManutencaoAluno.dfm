@@ -20,7 +20,6 @@ object FormManutencaoAluno: TFormManutencaoAluno
     Height = 51
     Align = alBottom
     TabOrder = 0
-    ExplicitTop = 478
     DesignSize = (
       475
       51)
@@ -53,7 +52,6 @@ object FormManutencaoAluno: TFormManutencaoAluno
     Margins.Bottom = 0
     Align = alClient
     TabOrder = 1
-    ExplicitHeight = 472
     object Label1: TLabel
       Left = 16
       Top = 16
@@ -157,7 +155,6 @@ object FormManutencaoAluno: TFormManutencaoAluno
       Align = alBottom
       Caption = 'Fotos'
       TabOrder = 6
-      ExplicitTop = 232
       object cxGrid1: TcxGrid
         AlignWithMargins = True
         Left = 5
@@ -166,8 +163,6 @@ object FormManutencaoAluno: TFormManutencaoAluno
         Height = 196
         Align = alClient
         TabOrder = 0
-        ExplicitTop = 112
-        ExplicitHeight = 144
         object cxGrid1DBLayoutView1: TcxGridDBLayoutView
           Navigator.Buttons.CustomButtons = <>
           DataController.DataSource = DataSource1
@@ -181,12 +176,30 @@ object FormManutencaoAluno: TFormManutencaoAluno
             RepositoryItem = cxEditRepository1ImageItem1
             LayoutItem = cxGrid1DBLayoutView1LayoutItem1
           end
+          object cxGrid1DBLayoutViewExcluir: TcxGridDBLayoutViewItem
+            Caption = 'Excluir'
+            DataBinding.FieldName = 'ExcluirFoto'
+            PropertiesClassName = 'TcxCheckBoxProperties'
+            Properties.NullStyle = nssUnchecked
+            LayoutItem = cxGrid1DBLayoutView1LayoutItem2
+            Options.Filtering = False
+            Options.FilteringWithFindPanel = False
+            Options.IgnoreTimeForFiltering = False
+            Options.IncSearch = False
+            Options.FilteringAddValueItems = False
+            Options.FilteringFilteredItemsList = False
+            Options.FilteringMRUItemsList = False
+            Options.FilteringPopup = False
+            Options.FilteringPopupMultiSelect = False
+            Options.ShowEditButtons = isebNever
+          end
           object cxGrid1DBLayoutView1Group_Root: TdxLayoutGroup
             AlignHorz = ahLeft
             AlignVert = avTop
             CaptionOptions.Text = 'Template Card'
             ButtonOptions.Buttons = <>
             Hidden = True
+            ItemIndex = 1
             ShowBorder = False
             Index = -1
           end
@@ -197,6 +210,10 @@ object FormManutencaoAluno: TFormManutencaoAluno
             SizeOptions.Height = 115
             SizeOptions.Width = 139
             Index = 0
+          end
+          object cxGrid1DBLayoutView1LayoutItem2: TcxGridLayoutItem
+            Parent = cxGrid1DBLayoutView1Group_Root
+            Index = 1
           end
         end
         object cxGrid1Level1: TcxGridLevel
@@ -219,8 +236,6 @@ object FormManutencaoAluno: TFormManutencaoAluno
         ShowHint = True
         TabOrder = 1
         OnClick = BitBtnAdicionarFotoClick
-        ExplicitTop = 27
-        ExplicitWidth = 463
       end
     end
   end

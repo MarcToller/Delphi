@@ -85,6 +85,7 @@ object Form1: TForm1
       DataController.Summary.DefaultGroupSummaryItems = <>
       DataController.Summary.FooterSummaryItems = <>
       DataController.Summary.SummaryGroups = <>
+      OptionsCustomize.ItemFiltering = False
       OptionsView.FocusRect = False
       OptionsView.CarouselMode.BackgroundRecordAlphaLevel = 50
       OptionsView.RecordSize.Height = 350
@@ -93,12 +94,14 @@ object Form1: TForm1
       object cxGrid1DBLayoutViewItemUrl: TcxGridDBLayoutViewItem
         DataBinding.FieldName = 'url'
         LayoutItem = cxLayoutViewDetailLayoutItem1
+        Options.ShowEditButtons = isebNever
       end
       object cxGrid1DBLayoutViewItemImagem: TcxGridDBLayoutViewItem
         Caption = 'Foto'
         DataBinding.FieldName = 'imagem'
         RepositoryItem = cxEditRepository1ImageItem1
         LayoutItem = cxLayoutViewDetailLayoutItem2
+        Options.ShowEditButtons = isebNever
       end
       object cxLayoutViewDetailGroup_Root: TdxLayoutGroup
         AlignHorz = ahLeft
@@ -300,6 +303,9 @@ object Form1: TForm1
       FieldName = 'CaminhoFotoUpload'
       Visible = False
       Size = 300
+    end
+    object FDMemTableGridDetailExcluirFoto: TBooleanField
+      FieldName = 'ExcluirFoto'
     end
   end
   object RESTRequestGridDetail: TRESTRequest

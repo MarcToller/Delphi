@@ -12,7 +12,7 @@ uses
   cxDBData, cxGridLevel, cxClasses, cxGridCustomView, cxGridCustomTableView,
   cxGridTableView, cxGridDBTableView, cxGrid, dxLayoutContainer,
   cxGridCustomLayoutView, cxGridLayoutView, cxGridDBLayoutView, cxImage,
-  cxGridViewLayoutContainer, cxEditRepositoryItems, Vcl.ExtDlgs;
+  cxGridViewLayoutContainer, cxEditRepositoryItems, Vcl.ExtDlgs, cxCheckBox;
 
 type
   TFormManutencaoAluno = class(TForm)
@@ -44,6 +44,8 @@ type
     cxGrid1DBLayoutViewImagem: TcxGridDBLayoutViewItem;
     OpenPictureDialog1: TOpenPictureDialog;
     BitBtnAdicionarFoto: TBitBtn;
+    cxGrid1DBLayoutView1LayoutItem2: TcxGridLayoutItem;
+    cxGrid1DBLayoutViewExcluir: TcxGridDBLayoutViewItem;
     procedure BitBtnGravarClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure BitBtnAdicionarFotoClick(Sender: TObject);

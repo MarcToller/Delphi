@@ -80,6 +80,7 @@ type
     RESTRequestFotos: TRESTRequest;
     RESTResponseFotos: TRESTResponse;
     FDMemTableGridDetailCaminhoFotoUpload: TStringField;
+    FDMemTableGridDetailExcluirFoto: TBooleanField;
     procedure FormShow(Sender: TObject);
     procedure cxGrid1DBTableView1DataControllerDetailExpanding(ADataController: TcxCustomDataController; ARecordIndex: Integer;  var AAllow: Boolean);
     procedure FDMemTableGridDetailBeforePost(DataSet: TDataSet);
@@ -326,9 +327,25 @@ begin
 
   FDMemTableGridDetail.First;
 
+  RESTRequestFotos.Method := rmDELETE;
+
   while not FDMemTableGridDetail.Eof do
   begin
-    if FDMemTableGridDetailid.AsInteger = 0 then
+    if (FDMemTableGridDetailid.AsInteger > 0) and FDMemTableGridDetailExcluirFoto.AsBoolean then
+    begin
+      RESTRequestFotos.Resource := FDMemTableGridDetailid.AsString;
+      RESTRequestFotos.Execute;
+    end;
+    FDMemTableGridDetail.Next;
+  end;
+
+  FDMemTableGridDetail.First;
+
+  RESTRequestFotos.Method   := rmPOST;
+  RESTRequestFotos.Resource := '';
+  while not FDMemTableGridDetail.Eof do
+  begin
+    if (FDMemTableGridDetailid.AsInteger = 0) and not FDMemTableGridDetailExcluirFoto.AsBoolean then
     begin
       RESTRequestFotos.Params[0].Value := FDMemTableGridDetailCaminhoFotoUpload.AsString;
       RESTRequestFotos.Params[1].Value := AAlunoID.ToString;
