@@ -36,20 +36,40 @@ Type
     property aluno: TAluno read Faluno write Faluno;
   end;
 
+  TRetornoTokenUsuario = class(Tobject)
+  private
+    FuserEmail: string;
+    FuserId: string;
+    FtokenExpira: string;
+    FuserName: string;
+    Ferrors: TArray<string>;
+  public
+    property userName: string read FuserName write FuserName;
+    property tokenExpira: string read FtokenExpira write FtokenExpira;
+    property userEmail: string read FuserEmail write FuserEmail;
+    property userId: string read FuserId write FuserId;
+    property errors: TArray<string> read Ferrors write Ferrors;
+  end;
+
   TMetodoExecutaManutencao = function(ATipoManutencao: TRESTRequestMethod; ADadosAluno: TAluno = nil):TRetornoAPI of object;
 
 
 const
   cBaseURL               = 'http://168.138.248.33:3001/alunos';
   cBaseURLFotos          = 'http://168.138.248.33:3001/fotos';
+  cBaseURLToken          = 'http://168.138.248.33:3001/tokens';
 
-(*  cBaseURL               = 'http://localhost:3001/alunos';
-  cBaseURLFotos          = 'http://localhost:3001/fotos';*)
+(*
+  cBaseURL               = 'http://localhost:3001/alunos';
+  cBaseURLFotos          = 'http://localhost:3001/fotos';
+  cBaseURLToken          = 'http://localhost:3001/tokens';
+*)
 
 
   cRootElementFotos      = '[%d].Fotos';
-  cToken                 = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJtYXJjZWxvMUB5YWhvby5jb20uYnIiLCJpYXQiOjE2NTk5OTM2MTcsImV4cCI6MTY2MDU5ODQxN30.QnIczn8IPj4sPuXegpTkqH_jV7mVXU6ceMpgM10i18I';
   cNomeParamAutenticacao = 'authorization';
+  cTokenCadastroAlunos   = 'TokenCadastroAlunos';
+  cBearer                = 'Bearer';
 
 
 implementation

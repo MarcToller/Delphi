@@ -19,7 +19,7 @@ uses
   IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, cxImage, cxDataUtils,
   cxEditRepositoryItems, Vcl.StdCtrls, Vcl.Buttons, REST.Json,
   REST.Authenticator.OAuth, REST.Authenticator.Basic, uConstantesRest,
-  Vcl.ExtCtrls;
+  Vcl.ExtCtrls, System.Win.Registry;
 
 type
   TForm1 = class(TForm)
@@ -81,6 +81,11 @@ type
     RESTResponseFotos: TRESTResponse;
     FDMemTableGridDetailCaminhoFotoUpload: TStringField;
     FDMemTableGridDetailExcluirFoto: TBooleanField;
+    PanelUsuario: TPanel;
+    LabelUsuario: TLabel;
+    RESTClientToken: TRESTClient;
+    RESTRequestToken: TRESTRequest;
+    RESTResponseToken: TRESTResponse;
     procedure FormShow(Sender: TObject);
     procedure cxGrid1DBTableView1DataControllerDetailExpanding(ADataController: TcxCustomDataController; ARecordIndex: Integer;  var AAllow: Boolean);
     procedure FDMemTableGridDetailBeforePost(DataSet: TDataSet);
@@ -97,6 +102,7 @@ type
     procedure Manutencao(ATipoManutencao: TRESTRequestMethod);
     procedure CriarAutenticacaoToken;
     function RetornaDadosAlunoSelecionado: TAluno;
+    function RetornaToken: string;
     { Private declarations }
   public
     procedure AfterConstruction; override;
@@ -110,7 +116,7 @@ var
 implementation
 
 uses
-  System.Net.HttpClient, uFormManutencaoAluno;
+  System.Net.HttpClient, uFormManutencaoAluno, uFormAutorizacaoToken;
 
 
 {$R *.dfm}
@@ -122,6 +128,7 @@ begin
   RESTClientConsultaGrid.BaseURL := cBaseURL;
   RESTClientManutencao.BaseURL   := cBaseURL;
   RESTClientFotos.BaseURL        := cBaseURLFotos;
+  RESTClientToken.BaseURL        := cBaseURLToken;
 
   CriarAutenticacaoToken;
 end;
@@ -155,18 +162,21 @@ end;
 procedure TForm1.CriarAutenticacaoToken;
 var
   vRESTRequestParameter: TRESTRequestParameter;
+  vToken: string;
 begin
+  vToken := RetornaToken;
+
   vRESTRequestParameter         := RESTClientManutencao.Params.AddItem;
   vRESTRequestParameter.Kind    := pkHTTPHEADER;
   vRESTRequestParameter.Name    := cNomeParamAutenticacao;
   vRESTRequestParameter.Options := [poDoNotEncode];
-  vRESTRequestParameter.Value   := cToken;
+  vRESTRequestParameter.Value   := vToken;
 
   vRESTRequestParameter         := RESTClientFotos.Params.AddItem;
   vRESTRequestParameter.Kind    := pkHTTPHEADER;
   vRESTRequestParameter.Name    := cNomeParamAutenticacao;
   vRESTRequestParameter.Options := [poDoNotEncode];
-  vRESTRequestParameter.Value   := cToken;
+  vRESTRequestParameter.Value   := vToken;
 
 end;
 
@@ -406,4 +416,80 @@ begin
   Result.nome      := FDMemTableGridMasternome.AsString;
 end;
 
+function TForm1.RetornaToken: string;
+var
+  vRESTRequestParameter: TRESTRequestParameter;
+  vRetornoTokenUsuario : TRetornoTokenUsuario;
+  vDataToken: string;
+  vRegistro: TRegistry;
+  vAutorizado: Boolean;
+
+  function RequisitarToken: string;
+  var
+    vFormAutorizacaoToken : TFormAutorizacaoToken;
+  begin
+    vFormAutorizacaoToken := TFormAutorizacaoToken.Create(self);
+    vFormAutorizacaoToken.ShowModal;
+    Result := vFormAutorizacaoToken.Token;
+
+    if not Result.IsEmpty then
+      vRegistro.WriteString(cTokenCadastroAlunos, Result);
+  end;
+
+begin
+  vRESTRequestParameter         := RESTRequestToken.Params.AddItem;
+  vRESTRequestParameter.Kind    := pkHTTPHEADER;
+  vRESTRequestParameter.Name    := cNomeParamAutenticacao;
+  vRESTRequestParameter.Options := [poDoNotEncode];
+
+  vAutorizado       := False;
+  vRegistro         := TRegistry.Create;
+  vRegistro.RootKey := HKEY_CURRENT_USER;
+
+  if vRegistro.OpenKey(cTokenCadastroAlunos, true) then
+    Result := vRegistro.ReadString(cTokenCadastroAlunos);
+
+  if Result.IsEmpty then
+    Result := RequisitarToken;
+
+  while True do
+  begin
+    if Result.IsEmpty then
+    begin
+      Application.Terminate;
+      Break;
+    end;
+
+    if vAutorizado then
+      Break;
+
+    vRESTRequestParameter.Value := cBearer+' '+Result;
+
+    try
+      try
+        RESTRequestToken.Execute;
+      except
+      end;
+    finally
+      vRetornoTokenUsuario := TJson.JsonToObject<TRetornoTokenUsuario>(RESTRequestToken.Response.JSONText);
+
+      if Length(vRetornoTokenUsuario.errors) > 0 then
+      begin
+        ShowMessage(vRetornoTokenUsuario.errors[0]);
+        Result := RequisitarToken;
+      end
+      else
+      begin
+        Result               := cBearer+' '+Result;
+        vAutorizado          := true;
+        vDataToken           := Copy(vRetornoTokenUsuario.tokenExpira, 4,2)+'/'+Copy(vRetornoTokenUsuario.tokenExpira, 1,2)+'/'+Copy(vRetornoTokenUsuario.tokenExpira, 7,2);
+        LabelUsuario.Caption := Format('Usuário: %s - Token expira em: %s', [vRetornoTokenUsuario.userName, vDataToken]);
+      end;
+    end;
+  end;
+
+end;
+
 end.
+
+

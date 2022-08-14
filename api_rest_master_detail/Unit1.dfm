@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Form1'
-  ClientHeight = 501
-  ClientWidth = 742
+  ClientHeight = 608
+  ClientWidth = 875
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,9 +14,9 @@ object Form1: TForm1
   TextHeight = 15
   object cxGrid1: TcxGrid
     Left = 0
-    Top = 65
-    Width = 742
-    Height = 436
+    Top = 98
+    Width = 875
+    Height = 510
     Align = alClient
     TabOrder = 0
     object cxGridViewMaster: TcxGridDBTableView
@@ -138,8 +138,8 @@ object Form1: TForm1
   end
   object PanelManutencao: TPanel
     Left = 0
-    Top = 0
-    Width = 742
+    Top = 33
+    Width = 875
     Height = 65
     Align = alTop
     TabOrder = 1
@@ -169,6 +169,21 @@ object Form1: TForm1
       Caption = 'Incluir'
       TabOrder = 2
       OnClick = BitBtnIncluirClick
+    end
+  end
+  object PanelUsuario: TPanel
+    Left = 0
+    Top = 0
+    Width = 875
+    Height = 33
+    Align = alTop
+    TabOrder = 2
+    object LabelUsuario: TLabel
+      Left = 20
+      Top = 9
+      Width = 68
+      Height = 15
+      Caption = 'LabelUsuario'
     end
   end
   object RESTClientConsultaGrid: TRESTClient
@@ -409,7 +424,25 @@ object Form1: TForm1
     Top = 160
   end
   object RESTResponseFotos: TRESTResponse
-    Left = 544
-    Top = 152
+    Left = 632
+    Top = 112
+  end
+  object RESTClientToken: TRESTClient
+    BaseURL = 'http://168.138.248.33:3001/tokens'
+    Params = <>
+    Left = 432
+    Top = 536
+  end
+  object RESTRequestToken: TRESTRequest
+    AssignedValues = [rvConnectTimeout, rvReadTimeout]
+    Client = RESTClientToken
+    Params = <>
+    Response = RESTResponseToken
+    Left = 432
+    Top = 480
+  end
+  object RESTResponseToken: TRESTResponse
+    Left = 432
+    Top = 424
   end
 end

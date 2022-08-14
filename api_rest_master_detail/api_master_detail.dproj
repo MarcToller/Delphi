@@ -109,6 +109,10 @@
             <Form>FormManutencaoAluno</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="uFormAutorizacaoToken.pas">
+            <Form>FormAutorizacaoToken</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
