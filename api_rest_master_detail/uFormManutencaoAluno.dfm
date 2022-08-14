@@ -1,6 +1,8 @@
 object FormManutencaoAluno: TFormManutencaoAluno
   Left = 0
   Top = 0
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsSingle
   Caption = 'Manuten'#231#227'o de Aluno'
   ClientHeight = 538
   ClientWidth = 481

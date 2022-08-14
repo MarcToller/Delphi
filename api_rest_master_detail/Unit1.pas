@@ -509,8 +509,8 @@ begin
       end
       else
       begin
-        Result               := cBearer+' '+Result;
-        vAutorizado          := true;
+        Result      := cBearer+' '+Result;
+        vAutorizado := true;
 
         if vRetornoTokenUsuario.tokenExpira.IsEmpty or (Pos('Invalid Date', vRetornoTokenUsuario.tokenExpira) > 0) then
           vDataToken := 'Nunca'
