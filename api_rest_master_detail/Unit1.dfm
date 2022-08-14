@@ -1,7 +1,7 @@
-object Form1: TForm1
+object FormPrincipal: TFormPrincipal
   Left = 0
   Top = 0
-  Caption = 'Form1'
+  Caption = 'Cadastro de Alunos'
   ClientHeight = 608
   ClientWidth = 875
   Color = clBtnFace
@@ -27,6 +27,8 @@ object Form1: TForm1
       DataController.DataModeController.SyncMode = False
       DataController.DataSource = DataSourceGridMaster
       DataController.DetailKeyFieldNames = 'aluno_id'
+      DataController.Filter.Active = True
+      DataController.Filter.AutoDataSetFilter = True
       DataController.KeyFieldNames = 'aluno_id'
       DataController.MasterKeyFieldNames = 'aluno_id'
       DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys]
@@ -35,6 +37,9 @@ object Form1: TForm1
       DataController.Summary.SummaryGroups = <>
       DataController.OnDetailExpanding = cxGrid1DBTableView1DataControllerDetailExpanding
       DataController.OnDetailExpanded = cxGridViewMasterDataControllerDetailExpanded
+      FilterRow.InfoText = 'Clique aqui para filtrar'
+      FilterRow.Visible = True
+      FilterRow.ApplyChanges = fracImmediately
       OptionsBehavior.ExpandMasterRowOnDblClick = False
       OptionsData.Deleting = False
       OptionsData.Editing = False

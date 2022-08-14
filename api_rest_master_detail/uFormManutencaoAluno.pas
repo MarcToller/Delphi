@@ -12,7 +12,8 @@ uses
   cxDBData, cxGridLevel, cxClasses, cxGridCustomView, cxGridCustomTableView,
   cxGridTableView, cxGridDBTableView, cxGrid, dxLayoutContainer,
   cxGridCustomLayoutView, cxGridLayoutView, cxGridDBLayoutView, cxImage,
-  cxGridViewLayoutContainer, cxEditRepositoryItems, Vcl.ExtDlgs, cxCheckBox;
+  cxGridViewLayoutContainer, cxEditRepositoryItems, Vcl.ExtDlgs, cxCheckBox,
+  Vcl.Samples.Gauges;
 
 type
   TFormManutencaoAluno = class(TForm)
@@ -46,9 +47,11 @@ type
     BitBtnAdicionarFoto: TBitBtn;
     cxGrid1DBLayoutView1LayoutItem2: TcxGridLayoutItem;
     cxGrid1DBLayoutViewExcluir: TcxGridDBLayoutViewItem;
+    Gauge1: TGauge;
     procedure BitBtnGravarClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure BitBtnAdicionarFotoClick(Sender: TObject);
+    procedure BitBtnCancelarClick(Sender: TObject);
   private
     FMetodoExecutaManutencao: TMetodoExecutaManutencao;
     FDadosAluno: TAluno;
@@ -88,25 +91,35 @@ begin
   end;
 end;
 
+procedure TFormManutencaoAluno.BitBtnCancelarClick(Sender: TObject);
+begin
+  Close;
+end;
+
 procedure TFormManutencaoAluno.BitBtnGravarClick(Sender: TObject);
 var
   vRetornoAPI : TRetornoAPI;
 begin
+  Gauge1.Visible        := true;
   FDadosAluno.nome      := EditNome.Text;
   FDadosAluno.sobrenome := EditSobreNome.Text;
   FDadosAluno.email     := EditEmail.Text;
   FDadosAluno.idade     := cxCurrencyEditIdade.EditValue;
   FDadosAluno.peso      := cxCurrencyEditPeso.Value;
-  FDadosAluno.altura    := cxCurrencyEditAltura.Value;   
+  FDadosAluno.altura    := cxCurrencyEditAltura.Value;
 
-  vRetornoAPI := FMetodoExecutaManutencao(FTipoManutencao, FDadosAluno);
+  vRetornoAPI := FMetodoExecutaManutencao(FTipoManutencao, FDadosAluno, Gauge1);
 
   if vRetornoAPI.sucesso then
-    Close;
+    Close
+  else
+    Gauge1.Visible := False;
 end;
 
 procedure TFormManutencaoAluno.FormShow(Sender: TObject);
 begin
+  Gauge1.Visible := False;
+
   EditNome.Text                 := FDadosAluno.nome;
   EditSobreNome.Text            := FDadosAluno.sobrenome;
   EditEmail.Text                := FDadosAluno.email;

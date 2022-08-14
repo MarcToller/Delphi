@@ -1,7 +1,7 @@
 object FormManutencaoAluno: TFormManutencaoAluno
   Left = 0
   Top = 0
-  Caption = 'FormManutencaoAluno'
+  Caption = 'Manuten'#231#227'o de Aluno'
   ClientHeight = 538
   ClientWidth = 481
   Color = clBtnFace
@@ -23,6 +23,13 @@ object FormManutencaoAluno: TFormManutencaoAluno
     DesignSize = (
       475
       51)
+    object Gauge1: TGauge
+      Left = 6
+      Top = 14
+      Width = 219
+      Height = 20
+      Progress = 0
+    end
     object BitBtnGravar: TBitBtn
       Left = 370
       Top = 14
@@ -41,6 +48,7 @@ object FormManutencaoAluno: TFormManutencaoAluno
       Anchors = [akTop, akRight]
       Caption = 'Cancelar'
       TabOrder = 1
+      OnClick = BitBtnCancelarClick
     end
   end
   object PanelDados: TPanel
@@ -213,6 +221,9 @@ object FormManutencaoAluno: TFormManutencaoAluno
           end
           object cxGrid1DBLayoutView1LayoutItem2: TcxGridLayoutItem
             Parent = cxGrid1DBLayoutView1Group_Root
+            AlignHorz = ahClient
+            AlignVert = avBottom
+            CaptionOptions.AlignHorz = taCenter
             Index = 1
           end
         end

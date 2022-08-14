@@ -3,7 +3,7 @@ unit uConstantesRest;
 interface
 
 uses
-  REST.Types;
+  REST.Types, Vcl.Samples.Gauges;
 
 Type
   TAluno = class(TObject)
@@ -51,7 +51,7 @@ Type
     property errors: TArray<string> read Ferrors write Ferrors;
   end;
 
-  TMetodoExecutaManutencao = function(ATipoManutencao: TRESTRequestMethod; ADadosAluno: TAluno = nil):TRetornoAPI of object;
+  TMetodoExecutaManutencao = function(ATipoManutencao: TRESTRequestMethod; ADadosAluno: TAluno = nil; AGauge: TGauge = nil):TRetornoAPI of object;
 
 
 const

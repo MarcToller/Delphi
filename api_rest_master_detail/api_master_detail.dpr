@@ -12,8 +12,6 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TForm1, Form1);
-  Application.CreateForm(TFormManutencaoAluno, FormManutencaoAluno);
-  Application.CreateForm(TFormAutorizacaoToken, FormAutorizacaoToken);
+  Application.CreateForm(TFormPrincipal, FormPrincipal);
   Application.Run;
 end.

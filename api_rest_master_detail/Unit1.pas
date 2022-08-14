@@ -19,10 +19,10 @@ uses
   IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, cxImage, cxDataUtils,
   cxEditRepositoryItems, Vcl.StdCtrls, Vcl.Buttons, REST.Json,
   REST.Authenticator.OAuth, REST.Authenticator.Basic, uConstantesRest,
-  Vcl.ExtCtrls, System.Win.Registry, Vcl.ComCtrls, dxStatusBar;
+  Vcl.ExtCtrls, System.Win.Registry, Vcl.ComCtrls, dxStatusBar,   Vcl.Samples.Gauges;
 
 type
-  TForm1 = class(TForm)
+  TFormPrincipal = class(TForm)
     cxGridViewMaster: TcxGridDBTableView;
     cxGrid1Level1: TcxGridLevel;
     cxGrid1: TcxGrid;
@@ -95,9 +95,9 @@ type
       ADataController: TcxCustomDataController; ARecordIndex: Integer);
   private
     FListaIndexAlunoId: IDictionary<Integer, integer>;
-    procedure GravarImagens(AAlunoID: integer);
+    procedure GravarImagens(AAlunoID: integer; AGauge: TGauge);
     procedure CarregarFotosDetail(AAlunoId: integer);
-    function ExecutaManutencao(ATipoManutencao: TRESTRequestMethod; ADadosAluno: TAluno = nil):TRetornoAPI;
+    function ExecutaManutencao(ATipoManutencao: TRESTRequestMethod; ADadosAluno: TAluno = nil; AGauge: TGauge = nil):TRetornoAPI;
     procedure Manutencao(ATipoManutencao: TRESTRequestMethod);
     procedure CriarAutenticacaoToken;
     function RetornaDadosAlunoSelecionado: TAluno;
@@ -109,7 +109,7 @@ type
     { Public declarations }
   end;
 var
-  Form1: TForm1;
+  FormPrincipal: TFormPrincipal;
 
 
 implementation
@@ -120,7 +120,7 @@ uses
 
 {$R *.dfm}
 
-procedure TForm1.AfterConstruction;
+procedure TFormPrincipal.AfterConstruction;
 begin
   inherited;
   FListaIndexAlunoId             := TCollections.CreateDictionary<integer,integer>;
@@ -133,22 +133,22 @@ begin
 end;
 
 
-procedure TForm1.BitBtnAlterarClick(Sender: TObject);
+procedure TFormPrincipal.BitBtnAlterarClick(Sender: TObject);
 begin
   Manutencao(rmPUT);
 end;
 
-procedure TForm1.BitBtnExcluirClick(Sender: TObject);
+procedure TFormPrincipal.BitBtnExcluirClick(Sender: TObject);
 begin
   Manutencao(rmDELETE);
 end;
 
-procedure TForm1.BitBtnIncluirClick(Sender: TObject);
+procedure TFormPrincipal.BitBtnIncluirClick(Sender: TObject);
 begin
   Manutencao(rmPOST);
 end;
 
-procedure TForm1.CarregarFotosDetail(AAlunoId: integer);
+procedure TFormPrincipal.CarregarFotosDetail(AAlunoId: integer);
 var
   vIndex: integer;
 begin
@@ -158,7 +158,7 @@ begin
   end;
 end;
 
-procedure TForm1.CriarAutenticacaoToken;
+procedure TFormPrincipal.CriarAutenticacaoToken;
 var
   vRESTRequestParameter: TRESTRequestParameter;
   vToken: string;
@@ -179,14 +179,14 @@ begin
 
 end;
 
-procedure TForm1.cxGrid1DBTableView1DataControllerDetailExpanding(ADataController: TcxCustomDataController;
+procedure TFormPrincipal.cxGrid1DBTableView1DataControllerDetailExpanding(ADataController: TcxCustomDataController;
                                                                   ARecordIndex: Integer;
                                                                   var AAllow: Boolean);
 begin
   cxGridViewMaster.DataController.CollapseDetails;
 end;
 
-procedure TForm1.cxGridViewMasterDataControllerDetailExpanded(ADataController: TcxCustomDataController; ARecordIndex: Integer);
+procedure TFormPrincipal.cxGridViewMasterDataControllerDetailExpanded(ADataController: TcxCustomDataController; ARecordIndex: Integer);
 var
   vAlunoId: Integer;
 begin
@@ -209,7 +209,7 @@ begin
 
 end;
 
-function TForm1.ExecutaManutencao(ATipoManutencao: TRESTRequestMethod; ADadosAluno: TAluno = nil):TRetornoAPI;
+function TFormPrincipal.ExecutaManutencao(ATipoManutencao: TRESTRequestMethod; ADadosAluno: TAluno; AGauge: TGauge):TRetornoAPI;
 var
   vOcorreuFalha: Boolean;
 
@@ -227,6 +227,21 @@ var
     end;
   end;
 
+  procedure AvancaGauge(AConfigurar: Boolean = false);
+  begin
+    if Assigned(AGauge) then
+    begin
+      if AConfigurar then
+      begin
+        AGauge.Progress := 0;
+        AGauge.MaxValue := (FDMemTableGridDetail.RecordCount * 2) + 4;
+      end
+      else
+        AGauge.Progress := AGauge.Progress + 1;
+    end;
+  end;
+
+
 begin
   vOcorreuFalha := false;
   RESTRequestManutencao.Resource := '';
@@ -238,8 +253,11 @@ begin
 
   RESTRequestManutencao.Method := ATipoManutencao;
 
+  AvancaGauge(true);
+
   try
     RESTRequestManutencao.Execute;
+    AvancaGauge;
   except
     vOcorreuFalha := True;
   end;
@@ -248,13 +266,15 @@ begin
 
   if Result.sucesso and not vOcorreuFalha then
   begin
-    GravarImagens(Result.aluno.id);
+    GravarImagens(Result.aluno.id, AGauge);
 
     RESTRequestGridMaster.Execute;
+    AvancaGauge;
 
     if (ATipoManutencao in [rmPOST, rmPUT]) then
     begin
       RESTRequestGridDetail.Execute;
+      AvancaGauge;
 
       if (ATipoManutencao = rmPOST) and FDMemTableGridMaster.Locate('aluno_id', Result.aluno.id, []) then
       begin
@@ -262,6 +282,7 @@ begin
       end;
 
       CarregarFotosDetail(Result.aluno.id);
+      AvancaGauge;
     end;
 
     ShowMessage(RetornaMensagemSucesso);
@@ -273,7 +294,7 @@ begin
 
 end;
 
-procedure TForm1.FDMemTableGridDetailBeforePost(DataSet: TDataSet);
+procedure TFormPrincipal.FDMemTableGridDetailBeforePost(DataSet: TDataSet);
 var
   MS : TMemoryStream;
   APath: String;
@@ -297,7 +318,7 @@ begin
   end;
 end;
 
-procedure TForm1.FormShow(Sender: TObject);
+procedure TFormPrincipal.FormShow(Sender: TObject);
 var
   vIndex: Integer;
 begin
@@ -330,7 +351,14 @@ begin
 end;
 
 
-procedure TForm1.GravarImagens(AAlunoID: integer);
+procedure TFormPrincipal.GravarImagens(AAlunoID: integer; AGauge: TGauge);
+
+  procedure AvancaGauge;
+  begin
+    if Assigned(AGauge) then
+      AGauge.Progress := AGauge.Progress + 1;
+  end;
+
 begin
   FDMemTableGridDetail.DisableControls;
 
@@ -340,6 +368,7 @@ begin
 
   while not FDMemTableGridDetail.Eof do
   begin
+    AvancaGauge;
     if (FDMemTableGridDetailid.AsInteger > 0) and FDMemTableGridDetailExcluirFoto.AsBoolean then
     begin
       RESTRequestFotos.Resource := FDMemTableGridDetailid.AsString;
@@ -354,6 +383,7 @@ begin
   RESTRequestFotos.Resource := '';
   while not FDMemTableGridDetail.Eof do
   begin
+    AvancaGauge;
     if (FDMemTableGridDetailid.AsInteger = 0) and not FDMemTableGridDetailExcluirFoto.AsBoolean then
     begin
       RESTRequestFotos.Params[0].Value := FDMemTableGridDetailCaminhoFotoUpload.AsString;
@@ -366,7 +396,7 @@ begin
   FDMemTableGridDetail.EnableControls;
 end;
 
-procedure TForm1.Manutencao(ATipoManutencao: TRESTRequestMethod);
+procedure TFormPrincipal.Manutencao(ATipoManutencao: TRESTRequestMethod);
 var
   vAluno : TAluno;
   vFormManutencao: TFormManutencaoAluno;
@@ -403,7 +433,7 @@ begin
   FreeAndNil(vFormManutencao);
 end;
 
-function TForm1.RetornaDadosAlunoSelecionado: TAluno;
+function TFormPrincipal.RetornaDadosAlunoSelecionado: TAluno;
 begin
   Result           := TAluno.Create;
   Result.id        := FDMemTableGridMasteraluno_id.AsInteger;
@@ -415,7 +445,7 @@ begin
   Result.nome      := FDMemTableGridMasternome.AsString;
 end;
 
-function TForm1.RetornaToken: string;
+function TFormPrincipal.RetornaToken: string;
 var
   vRESTRequestParameter: TRESTRequestParameter;
   vRetornoTokenUsuario : TRetornoTokenUsuario;
