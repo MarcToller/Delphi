@@ -481,7 +481,11 @@ begin
       begin
         Result               := cBearer+' '+Result;
         vAutorizado          := true;
-        vDataToken           := Copy(vRetornoTokenUsuario.tokenExpira, 4,2)+'/'+Copy(vRetornoTokenUsuario.tokenExpira, 1,2)+'/'+Copy(vRetornoTokenUsuario.tokenExpira, 7,2);
+
+        if vRetornoTokenUsuario.tokenExpira.IsEmpty or (Pos('Invalid Date', vRetornoTokenUsuario.tokenExpira) > 0) then
+          vDataToken := 'Nunca'
+        else
+          vDataToken := Copy(vRetornoTokenUsuario.tokenExpira, 4,2)+'/'+Copy(vRetornoTokenUsuario.tokenExpira, 1,2)+'/'+Copy(vRetornoTokenUsuario.tokenExpira, 7,2);
 
         dxStatusBar1.Panels[0].Text := Format('Usuário: %s', [vRetornoTokenUsuario.userName]);
         dxStatusBar1.Panels[1].Text := Format('Token expira em: %s', [vDataToken]);

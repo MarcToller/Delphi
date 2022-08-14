@@ -19,8 +19,6 @@ object Form1: TForm1
     Height = 511
     Align = alClient
     TabOrder = 0
-    ExplicitTop = 98
-    ExplicitHeight = 510
     object cxGridViewMaster: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.DataModeController.GridMode = True
@@ -145,7 +143,6 @@ object Form1: TForm1
     Height = 65
     Align = alTop
     TabOrder = 1
-    ExplicitTop = 33
     object BitBtnAlterar: TBitBtn
       Left = 127
       Top = 24
@@ -195,7 +192,6 @@ object Form1: TForm1
     Font.Height = -12
     Font.Name = 'Segoe UI'
     Font.Style = [fsBold]
-    ExplicitTop = 552
   end
   object RESTClientConsultaGrid: TRESTClient
     Accept = 'application/json, text/plain; q=0.9, text/html;q=0.8,'
