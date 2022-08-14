@@ -19,7 +19,7 @@ uses
   IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, cxImage, cxDataUtils,
   cxEditRepositoryItems, Vcl.StdCtrls, Vcl.Buttons, REST.Json,
   REST.Authenticator.OAuth, REST.Authenticator.Basic, uConstantesRest,
-  Vcl.ExtCtrls, System.Win.Registry;
+  Vcl.ExtCtrls, System.Win.Registry, Vcl.ComCtrls, dxStatusBar;
 
 type
   TForm1 = class(TForm)
@@ -81,11 +81,10 @@ type
     RESTResponseFotos: TRESTResponse;
     FDMemTableGridDetailCaminhoFotoUpload: TStringField;
     FDMemTableGridDetailExcluirFoto: TBooleanField;
-    PanelUsuario: TPanel;
-    LabelUsuario: TLabel;
     RESTClientToken: TRESTClient;
     RESTRequestToken: TRESTRequest;
     RESTResponseToken: TRESTResponse;
+    dxStatusBar1: TdxStatusBar;
     procedure FormShow(Sender: TObject);
     procedure cxGrid1DBTableView1DataControllerDetailExpanding(ADataController: TcxCustomDataController; ARecordIndex: Integer;  var AAllow: Boolean);
     procedure FDMemTableGridDetailBeforePost(DataSet: TDataSet);
@@ -483,7 +482,9 @@ begin
         Result               := cBearer+' '+Result;
         vAutorizado          := true;
         vDataToken           := Copy(vRetornoTokenUsuario.tokenExpira, 4,2)+'/'+Copy(vRetornoTokenUsuario.tokenExpira, 1,2)+'/'+Copy(vRetornoTokenUsuario.tokenExpira, 7,2);
-        LabelUsuario.Caption := Format('Usuário: %s - Token expira em: %s', [vRetornoTokenUsuario.userName, vDataToken]);
+
+        dxStatusBar1.Panels[0].Text := Format('Usuário: %s', [vRetornoTokenUsuario.userName]);
+        dxStatusBar1.Panels[1].Text := Format('Token expira em: %s', [vDataToken]);
       end;
     end;
   end;

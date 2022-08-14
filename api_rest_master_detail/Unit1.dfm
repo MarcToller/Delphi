@@ -14,11 +14,13 @@ object Form1: TForm1
   TextHeight = 15
   object cxGrid1: TcxGrid
     Left = 0
-    Top = 98
+    Top = 65
     Width = 875
-    Height = 510
+    Height = 511
     Align = alClient
     TabOrder = 0
+    ExplicitTop = 98
+    ExplicitHeight = 510
     object cxGridViewMaster: TcxGridDBTableView
       Navigator.Buttons.CustomButtons = <>
       DataController.DataModeController.GridMode = True
@@ -138,11 +140,12 @@ object Form1: TForm1
   end
   object PanelManutencao: TPanel
     Left = 0
-    Top = 33
+    Top = 0
     Width = 875
     Height = 65
     Align = alTop
     TabOrder = 1
+    ExplicitTop = 33
     object BitBtnAlterar: TBitBtn
       Left = 127
       Top = 24
@@ -171,20 +174,28 @@ object Form1: TForm1
       OnClick = BitBtnIncluirClick
     end
   end
-  object PanelUsuario: TPanel
+  object dxStatusBar1: TdxStatusBar
     Left = 0
-    Top = 0
+    Top = 576
     Width = 875
-    Height = 33
-    Align = alTop
-    TabOrder = 2
-    object LabelUsuario: TLabel
-      Left = 20
-      Top = 9
-      Width = 68
-      Height = 15
-      Caption = 'LabelUsuario'
-    end
+    Height = 32
+    Align = alBottom
+    Panels = <
+      item
+        PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
+        Text = 'Usu'#225'rio:'
+        Width = 300
+      end
+      item
+        PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
+        Text = 'Token expira em:'
+      end>
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = 'Segoe UI'
+    Font.Style = [fsBold]
+    ExplicitTop = 552
   end
   object RESTClientConsultaGrid: TRESTClient
     Accept = 'application/json, text/plain; q=0.9, text/html;q=0.8,'

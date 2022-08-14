@@ -35,10 +35,6 @@ object FormAutorizacaoToken: TFormAutorizacaoToken
     Align = alClient
     Style.TextStyle = [fsBold]
     TabOrder = 0
-    ExplicitLeft = 8
-    ExplicitTop = 48
-    ExplicitWidth = 425
-    ExplicitHeight = 145
     Height = 115
     Width = 407
   end
@@ -50,8 +46,6 @@ object FormAutorizacaoToken: TFormAutorizacaoToken
     Height = 45
     Align = alBottom
     TabOrder = 1
-    ExplicitTop = 240
-    ExplicitWidth = 384
     object BitBtnValidar: TBitBtn
       Left = 294
       Top = 11

@@ -42,12 +42,15 @@ end;
 
 procedure TFormAutorizacaoToken.BitBtnValidarClick(Sender: TObject);
 begin
-  close;
+  if Token.IsEmpty then
+    ShowMessage('Insira um token.')
+  else
+    close;
 end;
 
 function TFormAutorizacaoToken.getToken: string;
 begin
-  Result := cxMemoToken.Text;
+  Result := Trim(cxMemoToken.Text);
 end;
 
 end.
