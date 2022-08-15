@@ -421,18 +421,7 @@ object FormPrincipal: TFormPrincipal
     AssignedValues = [rvConnectTimeout, rvReadTimeout]
     Client = RESTClientFotos
     Method = rmPOST
-    Params = <
-      item
-        Kind = pkFILE
-        Name = 'foto'
-        Value = 
-          'D:\Marcelo\ScreenShotCaptor\Screenshot - 20_07_2022 , 20_45_33.p' +
-          'ng'
-      end
-      item
-        Name = 'aluno_id'
-        Value = '10'
-      end>
+    Params = <>
     Response = RESTResponseFotos
     Left = 632
     Top = 160

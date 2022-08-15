@@ -55,21 +55,20 @@ Type
 
 
 const
-  cBaseURL               = 'http://168.138.248.33:3001/alunos';
-  cBaseURLFotos          = 'http://168.138.248.33:3001/fotos';
-  cBaseURLToken          = 'http://168.138.248.33:3001/tokens';
+  //cBaseURL               = 'http://localhost:3001';
+  cBaseURL               = 'http://168.138.248.33:3001';
 
-(*
-  cBaseURL               = 'http://localhost:3001/alunos';
-  cBaseURLFotos          = 'http://localhost:3001/fotos';
-  cBaseURLToken          = 'http://localhost:3001/tokens';
-*)
-
+  cBaseURLAlunos         = cBaseURL+'/alunos';
+  cBaseURLFotos          = cBaseURL+'/fotos';
+  cBaseURLToken          = cBaseURL+'/tokens';
 
   cRootElementFotos      = '[%d].Fotos';
   cNomeParamAutenticacao = 'authorization';
   cTokenCadastroAlunos   = 'TokenCadastroAlunos';
   cBearer                = 'Bearer';
+  cParametroFoto         = 'foto';
+  cParametroAluno_id     = 'aluno_id';
+
 
 
 implementation

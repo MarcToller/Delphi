@@ -124,8 +124,8 @@ procedure TFormPrincipal.AfterConstruction;
 begin
   inherited;
   FListaIndexAlunoId             := TCollections.CreateDictionary<integer,integer>;
-  RESTClientConsultaGrid.BaseURL := cBaseURL;
-  RESTClientManutencao.BaseURL   := cBaseURL;
+  RESTClientConsultaGrid.BaseURL := cBaseURLAlunos;
+  RESTClientManutencao.BaseURL   := cBaseURLAlunos;
   RESTClientFotos.BaseURL        := cBaseURLFotos;
   RESTClientToken.BaseURL        := cBaseURLToken;
 
@@ -364,7 +364,28 @@ begin
 
   FDMemTableGridDetail.First;
 
+  RESTRequestFotos.Method   := rmPOST;
+  RESTRequestFotos.Resource := EmptyStr;
+
+  while not FDMemTableGridDetail.Eof do
+  begin
+    AvancaGauge;
+    if (FDMemTableGridDetailid.AsInteger = 0) and not FDMemTableGridDetailExcluirFoto.AsBoolean then
+    begin
+      RESTRequestFotos.Params.AddItem(cParametroFoto     , FDMemTableGridDetailCaminhoFotoUpload.AsString , pkFILE);
+      RESTRequestFotos.Params.AddItem(cParametroAluno_id , AAlunoID.ToString                              , pkGETorPOST);
+
+      RESTRequestFotos.Execute;
+    end;
+    FDMemTableGridDetail.Next;
+  end;
+
+
+  FDMemTableGridDetail.First;
   RESTRequestFotos.Method := rmDELETE;
+
+  RESTRequestFotos.Params.Delete(cParametroFoto);
+  RESTRequestFotos.Params.Delete(cParametroAluno_id);
 
   while not FDMemTableGridDetail.Eof do
   begin
@@ -372,22 +393,6 @@ begin
     if (FDMemTableGridDetailid.AsInteger > 0) and FDMemTableGridDetailExcluirFoto.AsBoolean then
     begin
       RESTRequestFotos.Resource := FDMemTableGridDetailid.AsString;
-      RESTRequestFotos.Execute;
-    end;
-    FDMemTableGridDetail.Next;
-  end;
-
-  FDMemTableGridDetail.First;
-
-  RESTRequestFotos.Method   := rmPOST;
-  RESTRequestFotos.Resource := '';
-  while not FDMemTableGridDetail.Eof do
-  begin
-    AvancaGauge;
-    if (FDMemTableGridDetailid.AsInteger = 0) and not FDMemTableGridDetailExcluirFoto.AsBoolean then
-    begin
-      RESTRequestFotos.Params[0].Value := FDMemTableGridDetailCaminhoFotoUpload.AsString;
-      RESTRequestFotos.Params[1].Value := AAlunoID.ToString;
       RESTRequestFotos.Execute;
     end;
     FDMemTableGridDetail.Next;
