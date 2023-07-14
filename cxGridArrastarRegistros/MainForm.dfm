@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 363
   Top = 165
-  Caption = 'Drag Test'
+  Caption = 'Teste Arrasta Grid'
   ClientHeight = 467
   ClientWidth = 666
   Color = clBtnFace
@@ -20,7 +20,6 @@ object Form1: TForm1
     Height = 25
     Caption = 'Copy Highlighted Records'
     TabOrder = 0
-    OnClick = CopyRecords
   end
   object PanelFrom: TPanel
     Left = 0
@@ -95,9 +94,9 @@ object Form1: TForm1
     end
   end
   object Panel1: TPanel
-    Left = 313
+    Left = 317
     Top = 0
-    Width = 353
+    Width = 349
     Height = 467
     Align = alClient
     Caption = 'Panel1'
@@ -106,7 +105,7 @@ object Form1: TForm1
       AlignWithMargins = True
       Left = 6
       Top = 11
-      Width = 343
+      Width = 339
       Height = 16
       Margins.Left = 5
       Margins.Top = 10
@@ -124,7 +123,7 @@ object Form1: TForm1
       AlignWithMargins = True
       Left = 4
       Top = 40
-      Width = 345
+      Width = 341
       Height = 423
       Align = alClient
       DragCursor = crMultiDrag
@@ -157,15 +156,47 @@ object Form1: TForm1
           Width = 32
         end
       end
+      object gDragToDBTableView1: TcxGridDBTableView
+        Navigator.Buttons.CustomButtons = <>
+        DataController.Summary.DefaultGroupSummaryItems = <>
+        DataController.Summary.FooterSummaryItems = <>
+        DataController.Summary.SummaryGroups = <>
+      end
+      object cxViewAssociacoes: TcxGridDBTableView
+        Navigator.Buttons.CustomButtons = <>
+        DataController.DataSource = DataSourceAssociacoes
+        DataController.DetailKeyFieldNames = 'Codigo'
+        DataController.KeyFieldNames = 'Codigo_conta'
+        DataController.MasterKeyFieldNames = 'Codigo'
+        DataController.Summary.DefaultGroupSummaryItems = <>
+        DataController.Summary.FooterSummaryItems = <>
+        DataController.Summary.SummaryGroups = <>
+        OptionsView.GroupByBox = False
+        object cxViewAssociacoesCodigo: TcxGridDBColumn
+          DataBinding.FieldName = 'Codigo'
+        end
+        object cxViewAssociacoesDescricao: TcxGridDBColumn
+          DataBinding.FieldName = 'Descricao'
+        end
+        object cxViewAssociacoesData: TcxGridDBColumn
+          DataBinding.FieldName = 'Data'
+        end
+        object cxViewAssociacoesCodigoConta: TcxGridDBColumn
+          DataBinding.FieldName = 'Codigo_conta'
+        end
+      end
       object lvDragTo: TcxGridLevel
         GridView = tvDragTo
+        object gDragToLevel1: TcxGridLevel
+          GridView = cxViewAssociacoes
+        end
       end
     end
   end
   object cxSplitter1: TcxSplitter
     Left = 305
     Top = 0
-    Width = 8
+    Width = 12
     Height = 467
     Align = alLeft
   end
@@ -255,8 +286,8 @@ object Form1: TForm1
     SortID = 0
     SubLanguageID = 1
     LocaleID = 1024
-    Left = 320
-    Top = 272
+    Left = 392
+    Top = 224
     object kbmMemTableToCodigo: TIntegerField
       FieldName = 'Codigo'
     end
@@ -267,5 +298,43 @@ object Form1: TForm1
     object kbmMemTableToData: TDateField
       FieldName = 'Data'
     end
+  end
+  object kbmMemTableAssociacoes: TkbmMemTable
+    DesignActivation = True
+    AttachedAutoRefresh = True
+    AttachMaxCount = 1
+    FieldDefs = <>
+    IndexDefs = <>
+    SortOptions = []
+    PersistentBackup = False
+    ProgressFlags = [mtpcLoad, mtpcSave, mtpcCopy]
+    LoadedCompletely = False
+    SavedCompletely = False
+    FilterOptions = []
+    Version = '7.71.00 Standard Edition'
+    LanguageID = 0
+    SortID = 0
+    SubLanguageID = 1
+    LocaleID = 1024
+    Left = 417
+    Top = 296
+    object kbmMemTableAssociacoesCodigo: TIntegerField
+      FieldName = 'Codigo'
+    end
+    object kbmMemTableAssociacoesDescricao: TStringField
+      FieldName = 'Descricao'
+      Size = 100
+    end
+    object kbmMemTableAssociacoesData: TDateField
+      FieldName = 'Data'
+    end
+    object kbmMemTableAssociacoesCodigo_conta: TIntegerField
+      FieldName = 'Codigo_conta'
+    end
+  end
+  object DataSourceAssociacoes: TDataSource
+    DataSet = kbmMemTableAssociacoes
+    Left = 548
+    Top = 296
   end
 end
