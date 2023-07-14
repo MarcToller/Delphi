@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 165
   Caption = 'Drag Test'
   ClientHeight = 467
-  ClientWidth = 566
+  ClientWidth = 666
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,166 +13,171 @@ object Form1: TForm1
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
-    Left = 12
-    Top = 28
-    Width = 74
-    Height = 16
-    Caption = 'Drag From'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -13
-    Font.Name = 'MS Sans Serif'
-    Font.Style = [fsBold]
-    ParentFont = False
-  end
-  object Label2: TLabel
-    Left = 288
-    Top = 28
-    Width = 58
-    Height = 16
-    Caption = 'Drag To'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -13
-    Font.Name = 'MS Sans Serif'
-    Font.Style = [fsBold]
-    ParentFont = False
-  end
-  object gDragFrom: TcxGrid
-    Left = 0
-    Top = 56
-    Width = 265
-    Height = 362
-    DragCursor = crMultiDrag
-    DragMode = dmAutomatic
-    TabOrder = 0
-    DragOpening = False
-    object tvDragFrom: TcxGridDBTableView
-      DragMode = dmAutomatic
-      OnDragOver = tvDragFromDragOver
-      OnEndDrag = tvDragFromEndDrag
-      OnMouseMove = tvDragFromMouseMove
-      OnStartDrag = tvDragFromStartDrag
-      Navigator.Buttons.CustomButtons = <>
-      DataController.DataSource = dsFrom
-      DataController.KeyFieldNames = 'PartNo'
-      DataController.Summary.DefaultGroupSummaryItems = <>
-      DataController.Summary.FooterSummaryItems = <>
-      DataController.Summary.SummaryGroups = <>
-      OptionsBehavior.PullFocusing = True
-      OptionsSelection.CellSelect = False
-      OptionsSelection.MultiSelect = True
-      OptionsView.ColumnAutoWidth = True
-      OptionsView.GroupByBox = False
-      OptionsView.Indicator = True
-      object tvDragFromPartNo: TcxGridDBColumn
-        DataBinding.FieldName = 'PartNo'
-      end
-      object tvDragFromDescription: TcxGridDBColumn
-        DataBinding.FieldName = 'Description'
-      end
-    end
-    object lvDragFrom: TcxGridLevel
-      GridView = tvDragFrom
-    end
-  end
   object btnCopy: TButton
     Left = 288
     Top = 424
     Width = 265
     Height = 25
     Caption = 'Copy Highlighted Records'
-    TabOrder = 1
+    TabOrder = 0
     OnClick = CopyRecords
   end
-  object gDragTo: TcxGrid
-    Left = 287
-    Top = 56
-    Width = 265
-    Height = 362
-    DragCursor = crMultiDrag
-    DragKind = dkDock
-    TabOrder = 2
-    object tvDragTo: TcxGridDBTableView
-      OnDragDrop = tvDragToDragDrop
-      OnDragOver = tvDragToDragOver
-      Navigator.Buttons.CustomButtons = <>
-      DataController.DataSource = dsTo
-      DataController.KeyFieldNames = 'PartNo'
-      DataController.Summary.DefaultGroupSummaryItems = <>
-      DataController.Summary.FooterSummaryItems = <>
-      DataController.Summary.SummaryGroups = <>
-      OptionsBehavior.PullFocusing = True
-      OptionsSelection.CellSelect = False
-      OptionsSelection.MultiSelect = True
-      OptionsView.ColumnAutoWidth = True
-      OptionsView.GroupByBox = False
-      object tvDragToPartNo: TcxGridDBColumn
-        DataBinding.FieldName = 'PartNo'
-        PropertiesClassName = 'TcxTextEditProperties'
-        Properties.Alignment.Horz = taLeftJustify
-        Width = 73
-      end
-      object tvDragToDecription: TcxGridDBColumn
-        DataBinding.FieldName = 'Description'
-        Width = 190
-      end
+  object PanelFrom: TPanel
+    Left = 0
+    Top = 0
+    Width = 305
+    Height = 467
+    Align = alLeft
+    TabOrder = 1
+    object Label1: TLabel
+      AlignWithMargins = True
+      Left = 6
+      Top = 11
+      Width = 293
+      Height = 16
+      Margins.Left = 5
+      Margins.Top = 10
+      Margins.Right = 5
+      Margins.Bottom = 10
+      Align = alTop
+      Caption = 'DADOS DE:'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
     end
-    object lvDragTo: TcxGridLevel
-      GridView = tvDragTo
+    object gDragFrom: TcxGrid
+      AlignWithMargins = True
+      Left = 4
+      Top = 40
+      Width = 297
+      Height = 423
+      Align = alClient
+      DragCursor = crMultiDrag
+      DragMode = dmAutomatic
+      TabOrder = 0
+      DragOpening = False
+      object tvDragFrom: TcxGridDBTableView
+        DragMode = dmAutomatic
+        OnDragOver = tvDragFromDragOver
+        OnEndDrag = tvDragFromEndDrag
+        OnMouseMove = tvDragFromMouseMove
+        OnStartDrag = tvDragFromStartDrag
+        Navigator.Buttons.CustomButtons = <>
+        DataController.DataSource = dsFrom
+        DataController.Summary.DefaultGroupSummaryItems = <>
+        DataController.Summary.FooterSummaryItems = <>
+        DataController.Summary.SummaryGroups = <>
+        OptionsBehavior.PullFocusing = True
+        OptionsSelection.CellSelect = False
+        OptionsSelection.MultiSelect = True
+        OptionsView.ColumnAutoWidth = True
+        OptionsView.GroupByBox = False
+        OptionsView.Indicator = True
+        object tvDragFromCodigo: TcxGridDBColumn
+          DataBinding.FieldName = 'Codigo'
+          Width = 64
+        end
+        object tvDragFromDescricao: TcxGridDBColumn
+          DataBinding.FieldName = 'Descricao'
+          Width = 136
+        end
+        object tvDragFromData: TcxGridDBColumn
+          DataBinding.FieldName = 'Data'
+          Width = 51
+        end
+      end
+      object lvDragFrom: TcxGridLevel
+        GridView = tvDragFrom
+      end
     end
   end
+  object Panel1: TPanel
+    Left = 313
+    Top = 0
+    Width = 353
+    Height = 467
+    Align = alClient
+    Caption = 'Panel1'
+    TabOrder = 2
+    object Label2: TLabel
+      AlignWithMargins = True
+      Left = 6
+      Top = 11
+      Width = 343
+      Height = 16
+      Margins.Left = 5
+      Margins.Top = 10
+      Margins.Bottom = 10
+      Align = alTop
+      Caption = 'DADOS PARA:'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object gDragTo: TcxGrid
+      AlignWithMargins = True
+      Left = 4
+      Top = 40
+      Width = 345
+      Height = 423
+      Align = alClient
+      DragCursor = crMultiDrag
+      DragKind = dkDock
+      TabOrder = 0
+      object tvDragTo: TcxGridDBTableView
+        OnDragDrop = tvDragToDragDrop
+        OnDragOver = tvDragToDragOver
+        Navigator.Buttons.CustomButtons = <>
+        DataController.DataSource = dsTo
+        DataController.KeyFieldNames = 'PartNo'
+        DataController.Summary.DefaultGroupSummaryItems = <>
+        DataController.Summary.FooterSummaryItems = <>
+        DataController.Summary.SummaryGroups = <>
+        OptionsBehavior.PullFocusing = True
+        OptionsSelection.CellSelect = False
+        OptionsSelection.MultiSelect = True
+        OptionsView.ColumnAutoWidth = True
+        OptionsView.GroupByBox = False
+        object tvDragToCodigo: TcxGridDBColumn
+          DataBinding.FieldName = 'Codigo'
+          Width = 50
+        end
+        object tvDragToDescricao: TcxGridDBColumn
+          DataBinding.FieldName = 'Descricao'
+          Width = 181
+        end
+        object tvDragToData: TcxGridDBColumn
+          DataBinding.FieldName = 'Data'
+          Width = 32
+        end
+      end
+      object lvDragTo: TcxGridLevel
+        GridView = tvDragTo
+      end
+    end
+  end
+  object cxSplitter1: TcxSplitter
+    Left = 305
+    Top = 0
+    Width = 8
+    Height = 467
+    Align = alLeft
+  end
   object dsFrom: TDataSource
-    DataSet = mFrom
+    DataSet = kbmMemTableFrom
     Left = 48
     Top = 208
   end
   object dsTo: TDataSource
-    DataSet = mTo
+    DataSet = kbmMemTableTo
     Left = 452
     Top = 168
-  end
-  object mTo: TdxMemData
-    Active = True
-    Indexes = <>
-    Persistent.Data = {
-      5665728FC2F5285C8FFE3F020000000800000006000700506172744E6F001E00
-      000001000C004465736372697074696F6E000100000000000036400103000000
-      5151510100000000008040400103000000575757010000000000004640010300
-      0000454545010000000000804B40010300000052525201000000000080504001
-      030000005454540100000000004053400103000000595959}
-    SortOptions = []
-    Left = 452
-    Top = 220
-    object mToPartNo: TFloatField
-      FieldName = 'PartNo'
-      DisplayFormat = 'PN-00000'
-    end
-    object mToDescription: TStringField
-      FieldName = 'Description'
-      Size = 30
-    end
-  end
-  object mFrom: TdxMemData
-    Active = True
-    Indexes = <>
-    Persistent.Data = {
-      5665728FC2F5285C8FFE3F020000000800000006000700506172744E6F001E00
-      000001000C004465736372697074696F6E000100000000000026400102000000
-      6161010000000000003640010200000062620100000000008040400102000000
-      6363}
-    SortOptions = []
-    Left = 52
-    Top = 156
-    object FloatField1: TFloatField
-      FieldName = 'PartNo'
-      DisplayFormat = 'PN-00000'
-    end
-    object StringField1: TStringField
-      FieldName = 'Description'
-      Size = 30
-    end
   end
   object cxStyleRepository1: TcxStyleRepository
     Left = 200
@@ -187,6 +192,80 @@ object Form1: TForm1
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       TextColor = clWhite
+    end
+  end
+  object kbmMemTableFrom: TkbmMemTable
+    Active = True
+    DesignActivation = True
+    AttachedAutoRefresh = True
+    AttachMaxCount = 1
+    FieldDefs = <
+      item
+        Name = 'Codigo'
+        DataType = ftInteger
+      end
+      item
+        Name = 'Descricao'
+        DataType = ftString
+        Size = 100
+      end
+      item
+        Name = 'Data'
+        DataType = ftDate
+      end>
+    IndexDefs = <>
+    SortOptions = []
+    PersistentBackup = False
+    ProgressFlags = [mtpcLoad, mtpcSave, mtpcCopy]
+    LoadedCompletely = False
+    SavedCompletely = False
+    FilterOptions = []
+    Version = '7.71.00 Standard Edition'
+    LanguageID = 0
+    SortID = 0
+    SubLanguageID = 1
+    LocaleID = 1024
+    Left = 96
+    Top = 256
+    object kbmMemTableFromCodigo: TIntegerField
+      FieldName = 'Codigo'
+    end
+    object kbmMemTableFromDescricao: TStringField
+      FieldName = 'Descricao'
+      Size = 100
+    end
+    object kbmMemTableFromData: TDateField
+      FieldName = 'Data'
+    end
+  end
+  object kbmMemTableTo: TkbmMemTable
+    DesignActivation = True
+    AttachedAutoRefresh = True
+    AttachMaxCount = 1
+    FieldDefs = <>
+    IndexDefs = <>
+    SortOptions = []
+    PersistentBackup = False
+    ProgressFlags = [mtpcLoad, mtpcSave, mtpcCopy]
+    LoadedCompletely = False
+    SavedCompletely = False
+    FilterOptions = []
+    Version = '7.71.00 Standard Edition'
+    LanguageID = 0
+    SortID = 0
+    SubLanguageID = 1
+    LocaleID = 1024
+    Left = 320
+    Top = 272
+    object kbmMemTableToCodigo: TIntegerField
+      FieldName = 'Codigo'
+    end
+    object kbmMemTableToDescricao: TStringField
+      FieldName = 'Descricao'
+      Size = 100
+    end
+    object kbmMemTableToData: TDateField
+      FieldName = 'Data'
     end
   end
 end

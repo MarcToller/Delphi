@@ -9,7 +9,8 @@ uses
   cxGridTableView, cxGridDBTableView, cxGridLevel, cxClasses, cxControls,
   cxGridCustomView, cxGrid, dxmdaset,  StdCtrls, cxTextEdit,
   ExtCtrls, cxLookAndFeels, cxLookAndFeelPainters, cxNavigator, cxDataUtils,
-  cxDataControllerConditionalFormattingRulesManagerDialog, Vcl.Controls;
+  cxDataControllerConditionalFormattingRulesManagerDialog, Vcl.Controls,
+  cxSplitter, kbmMemTable;
 
 const
   UM_AFTERSTARTDRAG = WM_USER + 10000;
@@ -18,27 +19,34 @@ type
   TForm1 = class(TForm)
     dsFrom: TDataSource;
     dsTo: TDataSource;
-    mTo: TdxMemData;
-    mToPartNo: TFloatField;
-    tvDragFrom: TcxGridDBTableView;
-    lvDragFrom: TcxGridLevel;
-    gDragFrom: TcxGrid;
-    tvDragFromPartNo: TcxGridDBColumn;
-    tvDragFromDescription: TcxGridDBColumn;
-    Label1: TLabel;
-    mToDescription: TStringField;
-    Label2: TLabel;
     btnCopy: TButton;
-    gDragTo: TcxGrid;
-    tvDragTo: TcxGridDBTableView;
-    lvDragTo: TcxGridLevel;
-    tvDragToPartNo: TcxGridDBColumn;
-    tvDragToDecription: TcxGridDBColumn;
-    mFrom: TdxMemData;
-    FloatField1: TFloatField;
-    StringField1: TStringField;
     cxStyleRepository1: TcxStyleRepository;
     cxStyle1: TcxStyle;
+    kbmMemTableFrom: TkbmMemTable;
+    kbmMemTableTo: TkbmMemTable;
+    kbmMemTableFromCodigo: TIntegerField;
+    kbmMemTableFromDescricao: TStringField;
+    kbmMemTableFromData: TDateField;
+    kbmMemTableToCodigo: TIntegerField;
+    kbmMemTableToDescricao: TStringField;
+    kbmMemTableToData: TDateField;
+    PanelFrom: TPanel;
+    Label1: TLabel;
+    gDragFrom: TcxGrid;
+    tvDragFrom: TcxGridDBTableView;
+    tvDragFromCodigo: TcxGridDBColumn;
+    tvDragFromDescricao: TcxGridDBColumn;
+    tvDragFromData: TcxGridDBColumn;
+    lvDragFrom: TcxGridLevel;
+    Panel1: TPanel;
+    Label2: TLabel;
+    gDragTo: TcxGrid;
+    tvDragTo: TcxGridDBTableView;
+    tvDragToCodigo: TcxGridDBColumn;
+    tvDragToDescricao: TcxGridDBColumn;
+    tvDragToData: TcxGridDBColumn;
+    lvDragTo: TcxGridLevel;
+    cxSplitter1: TcxSplitter;
     procedure CopyRecords(Sender: TObject);
     procedure tvDragFromMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
@@ -55,6 +63,8 @@ type
     FCellValue: Variant;
   public
     procedure UmAfterStartDrag(var Message: TMessage); message UM_AFTERSTARTDRAG;
+    procedure AfterConstruction; override;
+    procedure BeforeDestruction; override;
     { Public declarations }
   end;
 
@@ -69,6 +79,38 @@ type
 
 {$R *.dfm}
 
+procedure TForm1.AfterConstruction;
+var
+  vInd: Integer;
+begin
+  inherited;
+  kbmMemTableFrom.Active := True;
+  kbmMemTableTo.Active := True;
+
+  for vInd := 1 to 10 do
+  begin
+    kbmMemTableFrom.Append;
+    kbmMemTableFromCodigo.AsInteger := vInd;
+    kbmMemTableFromDescricao.AsString := 'Conta Empresa '+vInd.ToString;
+    kbmMemTableFromData.AsDateTime := Date;
+    kbmMemTableFrom.Post;
+
+    kbmMemTableTo.Append;
+    kbmMemTableToCodigo.AsInteger := vInd;
+    kbmMemTableToDescricao.AsString := 'Conta Referencial '+vInd.ToString;
+    kbmMemTableToData.AsDateTime := Date;
+    kbmMemTableTo.Post;
+  end;
+end;
+
+
+
+procedure TForm1.BeforeDestruction;
+begin
+  inherited;
+
+end;
+
 procedure TForm1.CopyRecords(Sender: TObject);
 var
   i : integer;
@@ -77,10 +119,11 @@ begin
   begin
     if tvDragFrom.ViewData.Records[I].Selected then
     begin
-      mTo.Append;
-      mToPartNo.Value := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,0];
-      mToDescription.Value := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,1];
-      mTo.Post;
+      kbmMemTableTo.Append;
+      kbmMemTableToCodigo.Value := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,0];
+      kbmMemTableToDescricao.Value := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,1];
+      kbmMemTableToData.Value := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,2];
+      kbmMemTableTo.Post;
     end;
   end;
 end;
@@ -97,8 +140,12 @@ begin
   if TObject(Message.WParam) is TcxGridSite then
   begin
     AGridSite := TcxGridSiteAccess(Message.WParam);
-    AGridSite.DragCursor := crHandPoint;
     tvDragTo.Styles.Selection := cxStyle1;
+
+    if tvDragFrom.DataController.GetSelectedCount > 1 then
+      AGridSite.DragCursor := crMultiDrag
+    else
+      AGridSite.DragCursor := crHandPoint;
   end;
 end;
 
@@ -126,13 +173,13 @@ begin
       if (FPrevHitTest <> nil) and (FPrevHitTest is TcxGridRowIndicatorHitTest) then
         TcxGridSite(Sender).BeginDrag(True);
 
-    if TcxGridRecordCellHitTest(AHitTest).Item = tvDragFromDescription then
+(*    if TcxGridRecordCellHitTest(AHitTest).Item = tvDragFromDescription then
     begin
       ARecIndex := TcxGridRecordCellHitTest(AHitTest).GridRecord.RecordIndex;
       FCellValue := TcxGridSite(Sender).GridView.DataController.Values[ARecIndex, tvDragFromDescription.Index];
     end
     else
-      FCellValue := Null;
+      FCellValue := Null;*)
 
   end;
   FPrevHitTest := AHitTest;
