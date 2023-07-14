@@ -60,6 +60,7 @@ type
     cxViewAssociacoesData: TcxGridDBColumn;
     kbmMemTableAssociacoesCodigo_conta: TIntegerField;
     cxViewAssociacoesCodigoConta: TcxGridDBColumn;
+    cxStyle2: TcxStyle;
     procedure CopyRecords(ACodigo: numerico);
     procedure tvDragFromMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
@@ -129,9 +130,6 @@ var
   vCodigo: Integer;
 begin
   kbmMemTableAssociacoes.Open;
-  //vCodigo := tvDragTo.DataController.Values[tvDragTo.ViewData.Records[i].RecordIndex,0];
-
-
 
   for i := 0 to tvDragFrom.ViewData.RecordCount -1 do
   begin

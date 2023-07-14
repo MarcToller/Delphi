@@ -171,7 +171,10 @@ object Form1: TForm1
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
+        OptionsCustomize.ColumnGrouping = False
+        OptionsView.ColumnAutoWidth = True
         OptionsView.GroupByBox = False
+        Styles.Content = cxStyle2
         object cxViewAssociacoesCodigo: TcxGridDBColumn
           DataBinding.FieldName = 'Codigo'
         end
@@ -223,6 +226,10 @@ object Form1: TForm1
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       TextColor = clWhite
+    end
+    object cxStyle2: TcxStyle
+      AssignedValues = [svColor]
+      Color = clMoneyGreen
     end
   end
   object kbmMemTableFrom: TkbmMemTable
