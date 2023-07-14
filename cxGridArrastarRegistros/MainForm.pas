@@ -127,7 +127,6 @@ end;
 procedure TForm1.CopyRecords(ACodigo: numerico);
 var
   i : integer;
-  vCodigo: Integer;
 begin
   kbmMemTableAssociacoes.Open;
 
@@ -136,10 +135,10 @@ begin
     if tvDragFrom.ViewData.Records[I].Selected then
     begin
       kbmMemTableAssociacoes.Append;
-      kbmMemTableAssociacoesCodigo_conta.Value := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,0];
-      kbmMemTableAssociacoesCodigo.AsInteger := ACodigo.toInteger;
-      kbmMemTableAssociacoesDescricao.Value := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,1];
-      kbmMemTableAssociacoesData.Value := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,2];
+      kbmMemTableAssociacoesCodigo.AsInteger       := ACodigo.toInteger;
+      kbmMemTableAssociacoesCodigo_conta.AsInteger := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,0];
+      kbmMemTableAssociacoesDescricao.AsString     := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,1];
+      kbmMemTableAssociacoesData.AsDateTime        := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,2];
       kbmMemTableAssociacoes.Post;
     end;
   end;
@@ -181,7 +180,6 @@ end;
 procedure TForm1.tvDragFromMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 var
   AHitTest: TcxCustomGridHitTest;
-  ARecIndex: Integer;
 begin
   AHitTest := TcxGridSite(Sender).ViewInfo.GetHitTest(X, Y);
   if AHitTest is TcxGridRecordCellHitTest then

@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 363
   Top = 165
   Caption = 'Teste Arrasta Grid'
-  ClientHeight = 467
-  ClientWidth = 666
+  ClientHeight = 631
+  ClientWidth = 1020
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -24,15 +24,15 @@ object Form1: TForm1
   object PanelFrom: TPanel
     Left = 0
     Top = 0
-    Width = 305
-    Height = 467
+    Width = 475
+    Height = 631
     Align = alLeft
     TabOrder = 1
     object Label1: TLabel
       AlignWithMargins = True
       Left = 6
       Top = 11
-      Width = 293
+      Width = 463
       Height = 16
       Margins.Left = 5
       Margins.Top = 10
@@ -51,8 +51,8 @@ object Form1: TForm1
       AlignWithMargins = True
       Left = 4
       Top = 40
-      Width = 297
-      Height = 423
+      Width = 467
+      Height = 587
       Align = alClient
       DragCursor = crMultiDrag
       DragMode = dmAutomatic
@@ -94,10 +94,10 @@ object Form1: TForm1
     end
   end
   object Panel1: TPanel
-    Left = 317
+    Left = 487
     Top = 0
-    Width = 349
-    Height = 467
+    Width = 533
+    Height = 631
     Align = alClient
     Caption = 'Panel1'
     TabOrder = 2
@@ -105,7 +105,7 @@ object Form1: TForm1
       AlignWithMargins = True
       Left = 6
       Top = 11
-      Width = 339
+      Width = 523
       Height = 16
       Margins.Left = 5
       Margins.Top = 10
@@ -123,8 +123,8 @@ object Form1: TForm1
       AlignWithMargins = True
       Left = 4
       Top = 40
-      Width = 341
-      Height = 423
+      Width = 525
+      Height = 587
       Align = alClient
       DragCursor = crMultiDrag
       DragKind = dkDock
@@ -197,10 +197,10 @@ object Form1: TForm1
     end
   end
   object cxSplitter1: TcxSplitter
-    Left = 305
+    Left = 475
     Top = 0
     Width = 12
-    Height = 467
+    Height = 631
     Align = alLeft
   end
   object dsFrom: TDataSource
