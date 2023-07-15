@@ -103,6 +103,7 @@ begin
   FDMemTableFrom.Active := True;
   FDMemTableTo.Active := True;
   FDMemTableAssociacoes.Active := True;
+  FDMemTableAssociacoes.IndexFieldNames := 'Codigo;Codigo_conta';
 
   for vInd := 1 to 10 do
   begin
@@ -132,7 +133,7 @@ procedure TForm1.CopyRecords(ACodigo: integer; ARecordIndex: integer);
 var
   i : integer;
 begin
-  tvDragTo.DataController.CollapseDetails;
+//  tvDragTo.DataController.CollapseDetails;
 
   for i := 0 to tvDragFrom.ViewData.RecordCount -1 do
   begin
@@ -145,6 +146,7 @@ begin
       FDMemTableAssociacoes.Post;
     end;
   end;
+  FDMemTableAssociacoes.Refresh;
 
   tvDragTo.DataController.ChangeDetailExpanding(ARecordIndex, True)
 end;

@@ -133,8 +133,10 @@ object Form1: TForm1
         OnDragDrop = tvDragToDragDrop
         OnDragOver = tvDragToDragOver
         Navigator.Buttons.CustomButtons = <>
+        DataController.DataModeController.SyncMode = False
         DataController.DataSource = dsTo
         DataController.KeyFieldNames = 'Codigo'
+        DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys]
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
@@ -169,6 +171,7 @@ object Form1: TForm1
         DataController.DetailKeyFieldNames = 'Codigo'
         DataController.KeyFieldNames = 'Codigo_conta'
         DataController.MasterKeyFieldNames = 'Codigo'
+        DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys]
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
