@@ -13,7 +13,8 @@ uses
   cxSplitter, (*uDTCTipos,*) dxSkinsCore, dxSkinsDefaultPainters,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, cxGridBandedTableView,
+  cxGridDBBandedTableView;
 
 const
   UM_AFTERSTARTDRAG = WM_USER + 10000;
@@ -44,12 +45,7 @@ type
     cxSplitter1: TcxSplitter;
     gDragToDBTableView1: TcxGridDBTableView;
     gDragToLevel1: TcxGridLevel;
-    cxViewAssociacoes: TcxGridDBTableView;
     DataSourceAssociacoes: TDataSource;
-    cxViewAssociacoesCodigo: TcxGridDBColumn;
-    cxViewAssociacoesDescricao: TcxGridDBColumn;
-    cxViewAssociacoesData: TcxGridDBColumn;
-    cxViewAssociacoesCodigoConta: TcxGridDBColumn;
     cxStyle2: TcxStyle;
     FDMemTableFrom: TFDMemTable;
     FDMemTableTo: TFDMemTable;
@@ -62,8 +58,12 @@ type
     FDMemTableToData: TDateField;
     FDMemTableAssociacoesCodigo: TIntegerField;
     FDMemTableAssociacoesDescricao: TStringField;
-    FDMemTableAssociacoesData: TDateField;
     FDMemTableAssociacoesCodigo_conta: TIntegerField;
+    cxViewAssociacoes: TcxGridDBBandedTableView;
+    cxViewAssociacoesCodigoDescricao: TcxGridDBBandedColumn;
+    cxViewAssociacoesCodigo: TcxGridDBBandedColumn;
+    cxViewAssociacoesCodigoConta: TcxGridDBBandedColumn;
+    cxStyle3: TcxStyle;
     procedure CopyRecords(ACodigo: integer; ARecordIndex: integer);
     procedure tvDragFromMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
@@ -132,6 +132,8 @@ procedure TForm1.CopyRecords(ACodigo: integer; ARecordIndex: integer);
 var
   i : integer;
 begin
+  tvDragTo.DataController.CollapseDetails;
+
   for i := 0 to tvDragFrom.ViewData.RecordCount -1 do
   begin
     if tvDragFrom.ViewData.Records[I].Selected then
@@ -139,8 +141,7 @@ begin
       FDMemTableAssociacoes.Append;
       FDMemTableAssociacoesCodigo.AsInteger       := ACodigo;
       FDMemTableAssociacoesCodigo_conta.AsInteger := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,0];
-      FDMemTableAssociacoesDescricao.AsString     := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,1];
-      FDMemTableAssociacoesData.AsDateTime        := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,2];
+      FDMemTableAssociacoesDescricao.AsString     := FDMemTableAssociacoesCodigo_conta.AsString+' - '+tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,1];
       FDMemTableAssociacoes.Post;
     end;
   end;

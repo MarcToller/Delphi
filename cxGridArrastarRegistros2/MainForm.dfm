@@ -134,7 +134,7 @@ object Form1: TForm1
         OnDragOver = tvDragToDragOver
         Navigator.Buttons.CustomButtons = <>
         DataController.DataSource = dsTo
-        DataController.KeyFieldNames = 'PartNo'
+        DataController.KeyFieldNames = 'Codigo'
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
@@ -162,7 +162,7 @@ object Form1: TForm1
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
       end
-      object cxViewAssociacoes: TcxGridDBTableView
+      object cxViewAssociacoes: TcxGridDBBandedTableView
         Navigator.Buttons.CustomButtons = <>
         DataController.DataModeController.SyncMode = False
         DataController.DataSource = DataSourceAssociacoes
@@ -172,21 +172,40 @@ object Form1: TForm1
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
-        OptionsCustomize.ColumnGrouping = False
+        OptionsView.ScrollBars = ssVertical
         OptionsView.ColumnAutoWidth = True
         OptionsView.GroupByBox = False
+        OptionsView.Header = False
         Styles.Content = cxStyle2
-        object cxViewAssociacoesCodigo: TcxGridDBColumn
+        Styles.BandHeader = cxStyle3
+        Bands = <
+          item
+            Caption = 'Contas da Empresa:'
+            HeaderAlignmentHorz = taLeftJustify
+            Styles.Background = cxStyle3
+            Styles.Header = cxStyle3
+          end>
+        object cxViewAssociacoesCodigoDescricao: TcxGridDBBandedColumn
+          DataBinding.FieldName = 'CodigoDescricao'
+          Position.BandIndex = 0
+          Position.ColIndex = 0
+          Position.RowIndex = 0
+        end
+        object cxViewAssociacoesCodigo: TcxGridDBBandedColumn
           DataBinding.FieldName = 'Codigo'
+          Visible = False
+          VisibleForCustomization = False
+          Position.BandIndex = 0
+          Position.ColIndex = 1
+          Position.RowIndex = 0
         end
-        object cxViewAssociacoesDescricao: TcxGridDBColumn
-          DataBinding.FieldName = 'Descricao'
-        end
-        object cxViewAssociacoesData: TcxGridDBColumn
-          DataBinding.FieldName = 'Data'
-        end
-        object cxViewAssociacoesCodigoConta: TcxGridDBColumn
-          DataBinding.FieldName = 'Codigo_conta'
+        object cxViewAssociacoesCodigoConta: TcxGridDBBandedColumn
+          DataBinding.FieldName = 'Codigo_Conta'
+          Visible = False
+          VisibleForCustomization = False
+          Position.BandIndex = 0
+          Position.ColIndex = 2
+          Position.RowIndex = 0
         end
       end
       object lvDragTo: TcxGridLevel
@@ -231,6 +250,15 @@ object Form1: TForm1
     object cxStyle2: TcxStyle
       AssignedValues = [svColor]
       Color = clMoneyGreen
+    end
+    object cxStyle3: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clBackground
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -12
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
     end
   end
   object DataSourceAssociacoes: TDataSource
@@ -294,11 +322,8 @@ object Form1: TForm1
       FieldName = 'Codigo'
     end
     object FDMemTableAssociacoesDescricao: TStringField
-      FieldName = 'Descricao'
+      FieldName = 'CodigoDescricao'
       Size = 100
-    end
-    object FDMemTableAssociacoesData: TDateField
-      FieldName = 'Data'
     end
     object FDMemTableAssociacoesCodigo_conta: TIntegerField
       FieldName = 'Codigo_conta'
