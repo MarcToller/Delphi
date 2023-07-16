@@ -150,7 +150,6 @@ begin
       FDMemTableAssociacoes.Post;
     end;
   end;
-  //FDMemTableAssociacoes.Refresh;
 
   if ARecordIndex > 0 then
     tvDragTo.DataController.ChangeDetailExpanding(ARecordIndex, True)
@@ -163,6 +162,7 @@ var
   ARecIndex: Integer;
   vValue: integer;
 begin
+  vValue := 0;
   AHitTest := TcxGridSite(Sender).ViewInfo.GetHitTest(X, Y);
   if AHitTest is TcxGridRecordCellHitTest then
   begin
@@ -240,6 +240,9 @@ var
   ARecIndex: Integer;
   vValue: integer;
 begin
+  ARecIndex := 0;
+  vValue := 0;
+
   AHitTest := TcxGridSite(Sender).ViewInfo.GetHitTest(X, Y);
   if AHitTest is TcxGridRecordCellHitTest then
   begin
