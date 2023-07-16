@@ -165,6 +165,9 @@ object Form1: TForm1
         DataController.Summary.SummaryGroups = <>
       end
       object cxViewAssociacoes: TcxGridDBBandedTableView
+        DragMode = dmAutomatic
+        OnDragDrop = cxViewAssociacoesDragDrop
+        OnDragOver = cxViewAssociacoesDragOver
         Navigator.Buttons.CustomButtons = <>
         DataController.DataModeController.SyncMode = False
         DataController.DataSource = DataSourceAssociacoes

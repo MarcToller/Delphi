@@ -74,6 +74,10 @@ type
     procedure tvDragFromEndDrag(Sender, Target: TObject; X, Y: Integer);
     procedure tvDragFromStartDrag(Sender: TObject; var DragObject: TDragObject);
     procedure tvDragToDragDrop(Sender, Source: TObject; X, Y: Integer);
+    procedure cxViewAssociacoesDragDrop(Sender, Source: TObject; X,
+      Y: Integer);
+    procedure cxViewAssociacoesDragOver(Sender, Source: TObject; X,
+      Y: Integer; State: TDragState; var Accept: Boolean);
   private
     { Private declarations }
     FPrevHitTest: TcxCustomGridHitTest;
@@ -146,14 +150,38 @@ begin
       FDMemTableAssociacoes.Post;
     end;
   end;
-  FDMemTableAssociacoes.Refresh;
+  //FDMemTableAssociacoes.Refresh;
 
-  tvDragTo.DataController.ChangeDetailExpanding(ARecordIndex, True)
+  if ARecordIndex > 0 then
+    tvDragTo.DataController.ChangeDetailExpanding(ARecordIndex, True)
+end;
+
+procedure TForm1.cxViewAssociacoesDragDrop(Sender, Source: TObject; X,
+  Y: Integer);
+var
+  AHitTest: TcxCustomGridHitTest;
+  ARecIndex: Integer;
+  vValue: integer;
+begin
+  AHitTest := TcxGridSite(Sender).ViewInfo.GetHitTest(X, Y);
+  if AHitTest is TcxGridRecordCellHitTest then
+  begin
+    ARecIndex := TcxGridRecordCellHitTest(AHitTest).GridRecord.RecordIndex;
+    vValue := TcxGridSite(Sender).GridView.DataController.Values[ARecIndex, cxViewAssociacoesCodigo.Index];
+  end;
+
+  CopyRecords(vValue, 0);
+end;
+
+procedure TForm1.cxViewAssociacoesDragOver(Sender, Source: TObject; X,
+  Y: Integer; State: TDragState; var Accept: Boolean);
+begin
+  Accept := ((TcxDragControlObject(Source).Control as TcxGridSite).GridView = tvDragFrom)
 end;
 
 procedure TForm1.tvDragToDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
 begin
-  Accept := (TcxDragControlObject(Source).Control as TcxGridSite).GridView = tvDragFrom;
+  Accept := ((TcxDragControlObject(Source).Control as TcxGridSite).GridView = tvDragFrom);
 end;
 
 procedure TForm1.UmAfterStartDrag(var Message: TMessage);
@@ -164,6 +192,7 @@ begin
   begin
     AGridSite := TcxGridSiteAccess(Message.WParam);
     tvDragTo.Styles.Selection := cxStyle1;
+    cxViewAssociacoes.Styles.Selection := cxStyle1;
 
     if tvDragFrom.DataController.GetSelectedCount > 1 then
       AGridSite.DragCursor := crMultiDrag
@@ -181,6 +210,7 @@ end;
 procedure TForm1.tvDragFromEndDrag(Sender, Target: TObject; X, Y: Integer);
 begin
   tvDragTo.Styles.Selection := nil;
+  cxViewAssociacoes.Styles.Selection := nil;
 end;
 
 
@@ -209,7 +239,6 @@ var
   AHitTest: TcxCustomGridHitTest;
   ARecIndex: Integer;
   vValue: integer;
-
 begin
   AHitTest := TcxGridSite(Sender).ViewInfo.GetHitTest(X, Y);
   if AHitTest is TcxGridRecordCellHitTest then
