@@ -34,7 +34,6 @@ type
     tvDragFrom: TcxGridDBTableView;
     tvDragFromCodigo: TcxGridDBColumn;
     tvDragFromDescricao: TcxGridDBColumn;
-    tvDragFromData: TcxGridDBColumn;
     lvDragFrom: TcxGridLevel;
     Panel1: TPanel;
     Label2: TLabel;
@@ -42,7 +41,6 @@ type
     tvDragTo: TcxGridDBTableView;
     tvDragToCodigo: TcxGridDBColumn;
     tvDragToDescricao: TcxGridDBColumn;
-    tvDragToData: TcxGridDBColumn;
     lvDragTo: TcxGridLevel;
     cxSplitter1: TcxSplitter;
     gDragToDBTableView1: TcxGridDBTableView;
@@ -54,10 +52,8 @@ type
     FDMemTableAssociacoes: TFDMemTable;
     FDMemTableFromCodigo: TIntegerField;
     FDMemTableFromDescricao: TStringField;
-    FDMemTableFromData: TDateField;
     FDMemTableToCodigo: TIntegerField;
     FDMemTableToDescricao: TStringField;
-    FDMemTableToData: TDateField;
     FDMemTableAssociacoesCodigo: TIntegerField;
     FDMemTableAssociacoesDescricao: TStringField;
     FDMemTableAssociacoesCodigo_conta: TIntegerField;
@@ -66,6 +62,10 @@ type
     cxViewAssociacoesCodigo: TcxGridDBBandedColumn;
     cxViewAssociacoesCodigoConta: TcxGridDBBandedColumn;
     cxStyle3: TcxStyle;
+    FDMemTableFromEstrutural: TStringField;
+    tvDragFromEstrututral: TcxGridDBColumn;
+    FDMemTableToEstrutural: TStringField;
+    tvDragToEstrutural: TcxGridDBColumn;
     procedure CopyRecords(ACodigo: integer; ARecordIndex: integer);
     procedure tvDragFromMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
@@ -127,27 +127,76 @@ type
 procedure TForm1.AfterConstruction;
 var
   vInd: Integer;
+
+  procedure AdicionarContaEmpresa(AEStrutural: string; Descricao: string);
+  begin
+    Inc(vInd);
+    FDMemTableFrom.Append;
+    FDMemTableFromCodigo.AsInteger := vInd;
+    FDMemTableFromEstrutural.AsString := AEStrutural;
+    FDMemTableFromDescricao.AsString := Descricao;
+    FDMemTableFrom.Post;
+  end;
+
+  procedure AdicionarContaReferencial(AEStrutural: string; Descricao: string);
+  begin
+    Inc(vInd);
+    FDMemTableTo.Append;
+    FDMemTableToCodigo.AsInteger := vInd;
+    FDMemTableToEstrutural.AsString := AEStrutural;
+    FDMemTableToDescricao.AsString := Descricao;
+    FDMemTableTo.Post;
+  end;
+
+
+
 begin
   inherited;
+  vInd := 0;
   FDMemTableFrom.Active := True;
   FDMemTableTo.Active := True;
   FDMemTableAssociacoes.Active := True;
   FDMemTableAssociacoes.IndexFieldNames := 'Codigo;Codigo_conta';
 
-  for vInd := 1 to 10 do
-  begin
-    FDMemTableFrom.Append;
-    FDMemTableFromCodigo.AsInteger := vInd;
-    FDMemTableFromDescricao.AsString := 'Conta Empresa '+vInd.ToString;
-    FDMemTableFromData.AsDateTime := Date;
-    FDMemTableFrom.Post;
+  AdicionarContaEmpresa('1',           'Ativo');
+  AdicionarContaEmpresa('1.1',         'Ativo Circulante');
+  AdicionarContaEmpresa('1.1.01',      'Disponivel');
+  AdicionarContaEmpresa('1.1.01.01',   'Caixa');
+  AdicionarContaEmpresa('1.1.01.02',   'Bancos Conta Movimento');
+  AdicionarContaEmpresa('1.1.01.03',   'Aplicações Financeiras');
+  AdicionarContaEmpresa('1.1.02',      'Realizável');
+  AdicionarContaEmpresa('1.1.02.01',   'Clientes');
+  AdicionarContaEmpresa('1.1.02.02',   '( - ) Desconto de duplicatas');
+  AdicionarContaEmpresa('1.1.02.03',   'Adiantamento Diversos');
+  AdicionarContaEmpresa('1.1.02.04',    'Outras contas a receber');
+  AdicionarContaEmpresa('1.1.03',      'Estoques');
+  AdicionarContaEmpresa('1.1.04',      'Valores e Créditos Recuperáveis');
+  AdicionarContaEmpresa('1.1.05',      'Despesas do Exercício Seguinte');
+  AdicionarContaEmpresa('1.2',         'Ativo Não Circulante');
+  AdicionarContaEmpresa('1.2.1',       'Realizavel a Longo Prazo');
+  AdicionarContaEmpresa('1.2.2',       'Investimentos');
+  AdicionarContaEmpresa('1.2.3',       'Imobilizado');
+  AdicionarContaEmpresa('1.2.4',       'Intangível');
 
-    FDMemTableTo.Append;
-    FDMemTableToCodigo.AsInteger := vInd;
-    FDMemTableToDescricao.AsString := 'Conta Referencial '+vInd.ToString;
-    FDMemTableToData.AsDateTime := Date;
-    FDMemTableTo.Post;
-  end;
+  AdicionarContaReferencial('1',           'Ativo');
+  AdicionarContaReferencial('1.1',         'Ativo Circulante');
+  AdicionarContaReferencial('1.1.01',      'Disponivel');
+  AdicionarContaReferencial('1.1.01.01',   'Caixa');
+  AdicionarContaReferencial('1.1.01.02',   'Bancos Conta Movimento');
+  AdicionarContaReferencial('1.1.01.03',   'Aplicações Financeiras');
+  AdicionarContaReferencial('1.1.02',      'Realizável');
+  AdicionarContaReferencial('1.1.02.01',   'Clientes');
+  AdicionarContaReferencial('1.1.02.02',   '( - ) Desconto de duplicatas');
+  AdicionarContaReferencial('1.1.02.03',   'Adiantamento Diversos');
+  AdicionarContaReferencial('1.1.02.04',    'Outras contas a receber');
+  AdicionarContaReferencial('1.1.03',      'Estoques');
+  AdicionarContaReferencial('1.1.04',      'Valores e Créditos Recuperáveis');
+  AdicionarContaReferencial('1.1.05',      'Despesas do Exercício Seguinte');
+  AdicionarContaReferencial('1.2',         'Ativo Não Circulante');
+  AdicionarContaReferencial('1.2.1',       'Realizavel a Longo Prazo');
+  AdicionarContaReferencial('1.2.2',       'Investimentos');
+  AdicionarContaReferencial('1.2.3',       'Imobilizado');
+  AdicionarContaReferencial('1.2.4',       'Intangível');
 end;
 
 
@@ -164,6 +213,9 @@ var
 begin
 //  tvDragTo.DataController.CollapseDetails;
 
+  cxViewAssociacoes.DataController.BeginUpdate;
+
+  FDMemTableAssociacoes.DisableControls;
   for i := 0 to tvDragFrom.ViewData.RecordCount -1 do
   begin
     if tvDragFrom.ViewData.Records[I].Selected then
@@ -171,10 +223,12 @@ begin
       FDMemTableAssociacoes.Append;
       FDMemTableAssociacoesCodigo.AsInteger       := ACodigo;
       FDMemTableAssociacoesCodigo_conta.AsInteger := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,0];
-      FDMemTableAssociacoesDescricao.AsString     := FDMemTableAssociacoesCodigo_conta.AsString+' - '+tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,1];
+      FDMemTableAssociacoesDescricao.AsString     := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,1]+' - '+tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,2];
       FDMemTableAssociacoes.Post;
     end;
   end;
+  cxViewAssociacoes.DataController.EndUpdate;
+  FDMemTableAssociacoes.EnableControls;
 
   if ARecordIndex > 0 then
     tvDragTo.DataController.ChangeDetailExpanding(ARecordIndex, True)
@@ -252,13 +306,18 @@ begin
   begin
     if TcxGridRecordCellHitTest(AHitTest).GridRecord.Selected then
       if (FPrevHitTest <> nil) and (FPrevHitTest is TcxGridRowIndicatorHitTest) then
+      begin
         TcxGridSite(Sender).BeginDrag(True);
+      end;
   end;
   FPrevHitTest := AHitTest;
 end;
 
 procedure TForm1.tvDragFromStartDrag(Sender: TObject; var DragObject: TDragObject);
 begin
+  aqui!!!
+  tvDragFrom.DataController.SelectRows(tvDragFrom.DataController.FocusedRowIndex, tvDragFrom.DataController.FocusedRowIndex+5);
+
   tvDragTo.Styles.Selection := cxStyle1;
   cxViewAssociacoes.Styles.Selection := cxStyle1;
 
@@ -307,6 +366,7 @@ begin
   FImageList  := TDragImageList.Create(nil);
   inherited Create(AGridView.Control as TControl);
   AlwaysShowDragImages := True;
+
 end;
 
 destructor TMeuDragObject.Destroy;
@@ -320,7 +380,8 @@ begin
   Result := crNoDrop;
   if Accepted then
   begin
-    Result := crDefault;
+    //Result := crDefault;
+    Result := crHandPoint
   end;
 end;
 
@@ -395,7 +456,6 @@ begin
     FImageList.Clear;
     FImageList.Width  := vSBitmap.Width;
     FImageList.Height := vSBitmap.Height;
-
     FImageList.Add(vSBitmap, nil);
 
     FImageList.SetDragImage(0, vSBitmap.Width div 2, vSBitmap.Height div 2);
@@ -437,6 +497,7 @@ begin
 
     FGridView.Control.PaintTo(vLBitmap.Canvas.Handle, 0, 0);
     vTotalSelecionados := FGridView.Controller.SelectedRecordCount;
+
 
     // Percorra a lista de registros selecionados e adicione os bitmaps à lista
     for i := 0 to vTotalSelecionados - 1 do
@@ -486,6 +547,7 @@ begin
 
     FImageList.Add(vMergeImagens, nil);
     FImageList.SetDragImage(0, FImageList.Width div 2, -20);
+    //FImageList.SetDragImage(0, 50, -20);
 
   finally
     FreeAndNil(vLBitmap);

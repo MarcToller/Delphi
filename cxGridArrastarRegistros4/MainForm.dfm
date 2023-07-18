@@ -10,8 +10,6 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
-  OldCreateOrder = True
-  PixelsPerInch = 96
   TextHeight = 13
   object btnCopy: TButton
     Left = 288
@@ -39,13 +37,14 @@ object Form1: TForm1
       Margins.Right = 5
       Margins.Bottom = 10
       Align = alTop
-      Caption = 'DADOS DE:'
+      Caption = 'CONTAS DA EMPRESA'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       ParentFont = False
+      ExplicitWidth = 165
     end
     object gDragFrom: TcxGrid
       AlignWithMargins = True
@@ -77,15 +76,16 @@ object Form1: TForm1
         OptionsView.Indicator = True
         object tvDragFromCodigo: TcxGridDBColumn
           DataBinding.FieldName = 'Codigo'
+          Visible = False
           Width = 64
+        end
+        object tvDragFromEstrututral: TcxGridDBColumn
+          DataBinding.FieldName = 'Estrutural'
+          Width = 151
         end
         object tvDragFromDescricao: TcxGridDBColumn
           DataBinding.FieldName = 'Descricao'
-          Width = 136
-        end
-        object tvDragFromData: TcxGridDBColumn
-          DataBinding.FieldName = 'Data'
-          Width = 51
+          Width = 302
         end
       end
       object lvDragFrom: TcxGridLevel
@@ -111,13 +111,14 @@ object Form1: TForm1
       Margins.Top = 10
       Margins.Bottom = 10
       Align = alTop
-      Caption = 'DADOS PARA:'
+      Caption = 'CONTAS O PLANO REFERENCIAL'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       ParentFont = False
+      ExplicitWidth = 240
     end
     object gDragTo: TcxGrid
       AlignWithMargins = True
@@ -147,15 +148,16 @@ object Form1: TForm1
         OptionsView.GroupByBox = False
         object tvDragToCodigo: TcxGridDBColumn
           DataBinding.FieldName = 'Codigo'
+          Visible = False
           Width = 50
+        end
+        object tvDragToEstrutural: TcxGridDBColumn
+          DataBinding.FieldName = 'Estrutural'
+          Width = 116
         end
         object tvDragToDescricao: TcxGridDBColumn
           DataBinding.FieldName = 'Descricao'
-          Width = 181
-        end
-        object tvDragToData: TcxGridDBColumn
-          DataBinding.FieldName = 'Data'
-          Width = 32
+          Width = 392
         end
       end
       object gDragToDBTableView1: TcxGridDBTableView
@@ -285,12 +287,13 @@ object Form1: TForm1
     object FDMemTableFromCodigo: TIntegerField
       FieldName = 'Codigo'
     end
+    object FDMemTableFromEstrutural: TStringField
+      FieldName = 'Estrutural'
+      Size = 100
+    end
     object FDMemTableFromDescricao: TStringField
       FieldName = 'Descricao'
       Size = 100
-    end
-    object FDMemTableFromData: TDateField
-      FieldName = 'Data'
     end
   end
   object FDMemTableTo: TFDMemTable
@@ -306,12 +309,13 @@ object Form1: TForm1
     object FDMemTableToCodigo: TIntegerField
       FieldName = 'Codigo'
     end
+    object FDMemTableToEstrutural: TStringField
+      FieldName = 'Estrutural'
+      Size = 100
+    end
     object FDMemTableToDescricao: TStringField
       FieldName = 'Descricao'
       Size = 100
-    end
-    object FDMemTableToData: TDateField
-      FieldName = 'Data'
     end
   end
   object FDMemTableAssociacoes: TFDMemTable
@@ -329,7 +333,7 @@ object Form1: TForm1
     end
     object FDMemTableAssociacoesDescricao: TStringField
       FieldName = 'CodigoDescricao'
-      Size = 100
+      Size = 200
     end
     object FDMemTableAssociacoesCodigo_conta: TIntegerField
       FieldName = 'Codigo_conta'
