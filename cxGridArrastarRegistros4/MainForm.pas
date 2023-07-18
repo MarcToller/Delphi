@@ -423,7 +423,7 @@ begin
       vAlturaAtual := vAlturaAtual + vSelectedBitmaps[i].Height;
     end;
     FImageList.Add(vMergeImagens, nil);
-    FImageList.SetDragImage(0, FImageList.Width div 2, FImageList.Height div 2 + vBounds.Height * i);
+    FImageList.SetDragImage(0, FImageList.Width div 2, -20);
 
   finally
     FreeAndNil(vLBitmap);
