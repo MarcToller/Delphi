@@ -18,6 +18,8 @@ uses
 
 const
   UM_AFTERSTARTDRAG = WM_USER + 10000;
+  cMaxSelecionadas = 3;
+
 
 type
   TForm1 = class(TForm)
@@ -109,6 +111,7 @@ type
   private
     FGridView : TcxGridDBTableView;
     FImageList: TDragImageList;
+    function RetornaImagemAdicional(ATotalSelecionados: integer; ALinha: TRect): TBitmap;
   protected
     function GetDragCursor(Accepted: Boolean; X, Y: Integer): TCursor; override;
     function GetDragImages: TDragImageList; override;
@@ -326,6 +329,46 @@ begin
   Result := FImageList;
 end;
 
+function TMeuDragObject.RetornaImagemAdicional(ATotalSelecionados: integer; ALinha: TRect): TBitmap;
+var
+  vDiferenca: Integer;
+  // Texto a ser escrito no bitmap
+  const TextToWrite = 'E mais %d contas selecionadas..';
+
+begin
+  Result := nil;
+
+  vDiferenca := ATotalSelecionados - cMaxSelecionadas;
+
+  if vDiferenca > 0 then
+  begin
+    Result := TBitmap.Create;
+    try
+      // Defina as dimensões do bitmap (largura e altura)
+      Result.Width := ALinha.Width;
+      Result.Height := 30;
+
+      // Define o formato de pixel do bitmap (pode ser pf32bit, pf24bit, pf16bit, etc., dependendo da sua necessidade)
+      Result.PixelFormat := pf32bit;
+
+      // Define o fundo do bitmap como branco (opcional, caso não defina, será preto por padrão)
+      Result.Canvas.Brush.Color := clHighlight;
+      Result.Canvas.FillRect(Rect(0, 0, Result.Width, Result.Height));
+
+      // Define as propriedades do texto a ser escrito
+      Result.Canvas.Font.Name := 'Arial';
+      Result.Canvas.Font.Size := 9;
+      //Result.Canvas.Font.Style := [fsBold];
+      Result.Canvas.Font.Color := clWhite;
+
+      // Escreve o texto no bitmap
+      Result.Canvas.TextOut(5, 5, Format(TextToWrite, [vDiferenca]));
+    finally
+      //Result.Free;
+    end;
+  end;
+end;
+
 procedure TMeuDragObject.ShowDragImage1;
 var
   vBounds : TRect;
@@ -375,11 +418,14 @@ var
   vAlturaTotal: Integer;
   vMergeImagens: TBitmap;
   vAlturaAtual: Integer;
+
+  vImagemAdicional: TBitmap;
+
+  vTotalSelecionados: Integer;
 begin
   inherited;
   vAlturaTotal := 0;
   vAlturaAtual := 0;
-  vBounds := FGridView.ViewInfo.RecordsViewInfo[FGridView.Controller.FocusedRecord.RecordIndex].Bounds;
 
   vLBitmap := TBitmap.Create;
   vSBitmap := TBitmap.Create;
@@ -390,10 +436,14 @@ begin
     vLBitmap.Width := FGridView.Control.Width;
 
     FGridView.Control.PaintTo(vLBitmap.Canvas.Handle, 0, 0);
+    vTotalSelecionados := FGridView.Controller.SelectedRecordCount;
 
     // Percorra a lista de registros selecionados e adicione os bitmaps à lista
-    for i := 0 to FGridView.Controller.SelectedRecordCount - 1 do
+    for i := 0 to vTotalSelecionados - 1 do
     begin
+      if i = cMaxSelecionadas then
+        Break;
+
       vBounds := FGridView.ViewInfo.RecordsViewInfo[FGridView.Controller.SelectedRecords[i].RecordIndex].Bounds;
       vSBitmap := TBitmap.Create;
       try
@@ -408,9 +458,18 @@ begin
       end;
     end;
 
+    vImagemAdicional := RetornaImagemAdicional(vTotalSelecionados, vBounds);
+
+    if Assigned(vImagemAdicional) then
+    begin
+      vAlturaTotal := vAlturaTotal + vImagemAdicional.Height;
+      vSelectedBitmaps.Add(vImagemAdicional);
+    end;
+
     FImageList.Clear;
     FImageList.Width := vBounds.Width; // Use a largura do último bitmap selecionado
     FImageList.Height := vAlturaTotal;
+
 
     vMergeImagens.Height := FImageList.Height;
     vMergeImagens.Width := FImageList.Width;
@@ -422,11 +481,15 @@ begin
       vMergeImagens.Canvas.Draw(0, vAlturaAtual, vSelectedBitmaps[i]);
       vAlturaAtual := vAlturaAtual + vSelectedBitmaps[i].Height;
     end;
+
+    //vMergeImagens.SaveToFile('C:\Users\marcelotoller\Desktop\teste2.bmp');
+
     FImageList.Add(vMergeImagens, nil);
     FImageList.SetDragImage(0, FImageList.Width div 2, -20);
 
   finally
     FreeAndNil(vLBitmap);
+    FreeAndNil(vImagemAdicional);
   end;
 end;
 end.

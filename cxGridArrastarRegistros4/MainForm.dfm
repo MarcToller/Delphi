@@ -32,7 +32,7 @@ object Form1: TForm1
       AlignWithMargins = True
       Left = 6
       Top = 11
-      Width = 83
+      Width = 463
       Height = 16
       Margins.Left = 5
       Margins.Top = 10
@@ -105,7 +105,7 @@ object Form1: TForm1
       AlignWithMargins = True
       Left = 6
       Top = 11
-      Width = 103
+      Width = 523
       Height = 16
       Margins.Left = 5
       Margins.Top = 10
