@@ -431,3 +431,50 @@ begin
 end;
 end.
 
+(*uses
+  Graphics;
+
+procedure CreateBitmapWithText;
+var
+  MyBitmap: TBitmap;
+begin
+  MyBitmap := TBitmap.Create;
+  try
+    // Defina as dimensões do bitmap (largura e altura)
+    MyBitmap.Width := 300;
+    MyBitmap.Height := 200;
+
+    // Define o formato de pixel do bitmap (pode ser pf32bit, pf24bit, pf16bit, etc., dependendo da sua necessidade)
+    MyBitmap.PixelFormat := pf32bit;
+
+    // Define o fundo do bitmap como branco (opcional, caso não defina, será preto por padrão)
+    MyBitmap.Canvas.Brush.Color := clWhite;
+    MyBitmap.Canvas.FillRect(Rect(0, 0, MyBitmap.Width, MyBitmap.Height));
+
+    // Define as propriedades do texto a ser escrito
+    MyBitmap.Canvas.Font.Name := 'Arial';
+    MyBitmap.Canvas.Font.Size := 14;
+    MyBitmap.Canvas.Font.Style := [fsBold];
+    MyBitmap.Canvas.Font.Color := clBlack;
+
+    // Posição em que o texto será escrito
+    const TextX = 50;
+    const TextY = 100;
+
+    // Texto a ser escrito no bitmap
+    const TextToWrite = 'Exemplo de texto no bitmap!';
+
+    // Escreve o texto no bitmap
+    MyBitmap.Canvas.TextOut(TextX, TextY, TextToWrite);
+
+    // Agora você tem um TBitmap criado e com o texto desenhado nele.
+
+    // Use o TBitmap como necessário (por exemplo, exiba-o em um componente TImage)
+    Image1.Picture.Assign(MyBitmap);
+
+  finally
+    MyBitmap.Free;
+  end;
+end;
+*)
+
