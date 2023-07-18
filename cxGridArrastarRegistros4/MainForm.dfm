@@ -10,6 +10,8 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
+  OldCreateOrder = True
+  PixelsPerInch = 96
   TextHeight = 13
   object btnCopy: TButton
     Left = 288
@@ -30,7 +32,7 @@ object Form1: TForm1
       AlignWithMargins = True
       Left = 6
       Top = 11
-      Width = 463
+      Width = 83
       Height = 16
       Margins.Left = 5
       Margins.Top = 10
@@ -44,7 +46,6 @@ object Form1: TForm1
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       ParentFont = False
-      ExplicitWidth = 83
     end
     object gDragFrom: TcxGrid
       AlignWithMargins = True
@@ -104,7 +105,7 @@ object Form1: TForm1
       AlignWithMargins = True
       Left = 6
       Top = 11
-      Width = 523
+      Width = 103
       Height = 16
       Margins.Left = 5
       Margins.Top = 10
@@ -117,7 +118,6 @@ object Form1: TForm1
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       ParentFont = False
-      ExplicitWidth = 103
     end
     object gDragTo: TcxGrid
       AlignWithMargins = True

@@ -95,6 +95,9 @@ var
 
 implementation
 
+uses
+  Spring.Collections;
+
 type
   TcxGridSiteAccess = class (TcxGridSite);
 
@@ -112,6 +115,7 @@ type
   public
     constructor Create(AGridView: TcxGridDBTableView); reintroduce;
     destructor Destroy; override;
+    procedure ShowDragImage1;
     procedure ShowDragImage; override;
   end;
 
@@ -322,7 +326,7 @@ begin
   Result := FImageList;
 end;
 
-procedure TMeuDragObject.ShowDragImage;
+procedure TMeuDragObject.ShowDragImage1;
 var
   vBounds : TRect;
   vLBitmap: TBitmap;
@@ -343,6 +347,8 @@ begin
     vSBitmap.Width  := vBounds.Width;
     vSBitmap.Canvas.CopyRect(Rect(0, 0, vSBitmap.Width, vSBitmap.Height), vLBitmap.Canvas, vBounds);
 
+    //vSBitmap.LoadFromFile('C:\Bin.Separado\Delphi\Fontes\Imagens\Bmp\LogoDataCemproBoleto160x85.bmp');
+
     FImageList.Clear;
     FImageList.Width  := vSBitmap.Width;
     FImageList.Height := vSBitmap.Height;
@@ -356,4 +362,72 @@ begin
   end;
 end;
 
+
+
+procedure TMeuDragObject.ShowDragImage;
+var
+  vBounds: TRect;
+  vLBitmap: TBitmap;
+  vSBitmap: TBitmap;
+  vSelectedBitmaps: IList<TBitmap>; // Lista para armazenar os bitmaps dos registros selecionados
+  i: Integer;
+
+  vAlturaTotal: Integer;
+  vMergeImagens: TBitmap;
+  vAlturaAtual: Integer;
+begin
+  inherited;
+  vAlturaTotal := 0;
+  vAlturaAtual := 0;
+  vBounds := FGridView.ViewInfo.RecordsViewInfo[FGridView.Controller.FocusedRecord.RecordIndex].Bounds;
+
+  vLBitmap := TBitmap.Create;
+  vSBitmap := TBitmap.Create;
+  vMergeImagens := TBitmap.Create;
+  vSelectedBitmaps := TCollections.CreateList<TBitmap>; // Crie a lista de bitmaps selecionados
+  try
+    vLBitmap.Height := FGridView.Control.Height;
+    vLBitmap.Width := FGridView.Control.Width;
+
+    FGridView.Control.PaintTo(vLBitmap.Canvas.Handle, 0, 0);
+
+    // Percorra a lista de registros selecionados e adicione os bitmaps à lista
+    for i := 0 to FGridView.Controller.SelectedRecordCount - 1 do
+    begin
+      vBounds := FGridView.ViewInfo.RecordsViewInfo[FGridView.Controller.SelectedRecords[i].RecordIndex].Bounds;
+      vSBitmap := TBitmap.Create;
+      try
+        vSBitmap.Height := vBounds.Height;
+        vSBitmap.Width := vBounds.Width;
+        vSBitmap.Canvas.CopyRect(Rect(0, 0, vSBitmap.Width, vSBitmap.Height), vLBitmap.Canvas, vBounds);
+        vSelectedBitmaps.Add(vSBitmap);
+        vAlturaTotal := vAlturaTotal + vSBitmap.Height;
+      except
+        vSBitmap.Free;
+        raise;
+      end;
+    end;
+
+    FImageList.Clear;
+    FImageList.Width := vBounds.Width; // Use a largura do último bitmap selecionado
+    FImageList.Height := vAlturaTotal;
+
+    vMergeImagens.Height := FImageList.Height;
+    vMergeImagens.Width := FImageList.Width;
+
+
+    // Desenhe os bitmaps selecionados na imagem de arraste
+    for i := 0 to vSelectedBitmaps.Count - 1 do
+    begin
+      vMergeImagens.Canvas.Draw(0, vAlturaAtual, vSelectedBitmaps[i]);
+      vAlturaAtual := vAlturaAtual + vSelectedBitmaps[i].Height;
+    end;
+    FImageList.Add(vMergeImagens, nil);
+    FImageList.SetDragImage(0, FImageList.Width div 2, FImageList.Height div 2 + vBounds.Height * i);
+
+  finally
+    FreeAndNil(vLBitmap);
+  end;
+end;
 end.
+
