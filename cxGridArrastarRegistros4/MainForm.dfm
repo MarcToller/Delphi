@@ -165,15 +165,19 @@ object Form1: TForm1
         end
         object tvDragToEstrutural: TcxGridDBColumn
           DataBinding.FieldName = 'Estrutural'
-          Width = 116
+          Width = 99
         end
         object tvDragToDescricao: TcxGridDBColumn
           DataBinding.FieldName = 'Descricao'
-          Width = 392
+          Width = 290
         end
         object tvDragToContaAnalitica: TcxGridDBColumn
           DataBinding.FieldName = 'ContaAnalitica'
           Visible = False
+        end
+        object tvDragToQtdAssociacoes: TcxGridDBColumn
+          DataBinding.FieldName = 'QtdAssociacoes'
+          Width = 109
         end
       end
       object gDragToDBTableView1: TcxGridDBTableView
@@ -348,6 +352,9 @@ object Form1: TForm1
     object FDMemTableToContaAnalitica: TStringField
       FieldName = 'ContaAnalitica'
       Size = 1
+    end
+    object FDMemTableToQtdAssociacoes: TIntegerField
+      FieldName = 'QtdAssociacoes'
     end
   end
   object FDMemTableAssociacoes: TFDMemTable

@@ -73,6 +73,8 @@ type
     tvDragToContaAnalitica: TcxGridDBColumn;
     FDMemTableToContaAnalitica: TStringField;
     cxStyle4: TcxStyle;
+    FDMemTableToQtdAssociacoes: TIntegerField;
+    tvDragToQtdAssociacoes: TcxGridDBColumn;
     procedure CopyRecords(ACodigo: integer; ARecordIndex: integer);
     procedure tvDragFromMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
@@ -286,12 +288,22 @@ end;
 procedure TForm1.CopyRecords(ACodigo: integer; ARecordIndex: integer);
 var
   i : integer;
+  vCount: Integer;
 begin
+  vCount := 0;
 //  tvDragTo.DataController.CollapseDetails;
 
+
+  if ARecordIndex = 0 then
+    ARecordIndex := tvDragTo.DataController.FocusedRecordIndex;
+
   cxViewAssociacoes.DataController.BeginUpdate;
+  tvDragTo.DataController.BeginUpdate;
+
 
   FDMemTableAssociacoes.DisableControls;
+  FDMemTableTo.DisableControls;
+
   for i := 0 to tvDragFrom.ViewData.RecordCount -1 do
   begin
     if tvDragFrom.ViewData.Records[I].Selected then
@@ -302,11 +314,23 @@ begin
         FDMemTableAssociacoesCodigo.AsInteger       := ACodigo;
         FDMemTableAssociacoesCodigo_conta.AsInteger := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,0];
         FDMemTableAssociacoesDescricao.AsString     := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,1]+' - '+tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,2]+' - '+Trim(tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,3]);
+        Inc(vCount);
         FDMemTableAssociacoes.Post;
       end;
     end;
   end;
+
+  if (vCount > 0) and FDMemTableTo.Locate('Codigo', ACodigo, []) then
+  begin
+    FDMemTableTo.Edit;
+    FDMemTableToQtdAssociacoes.AsInteger := FDMemTableToQtdAssociacoes.AsInteger + vCount;
+    FDMemTableTo.Post;
+  end;
+
   cxViewAssociacoes.DataController.EndUpdate;
+  tvDragTo.DataController.EndUpdate;
+
+  FDMemTableTo.EnableControls;
   FDMemTableAssociacoes.EnableControls;
 
   if ARecordIndex > 0 then
