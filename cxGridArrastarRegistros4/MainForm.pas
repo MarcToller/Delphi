@@ -628,7 +628,7 @@ begin
     //vMergeImagens.SaveToFile('C:\Users\marcelotoller\Desktop\teste2.bmp');
 
     FImageList.Add(vMergeImagens, nil);
-    FImageList.SetDragImage(0, FImageList.Width div 2, -20);
+    FImageList.SetDragImage(0, FImageList.Width div 2, -10);
     //FImageList.SetDragImage(0, 50, -20);
 
   finally
