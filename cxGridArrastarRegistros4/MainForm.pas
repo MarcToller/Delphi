@@ -106,7 +106,7 @@ var
 implementation
 
 uses
-  Spring.Collections, MascaraContabilidade;
+  Spring.Collections(*, MascaraContabilidade*);
 
 type
   TcxGridSiteAccess = class (TcxGridSite);
@@ -331,16 +331,17 @@ begin
   CopyRecords(vValue, 0);
 end;
 
-procedure TForm1.cxViewAssociacoesDragOver(Sender, Source: TObject; X,
-  Y: Integer; State: TDragState; var Accept: Boolean);
+procedure TForm1.cxViewAssociacoesDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
 begin
-  Accept := Source is TMeuDragObject;
+  Accept := (Source is TMeuDragObject);
 end;
+
 
 procedure TForm1.FormShow(Sender: TObject);
 begin
   PanelFrom.Width := RoundDiv(Screen.Width, 2);
 end;
+
 
 procedure TForm1.tvDragToDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
 var
@@ -361,9 +362,14 @@ begin
   Accept := (Source is TMeuDragObject) and (vValue = 'T');
 
   if Accept then
-    tvDragTo.Styles.Selection := cxStyle1
+  begin
+    tvDragTo.Styles.Selection := cxStyle1;
+    cxViewAssociacoes.Styles.Selection := cxStyle1;
+  end
   else
+  begin
     tvDragTo.Styles.Selection := cxStyle4;
+  end;
 end;
 
 procedure TForm1.UmAfterStartDrag(var Message: TMessage);
@@ -450,12 +456,16 @@ begin
     FreeAndNil(FDragObject);
   end;
 
-  if tvDragFrom.DataController.Values[tvDragFrom.DataController.FocusedRecordIndex, tvDragFromAnalitica.Index] = 'T' then
+  tvDragTo.Styles.Selection := cxStyle1;
+  cxViewAssociacoes.Styles.Selection := cxStyle1;
+
+
+  if (tvDragFrom.DataController.Values[tvDragFrom.DataController.FocusedRecordIndex, tvDragFromAnalitica.Index] = 'T') or (tvDragFrom.DataController.GetSelectedCount > 1) then
   begin
     //tvDragFrom.DataController.SelectRows(tvDragFrom.DataController.FocusedRowIndex, tvDragFrom.DataController.FocusedRowIndex+5);
 
-    tvDragTo.Styles.Selection := cxStyle1;
-    cxViewAssociacoes.Styles.Selection := cxStyle1;
+(*    tvDragTo.Styles.Selection := cxStyle1;
+    cxViewAssociacoes.Styles.Selection := cxStyle1;*)
 
 
     if (Sender is TWinControl) then
@@ -467,6 +477,11 @@ begin
 
     FIsOnDragOver := True;
     Invalidate;
+  end
+  else
+  begin
+    tvDragTo.Styles.Selection := cxStyle4;
+    cxViewAssociacoes.Styles.Selection := cxStyle4;
   end;
 
 
