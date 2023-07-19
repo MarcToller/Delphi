@@ -72,6 +72,7 @@ type
     tvDragFromAnalitica: TcxGridDBColumn;
     tvDragToContaAnalitica: TcxGridDBColumn;
     FDMemTableToContaAnalitica: TStringField;
+    cxStyle4: TcxStyle;
     procedure CopyRecords(ACodigo: integer; ARecordIndex: integer);
     procedure tvDragFromMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
@@ -155,6 +156,7 @@ var
     FDMemTableToCodigo.AsInteger := vInd;
     FDMemTableToEstrutural.AsString := AEStrutural;
     FDMemTableToDescricao.AsString := Descricao;
+    FDMemTableToContaAnalitica.AsString := AContaAnalitica;
     FDMemTableTo.Post;
   end;
 
@@ -294,11 +296,14 @@ begin
   begin
     if tvDragFrom.ViewData.Records[I].Selected then
     begin
-      FDMemTableAssociacoes.Append;
-      FDMemTableAssociacoesCodigo.AsInteger       := ACodigo;
-      FDMemTableAssociacoesCodigo_conta.AsInteger := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,0];
-      FDMemTableAssociacoesDescricao.AsString     := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,1]+' - '+tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,2]+' - '+Trim(tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,3]);
-      FDMemTableAssociacoes.Post;
+      if tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,4] = 'T' then
+      begin
+        FDMemTableAssociacoes.Append;
+        FDMemTableAssociacoesCodigo.AsInteger       := ACodigo;
+        FDMemTableAssociacoesCodigo_conta.AsInteger := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,0];
+        FDMemTableAssociacoesDescricao.AsString     := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,1]+' - '+tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,2]+' - '+Trim(tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,3]);
+        FDMemTableAssociacoes.Post;
+      end;
     end;
   end;
   cxViewAssociacoes.DataController.EndUpdate;
@@ -338,8 +343,27 @@ begin
 end;
 
 procedure TForm1.tvDragToDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
+var
+  AHitTest: TcxCustomGridHitTest;
+  ARecIndex: Integer;
+  vValue: Variant;
 begin
-  Accept := Source is TMeuDragObject;
+  ARecIndex := 0;
+  vValue := '';
+
+  AHitTest := TcxGridSite(Sender).ViewInfo.GetHitTest(X, Y);
+  if AHitTest is TcxGridRecordCellHitTest then
+  begin
+    ARecIndex := TcxGridRecordCellHitTest(AHitTest).GridRecord.RecordIndex;
+    vValue := TcxGridSite(Sender).GridView.DataController.Values[ARecIndex, tvDragToContaAnalitica.Index];
+  end;
+
+  Accept := (Source is TMeuDragObject) and ((vValue = 'T') or (tvDragFrom.DataController.GetSelectedCount > 1));
+
+  if Accept then
+    tvDragTo.Styles.Selection := cxStyle1
+  else
+    tvDragTo.Styles.Selection := cxStyle4;
 end;
 
 procedure TForm1.UmAfterStartDrag(var Message: TMessage);

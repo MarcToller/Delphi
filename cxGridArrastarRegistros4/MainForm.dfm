@@ -263,7 +263,7 @@ object Form1: TForm1
     PixelsPerInch = 96
     object cxStyle1: TcxStyle
       AssignedValues = [svColor, svFont, svTextColor]
-      Color = clRed
+      Color = clGreen
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -11
@@ -283,6 +283,10 @@ object Form1: TForm1
       Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = [fsBold]
+    end
+    object cxStyle4: TcxStyle
+      AssignedValues = [svColor]
+      Color = clRed
     end
   end
   object DataSourceAssociacoes: TDataSource
