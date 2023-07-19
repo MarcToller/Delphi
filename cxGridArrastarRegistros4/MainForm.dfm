@@ -10,6 +10,11 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
+  OldCreateOrder = True
+  Position = poScreenCenter
+  WindowState = wsMaximized
+  OnShow = FormShow
+  PixelsPerInch = 96
   TextHeight = 13
   object btnCopy: TButton
     Left = 288
@@ -22,7 +27,7 @@ object Form1: TForm1
   object PanelFrom: TPanel
     Left = 0
     Top = 0
-    Width = 475
+    Width = 485
     Height = 631
     Align = alLeft
     TabOrder = 1
@@ -30,7 +35,7 @@ object Form1: TForm1
       AlignWithMargins = True
       Left = 6
       Top = 11
-      Width = 463
+      Width = 473
       Height = 16
       Margins.Left = 5
       Margins.Top = 10
@@ -44,13 +49,12 @@ object Form1: TForm1
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       ParentFont = False
-      ExplicitWidth = 165
     end
     object gDragFrom: TcxGrid
       AlignWithMargins = True
       Left = 4
       Top = 40
-      Width = 467
+      Width = 477
       Height = 587
       Align = alClient
       DragCursor = crMultiDrag
@@ -81,11 +85,20 @@ object Form1: TForm1
         end
         object tvDragFromEstrututral: TcxGridDBColumn
           DataBinding.FieldName = 'Estrutural'
-          Width = 151
+          Width = 113
+        end
+        object tvDragFromReduzido: TcxGridDBColumn
+          DataBinding.FieldName = 'Reduzido'
+          Width = 59
         end
         object tvDragFromDescricao: TcxGridDBColumn
           DataBinding.FieldName = 'Descricao'
-          Width = 302
+          Width = 281
+        end
+        object tvDragFromAnalitica: TcxGridDBColumn
+          Caption = 'Analitica'
+          DataBinding.FieldName = 'ContaAnalitica'
+          Visible = False
         end
       end
       object lvDragFrom: TcxGridLevel
@@ -94,9 +107,9 @@ object Form1: TForm1
     end
   end
   object Panel1: TPanel
-    Left = 487
+    Left = 497
     Top = 0
-    Width = 533
+    Width = 523
     Height = 631
     Align = alClient
     Caption = 'Panel1'
@@ -105,7 +118,7 @@ object Form1: TForm1
       AlignWithMargins = True
       Left = 6
       Top = 11
-      Width = 523
+      Width = 513
       Height = 16
       Margins.Left = 5
       Margins.Top = 10
@@ -118,13 +131,12 @@ object Form1: TForm1
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       ParentFont = False
-      ExplicitWidth = 240
     end
     object gDragTo: TcxGrid
       AlignWithMargins = True
       Left = 4
       Top = 40
-      Width = 525
+      Width = 515
       Height = 587
       Align = alClient
       DragCursor = crMultiDrag
@@ -158,6 +170,10 @@ object Form1: TForm1
         object tvDragToDescricao: TcxGridDBColumn
           DataBinding.FieldName = 'Descricao'
           Width = 392
+        end
+        object tvDragToContaAnalitica: TcxGridDBColumn
+          DataBinding.FieldName = 'ContaAnalitica'
+          Visible = False
         end
       end
       object gDragToDBTableView1: TcxGridDBTableView
@@ -225,7 +241,7 @@ object Form1: TForm1
     end
   end
   object cxSplitter1: TcxSplitter
-    Left = 475
+    Left = 485
     Top = 0
     Width = 12
     Height = 631
@@ -291,9 +307,17 @@ object Form1: TForm1
       FieldName = 'Estrutural'
       Size = 100
     end
+    object FDMemTableFromReduzido: TStringField
+      FieldName = 'Reduzido'
+      Size = 10
+    end
     object FDMemTableFromDescricao: TStringField
       FieldName = 'Descricao'
       Size = 100
+    end
+    object FDMemTableFromContaAnalitica: TStringField
+      FieldName = 'ContaAnalitica'
+      Size = 1
     end
   end
   object FDMemTableTo: TFDMemTable
@@ -316,6 +340,10 @@ object Form1: TForm1
     object FDMemTableToDescricao: TStringField
       FieldName = 'Descricao'
       Size = 100
+    end
+    object FDMemTableToContaAnalitica: TStringField
+      FieldName = 'ContaAnalitica'
+      Size = 1
     end
   end
   object FDMemTableAssociacoes: TFDMemTable

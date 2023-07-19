@@ -66,6 +66,12 @@ type
     tvDragFromEstrututral: TcxGridDBColumn;
     FDMemTableToEstrutural: TStringField;
     tvDragToEstrutural: TcxGridDBColumn;
+    FDMemTableFromReduzido: TStringField;
+    FDMemTableFromContaAnalitica: TStringField;
+    tvDragFromReduzido: TcxGridDBColumn;
+    tvDragFromAnalitica: TcxGridDBColumn;
+    tvDragToContaAnalitica: TcxGridDBColumn;
+    FDMemTableToContaAnalitica: TStringField;
     procedure CopyRecords(ACodigo: integer; ARecordIndex: integer);
     procedure tvDragFromMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
@@ -80,6 +86,7 @@ type
       Y: Integer);
     procedure cxViewAssociacoesDragOver(Sender, Source: TObject; X,
       Y: Integer; State: TDragState; var Accept: Boolean);
+    procedure FormShow(Sender: TObject);
   private
     { Private declarations }
     FPrevHitTest: TcxCustomGridHitTest;
@@ -128,17 +135,20 @@ procedure TForm1.AfterConstruction;
 var
   vInd: Integer;
 
-  procedure AdicionarContaEmpresa(AEStrutural: string; Descricao: string);
+  procedure AdicionarContaEmpresa(AEStrutural: string; AReduzido: string; ADescricao: string; AContaAnalitica: String);
   begin
     Inc(vInd);
     FDMemTableFrom.Append;
     FDMemTableFromCodigo.AsInteger := vInd;
     FDMemTableFromEstrutural.AsString := AEStrutural;
-    FDMemTableFromDescricao.AsString := Descricao;
+    FDMemTableFromDescricao.AsString := ADescricao;
+    FDMemTableFromReduzido.AsString := AReduzido;
+    FDMemTableFromContaAnalitica.AsString := AContaAnalitica;
+
     FDMemTableFrom.Post;
   end;
 
-  procedure AdicionarContaReferencial(AEStrutural: string; Descricao: string);
+  procedure AdicionarContaReferencial(AEStrutural: string; Descricao: string; AContaAnalitica: String);
   begin
     Inc(vInd);
     FDMemTableTo.Append;
@@ -158,45 +168,109 @@ begin
   FDMemTableAssociacoes.Active := True;
   FDMemTableAssociacoes.IndexFieldNames := 'Codigo;Codigo_conta';
 
-  AdicionarContaEmpresa('1',           'Ativo');
-  AdicionarContaEmpresa('1.1',         'Ativo Circulante');
-  AdicionarContaEmpresa('1.1.01',      'Disponivel');
-  AdicionarContaEmpresa('1.1.01.01',   'Caixa');
-  AdicionarContaEmpresa('1.1.01.02',   'Bancos Conta Movimento');
-  AdicionarContaEmpresa('1.1.01.03',   'Aplicações Financeiras');
-  AdicionarContaEmpresa('1.1.02',      'Realizável');
-  AdicionarContaEmpresa('1.1.02.01',   'Clientes');
-  AdicionarContaEmpresa('1.1.02.02',   '( - ) Desconto de duplicatas');
-  AdicionarContaEmpresa('1.1.02.03',   'Adiantamento Diversos');
-  AdicionarContaEmpresa('1.1.02.04',    'Outras contas a receber');
-  AdicionarContaEmpresa('1.1.03',      'Estoques');
-  AdicionarContaEmpresa('1.1.04',      'Valores e Créditos Recuperáveis');
-  AdicionarContaEmpresa('1.1.05',      'Despesas do Exercício Seguinte');
-  AdicionarContaEmpresa('1.2',         'Ativo Não Circulante');
-  AdicionarContaEmpresa('1.2.1',       'Realizavel a Longo Prazo');
-  AdicionarContaEmpresa('1.2.2',       'Investimentos');
-  AdicionarContaEmpresa('1.2.3',       'Imobilizado');
-  AdicionarContaEmpresa('1.2.4',       'Intangível');
+  AdicionarContaEmpresa('1.0.0.00.0000', '',     'ATIVO                                                        ', 'F');
+  AdicionarContaEmpresa('1.1.0.00.0000', '',     '     CIRCULANTE                                              ', 'F');
+  AdicionarContaEmpresa('1.1.1.00.0000', '',     '          DISPONIVEL                                         ', 'F');
+  AdicionarContaEmpresa('1.1.1.01.0000', '',     '               CAIXA GERAL                                   ', 'F');
+  AdicionarContaEmpresa('1.1.1.01.0001', '0001', '                        CAIXA                                ', 'T');
+  AdicionarContaEmpresa('1.1.1.01.0002', '0002', '                        CHEQUES PRE-DATADOS                  ', 'T');
+  AdicionarContaEmpresa('1.1.1.02.0000', '',     '               BANCO CONTA CORRENTE                          ', 'F');
+  AdicionarContaEmpresa('1.1.1.02.0001', '0003', '                        BANCO A                              ', 'T');
+  AdicionarContaEmpresa('1.1.1.02.0002', '0004', '                            BANCO B                          ', 'T');
+  AdicionarContaEmpresa('1.1.1.03.0000', '',     '                   BANCO CONTA APLICACOES                    ', 'F');
+  AdicionarContaEmpresa('1.1.1.03.0001', '0005', '                        BANCO A C/APLIC                      ', 'T');
+  AdicionarContaEmpresa('1.1.1.03.0002', '0006', '                            BANCO B C/APLIC                  ', 'T');
+  AdicionarContaEmpresa('1.1.2.00.0000', '',     '              CREDITOS DE CLIENTES                           ', 'F');
+  AdicionarContaEmpresa('1.1.2.01.0000', '',     '               DUPLICATAS A RECEBER                          ', 'F');
+  AdicionarContaEmpresa('1.1.2.01.0001', '0007', '                            CLIENTE ABC                      ', 'T');
+  AdicionarContaEmpresa('1.1.2.01.0002', '0008', '                            CLIENTE XYZ                      ', 'T');
+  AdicionarContaEmpresa('1.1.2.01.0003', '0009', '                        CLIENTE AAA                          ', 'T');
+  AdicionarContaEmpresa('1.1.2.80.0000', '',     '               (-)DUPLICATAS DESCONTADAS                     ', 'F');
+  AdicionarContaEmpresa('1.1.2.80.0001', '0010', '                            BANCO BBBB                       ', 'T');
+  AdicionarContaEmpresa('1.1.2.80.0002', '0011', '                            BANCO AA                         ', 'T');
+  AdicionarContaEmpresa('1.1.2.90.0000', '',     '                   (-) PROV P/CRED LIQ DUVIDOSA              ', 'F');
+  AdicionarContaEmpresa('1.1.2.90.0001', '0012', '                        PROVISAO P/CLD                       ', 'T');
+  AdicionarContaEmpresa('1.1.5.00.0000', '',     '              OUTROS CREDITOS                                ', 'F');
+  AdicionarContaEmpresa('1.1.5.01.0000', '',     '                   ADIANTAMENTOS A TERCEIROS                 ', 'F');
+  AdicionarContaEmpresa('1.1.5.01.0001', '0013', '                        FORNECEDOR A                         ', 'T');
+  AdicionarContaEmpresa('1.1.5.01.0002', '0014', '                            FORNECEDOR B                     ', 'T');
+  AdicionarContaEmpresa('1.1.5.01.0003', '0015', '                        FORNECEDOR CC                        ', 'T');
+  AdicionarContaEmpresa('1.1.5.02.0000', '',     '               ADIANTAMENTOS A FUNCIONARIOS                  ', 'F');
+  AdicionarContaEmpresa('1.1.5.02.0001', '0016', '                            FUNCIONARIO AA                   ', 'T');
+  AdicionarContaEmpresa('1.1.5.02.0002', '0017', '                            FUNCIONARIO BB                   ', 'T');
+  AdicionarContaEmpresa('1.1.5.03.0000', '',     '                   DEPOSITOS CAUCIONADOS                     ', 'F');
+  AdicionarContaEmpresa('1.1.5.03.0001', '0018', '                        DEPOS CAUC AA                        ', 'T');
+  AdicionarContaEmpresa('1.1.5.03.0002', '0019', '                            DEPOSITO CAUC BBB                ', 'T');
+  AdicionarContaEmpresa('1.1.7.00.0000', '',     '              ESTOQUES                                       ', 'F');
+  AdicionarContaEmpresa('1.1.7.01.0000', '',     '               ESTOQUE DE PRODUTOS                           ', 'F');
+  AdicionarContaEmpresa('1.1.7.01.0001', '0020', '                            ESTOQUE DE MATERIA PRIMA         ', 'T');
+  AdicionarContaEmpresa('1.1.7.01.0002', '0021', '                            ESTOQUE DE PRODUTOS EM ELABORACAO', 'T');
+  AdicionarContaEmpresa('1.1.7.01.0003', '0022', '                        ESTOQUE PRODUTO PRONTO               ', 'T');
+  AdicionarContaEmpresa('1.1.7.02.0000', '',     '               ESTOQUE DE MERCADORIAS P/REVENDA              ', 'F');
+  AdicionarContaEmpresa('1.1.7.02.0001', '0023', '                            MERCADORIAS AAA                  ', 'T');
+  AdicionarContaEmpresa('1.1.7.02.0002', '0024', '                            MERCADORIAS BBB                  ', 'T');
+  AdicionarContaEmpresa('1.1.7.03.0000', '',     '                   MERCADORIAS EM CONSIGNACAO                ', 'F');
+  AdicionarContaEmpresa('1.1.7.03.0001', '0025', '                        REVENDA AAA                          ', 'T');
+  AdicionarContaEmpresa('1.1.7.03.0002', '0026', '                            REVENDA BBB                      ', 'T');
+  AdicionarContaEmpresa('1.1.9.00.0000', '',     '              DESPESAS ANTECIPADAS                           ', 'F');
+  AdicionarContaEmpresa('1.1.9.01.0000', '',     '               DESPESAS A APROPRIAR                          ', 'F');
+  AdicionarContaEmpresa('1.1.9.01.0001', '0027', '                            PREMIOS DE SEGUROS A APROPRIAR   ', 'T');
+  AdicionarContaEmpresa('1.1.9.01.0002', '0028', '                            ENCARGOS FINANCEIROS A APROPRIAR ', 'T');
 
-  AdicionarContaReferencial('1',           'Ativo');
-  AdicionarContaReferencial('1.1',         'Ativo Circulante');
-  AdicionarContaReferencial('1.1.01',      'Disponivel');
-  AdicionarContaReferencial('1.1.01.01',   'Caixa');
-  AdicionarContaReferencial('1.1.01.02',   'Bancos Conta Movimento');
-  AdicionarContaReferencial('1.1.01.03',   'Aplicações Financeiras');
-  AdicionarContaReferencial('1.1.02',      'Realizável');
-  AdicionarContaReferencial('1.1.02.01',   'Clientes');
-  AdicionarContaReferencial('1.1.02.02',   '( - ) Desconto de duplicatas');
-  AdicionarContaReferencial('1.1.02.03',   'Adiantamento Diversos');
-  AdicionarContaReferencial('1.1.02.04',    'Outras contas a receber');
-  AdicionarContaReferencial('1.1.03',      'Estoques');
-  AdicionarContaReferencial('1.1.04',      'Valores e Créditos Recuperáveis');
-  AdicionarContaReferencial('1.1.05',      'Despesas do Exercício Seguinte');
-  AdicionarContaReferencial('1.2',         'Ativo Não Circulante');
-  AdicionarContaReferencial('1.2.1',       'Realizavel a Longo Prazo');
-  AdicionarContaReferencial('1.2.2',       'Investimentos');
-  AdicionarContaReferencial('1.2.3',       'Imobilizado');
-  AdicionarContaReferencial('1.2.4',       'Intangível');
+  AdicionarContaReferencial('1.0.0.00.0000',  'ATIVO                                                        ', 'F');
+  AdicionarContaReferencial('1.1.0.00.0000',  '     CIRCULANTE                                              ', 'F');
+  AdicionarContaReferencial('1.1.1.00.0000',  '          DISPONIVEL                                         ', 'F');
+  AdicionarContaReferencial('1.1.1.01.0000',  '               CAIXA GERAL                                   ', 'F');
+  AdicionarContaReferencial('1.1.1.01.0001',  '                        CAIXA                                ', 'T');
+  AdicionarContaReferencial('1.1.1.01.0002',  '                        CHEQUES PRE-DATADOS                  ', 'T');
+  AdicionarContaReferencial('1.1.1.02.0000',  '               BANCO CONTA CORRENTE                          ', 'F');
+  AdicionarContaReferencial('1.1.1.02.0001',  '                        BANCO A                              ', 'T');
+  AdicionarContaReferencial('1.1.1.02.0002',  '                            BANCO B                          ', 'T');
+  AdicionarContaReferencial('1.1.1.03.0000',  '                   BANCO CONTA APLICACOES                    ', 'F');
+  AdicionarContaReferencial('1.1.1.03.0001',  '                        BANCO A C/APLIC                      ', 'T');
+  AdicionarContaReferencial('1.1.1.03.0002',  '                            BANCO B C/APLIC                  ', 'T');
+  AdicionarContaReferencial('1.1.2.00.0000',  '              CREDITOS DE CLIENTES                           ', 'F');
+  AdicionarContaReferencial('1.1.2.01.0000',  '               DUPLICATAS A RECEBER                          ', 'F');
+  AdicionarContaReferencial('1.1.2.01.0001',  '                            CLIENTE ABC                      ', 'T');
+  AdicionarContaReferencial('1.1.2.01.0002',  '                            CLIENTE XYZ                      ', 'T');
+  AdicionarContaReferencial('1.1.2.01.0003',  '                        CLIENTE AAA                          ', 'T');
+  AdicionarContaReferencial('1.1.2.80.0000',  '               (-)DUPLICATAS DESCONTADAS                     ', 'F');
+  AdicionarContaReferencial('1.1.2.80.0001',  '                            BANCO BBBB                       ', 'T');
+  AdicionarContaReferencial('1.1.2.80.0002',  '                            BANCO AA                         ', 'T');
+  AdicionarContaReferencial('1.1.2.90.0000',  '                   (-) PROV P/CRED LIQ DUVIDOSA              ', 'F');
+  AdicionarContaReferencial('1.1.2.90.0001',  '                        PROVISAO P/CLD                       ', 'T');
+  AdicionarContaReferencial('1.1.5.00.0000',  '              OUTROS CREDITOS                                ', 'F');
+  AdicionarContaReferencial('1.1.5.01.0000',  '                   ADIANTAMENTOS A TERCEIROS                 ', 'F');
+  AdicionarContaReferencial('1.1.5.01.0001',  '                        FORNECEDOR A                         ', 'T');
+  AdicionarContaReferencial('1.1.5.01.0002',  '                            FORNECEDOR B                     ', 'T');
+  AdicionarContaReferencial('1.1.5.01.0003',  '                        FORNECEDOR CC                        ', 'T');
+  AdicionarContaReferencial('1.1.5.02.0000',  '               ADIANTAMENTOS A FUNCIONARIOS                  ', 'F');
+  AdicionarContaReferencial('1.1.5.02.0001',  '                            FUNCIONARIO AA                   ', 'T');
+  AdicionarContaReferencial('1.1.5.02.0002',  '                            FUNCIONARIO BB                   ', 'T');
+  AdicionarContaReferencial('1.1.5.03.0000',  '                   DEPOSITOS CAUCIONADOS                     ', 'F');
+  AdicionarContaReferencial('1.1.5.03.0001',  '                        DEPOS CAUC AA                        ', 'T');
+  AdicionarContaReferencial('1.1.5.03.0002',  '                            DEPOSITO CAUC BBB                ', 'T');
+  AdicionarContaReferencial('1.1.7.00.0000',  '              ESTOQUES                                       ', 'F');
+  AdicionarContaReferencial('1.1.7.01.0000',  '               ESTOQUE DE PRODUTOS                           ', 'F');
+  AdicionarContaReferencial('1.1.7.01.0001',  '                            ESTOQUE DE MATERIA PRIMA         ', 'T');
+  AdicionarContaReferencial('1.1.7.01.0002',  '                            ESTOQUE DE PRODUTOS EM ELABORACAO', 'T');
+  AdicionarContaReferencial('1.1.7.01.0003',  '                        ESTOQUE PRODUTO PRONTO               ', 'T');
+  AdicionarContaReferencial('1.1.7.02.0000',  '               ESTOQUE DE MERCADORIAS P/REVENDA              ', 'F');
+  AdicionarContaReferencial('1.1.7.02.0001',  '                            MERCADORIAS AAA                  ', 'T');
+  AdicionarContaReferencial('1.1.7.02.0002',  '                            MERCADORIAS BBB                  ', 'T');
+  AdicionarContaReferencial('1.1.7.03.0000',  '                   MERCADORIAS EM CONSIGNACAO                ', 'F');
+  AdicionarContaReferencial('1.1.7.03.0001',  '                        REVENDA AAA                          ', 'T');
+  AdicionarContaReferencial('1.1.7.03.0002',  '                            REVENDA BBB                      ', 'T');
+  AdicionarContaReferencial('1.1.9.00.0000',  '              DESPESAS ANTECIPADAS                           ', 'F');
+  AdicionarContaReferencial('1.1.9.01.0000',  '               DESPESAS A APROPRIAR                          ', 'F');
+  AdicionarContaReferencial('1.1.9.01.0001',  '                            PREMIOS DE SEGUROS A APROPRIAR   ', 'T');
+  AdicionarContaReferencial('1.1.9.01.0002',  '                            ENCARGOS FINANCEIROS A APROPRIAR ', 'T');
+
+
+
+  FDMemTableFrom.First;
+  FDMemTableTo.First;
+
 end;
 
 
@@ -223,7 +297,7 @@ begin
       FDMemTableAssociacoes.Append;
       FDMemTableAssociacoesCodigo.AsInteger       := ACodigo;
       FDMemTableAssociacoesCodigo_conta.AsInteger := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,0];
-      FDMemTableAssociacoesDescricao.AsString     := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,1]+' - '+tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,2];
+      FDMemTableAssociacoesDescricao.AsString     := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,1]+' - '+tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,2]+' - '+Trim(tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,3]);
       FDMemTableAssociacoes.Post;
     end;
   end;
@@ -256,6 +330,11 @@ procedure TForm1.cxViewAssociacoesDragOver(Sender, Source: TObject; X,
   Y: Integer; State: TDragState; var Accept: Boolean);
 begin
   Accept := Source is TMeuDragObject;
+end;
+
+procedure TForm1.FormShow(Sender: TObject);
+begin
+  PanelFrom.Width := RoundDiv(Screen.Width, 2);
 end;
 
 procedure TForm1.tvDragToDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
@@ -315,26 +394,29 @@ end;
 
 procedure TForm1.tvDragFromStartDrag(Sender: TObject; var DragObject: TDragObject);
 begin
-  aqui!!!
-  tvDragFrom.DataController.SelectRows(tvDragFrom.DataController.FocusedRowIndex, tvDragFrom.DataController.FocusedRowIndex+5);
-
-  tvDragTo.Styles.Selection := cxStyle1;
-  cxViewAssociacoes.Styles.Selection := cxStyle1;
-
   if Assigned(FDragObject) then
   begin
     FreeAndNil(FDragObject);
   end;
 
-  if (Sender is TWinControl) then
+  if tvDragFrom.DataController.Values[tvDragFrom.DataController.FocusedRecordIndex, tvDragFromAnalitica.Index] = 'T' then
   begin
-    FDragObject := TMeuDragObject.Create(tvDragFrom);
-    DragObject  := FDragObject;
-    DragObject.ShowDragImage;
-  end;
+    //tvDragFrom.DataController.SelectRows(tvDragFrom.DataController.FocusedRowIndex, tvDragFrom.DataController.FocusedRowIndex+5);
 
-  FIsOnDragOver := True;
-  Invalidate;
+    tvDragTo.Styles.Selection := cxStyle1;
+    cxViewAssociacoes.Styles.Selection := cxStyle1;
+
+
+    if (Sender is TWinControl) then
+    begin
+      FDragObject := TMeuDragObject.Create(tvDragFrom);
+      DragObject  := FDragObject;
+      DragObject.ShowDragImage;
+    end;
+
+    FIsOnDragOver := True;
+    Invalidate;
+  end;
 
 
 end;
@@ -556,50 +638,4 @@ begin
 end;
 end.
 
-(*uses
-  Graphics;
-
-procedure CreateBitmapWithText;
-var
-  MyBitmap: TBitmap;
-begin
-  MyBitmap := TBitmap.Create;
-  try
-    // Defina as dimensões do bitmap (largura e altura)
-    MyBitmap.Width := 300;
-    MyBitmap.Height := 200;
-
-    // Define o formato de pixel do bitmap (pode ser pf32bit, pf24bit, pf16bit, etc., dependendo da sua necessidade)
-    MyBitmap.PixelFormat := pf32bit;
-
-    // Define o fundo do bitmap como branco (opcional, caso não defina, será preto por padrão)
-    MyBitmap.Canvas.Brush.Color := clWhite;
-    MyBitmap.Canvas.FillRect(Rect(0, 0, MyBitmap.Width, MyBitmap.Height));
-
-    // Define as propriedades do texto a ser escrito
-    MyBitmap.Canvas.Font.Name := 'Arial';
-    MyBitmap.Canvas.Font.Size := 14;
-    MyBitmap.Canvas.Font.Style := [fsBold];
-    MyBitmap.Canvas.Font.Color := clBlack;
-
-    // Posição em que o texto será escrito
-    const TextX = 50;
-    const TextY = 100;
-
-    // Texto a ser escrito no bitmap
-    const TextToWrite = 'Exemplo de texto no bitmap!';
-
-    // Escreve o texto no bitmap
-    MyBitmap.Canvas.TextOut(TextX, TextY, TextToWrite);
-
-    // Agora você tem um TBitmap criado e com o texto desenhado nele.
-
-    // Use o TBitmap como necessário (por exemplo, exiba-o em um componente TImage)
-    Image1.Picture.Assign(MyBitmap);
-
-  finally
-    MyBitmap.Free;
-  end;
-end;
-*)
 
