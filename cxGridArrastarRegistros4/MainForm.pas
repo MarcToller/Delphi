@@ -106,7 +106,7 @@ var
 implementation
 
 uses
-  Spring.Collections;
+  Spring.Collections, MascaraContabilidade;
 
 type
   TcxGridSiteAccess = class (TcxGridSite);
@@ -358,7 +358,7 @@ begin
     vValue := TcxGridSite(Sender).GridView.DataController.Values[ARecIndex, tvDragToContaAnalitica.Index];
   end;
 
-  Accept := (Source is TMeuDragObject) and ((vValue = 'T') or (tvDragFrom.DataController.GetSelectedCount > 1));
+  Accept := (Source is TMeuDragObject) and (vValue = 'T');
 
   if Accept then
     tvDragTo.Styles.Selection := cxStyle1
@@ -417,7 +417,34 @@ begin
 end;
 
 procedure TForm1.tvDragFromStartDrag(Sender: TObject; var DragObject: TDragObject);
+var
+  vEstruturalSelecionado:string;
+  vEstruturalFilho:string;
+  vFocusedRecordIndex: Integer;
+  vFocusedRecordIndex1: Integer;
 begin
+  vEstruturalFilho := '';
+  vEstruturalSelecionado := '';
+  vFocusedRecordIndex := tvDragFrom.DataController.FocusedRecordIndex;
+
+(*  if tvDragFrom.DataController.Values[vFocusedRecordIndex, tvDragFromAnalitica.Index] = 'F' then
+  begin
+    vEstruturalSelecionado := tvDragFrom.DataController.Values[vFocusedRecordIndex, tvDragFromEstrututral.Index];
+    vFocusedRecordIndex1 := vFocusedRecordIndex;;
+
+    while True do
+    begin
+      vFocusedRecordIndex1 := vFocusedRecordIndex1 + 1;
+      vEstruturalFilho := tvDragFrom.DataController.Values[vFocusedRecordIndex1, tvDragFromEstrututral.Index];
+
+      if not TMascaraContabilidade.ContaPertence(vEstruturalFilho, vEstruturalSelecionado) then
+        Break;
+    end;
+    tvDragFrom.DataController.SelectRows(vFocusedRecordIndex, vFocusedRecordIndex1-1);
+  end;*)
+
+
+
   if Assigned(FDragObject) then
   begin
     FreeAndNil(FDragObject);
