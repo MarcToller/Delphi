@@ -489,8 +489,12 @@ end;
 
 procedure TForm1.tvDragFromEndDrag(Sender, Target: TObject; X, Y: Integer);
 begin
-  tvDragTo.Styles.Selection := nil;
-  cxViewAssociacoes.Styles.Selection := nil;
+(*  tvDragTo.Styles.Selection := nil;
+  cxViewAssociacoes.Styles.Selection := nil;*)
+
+  tvDragTo.Styles.Selection.RestoreDefaults;
+  cxViewAssociacoes.Styles.Selection.RestoreDefaults;
+
 
   FreeAndNil(FDragObject);
   FIsOnDragOver := False;
