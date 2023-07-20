@@ -418,8 +418,8 @@ begin
 
   if vDescricao <> '' then
   begin
-    ACanvas.Brush.Color := clSilver
-    //ACanvas.Font.Color  := clWhite;
+    ACanvas.Brush.Color := clSilver;
+    ACanvas.Font.Color  := clBlack;
   end;
 
 end;
@@ -519,8 +519,9 @@ var
   vEstruturalSelecionado:string;
   vEstruturalFilho:string;
   vFocusedRecordIndex: Integer;
-  vFocusedRecordIndex1: Integer;
   vEstaAssociada: Boolean;
+  vQtdSelecionadas: Integer;
+  vAnalitica: Boolean;
 begin
   vEstruturalFilho := '';
   vEstruturalSelecionado := '';
@@ -534,9 +535,11 @@ begin
   tvDragTo.Styles.Selection := cxStyle1;
   cxViewAssociacoes.Styles.Selection := cxStyle1;
 
-  vEstaAssociada := VarToStr(tvDragFrom.DataController.Values[tvDragFrom.DataController.FocusedRecordIndex, tvDragFromDescricaoReferencial.Index]) <> '';
+  vEstaAssociada   := VarToStr(tvDragFrom.DataController.Values[tvDragFrom.DataController.FocusedRecordIndex, tvDragFromDescricaoReferencial.Index]) <> '';
+  vQtdSelecionadas := tvDragFrom.DataController.GetSelectedCount;
+  //vAnalitica       := (tvDragFrom.DataController.Values[tvDragFrom.DataController.FocusedRecordIndex, tvDragFromAnalitica.Index] = 'T')
 
-  if ((tvDragFrom.DataController.Values[tvDragFrom.DataController.FocusedRecordIndex, tvDragFromAnalitica.Index] = 'T') and not vEstaAssociada) or (tvDragFrom.DataController.GetSelectedCount > 1) then
+  if (vQtdSelecionadas > 1) or (not vEstaAssociada) then
   begin
     //tvDragFrom.DataController.SelectRows(tvDragFrom.DataController.FocusedRowIndex, tvDragFrom.DataController.FocusedRowIndex+5);
 
@@ -639,6 +642,7 @@ end;
 function TMeuDragObject.RetornaImagemAdicional(ATotalSelecionados: integer; ALinha: TRect): TBitmap;
 var
   vDiferenca: Integer;
+  vSomenteUmaSintetica: Boolean;
   // Texto a ser escrito no bitmap
   const TextToWrite = 'E mais %d contas selecionadas..';
 
@@ -647,7 +651,10 @@ begin
 
   vDiferenca := ATotalSelecionados - cMaxSelecionadas;
 
-  if vDiferenca > 0 then
+
+  vSomenteUmaSintetica := (ATotalSelecionados = 1) and (VarToStr(FGridView.DataController.Values[FGridView.Controller.SelectedRecords[0].RecordIndex, 4]) = 'F');
+
+  if (vDiferenca > 0) or vSomenteUmaSintetica then
   begin
     Result := TBitmap.Create;
     try
@@ -669,7 +676,11 @@ begin
       Result.Canvas.Font.Color := clWhite;
 
       // Escreve o texto no bitmap
-      Result.Canvas.TextOut(5, 5, Format(TextToWrite, [vDiferenca]));
+      if vSomenteUmaSintetica then
+        Result.Canvas.TextOut(5, 5, 'Serão associadas todas as analíticas disponíveis..')
+      else
+        Result.Canvas.TextOut(5, 5, Format(TextToWrite, [vDiferenca]))
+
     finally
       //Result.Free;
     end;
