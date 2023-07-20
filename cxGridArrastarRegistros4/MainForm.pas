@@ -507,6 +507,7 @@ end;
 
 procedure TForm1.tvDragFromEndDrag(Sender, Target: TObject; X, Y: Integer);
 begin
+  LimparStyle(nil);
 // não esta passando por aqui...
 (*  tvDragTo.Styles.Selection := nil;
   cxViewAssociacoes.Styles.Selection := nil;*)
