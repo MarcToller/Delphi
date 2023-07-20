@@ -70,9 +70,14 @@ object Form1: TForm1
         Navigator.Buttons.CustomButtons = <>
         OnCustomDrawCell = tvDragFromCustomDrawCell
         DataController.DataSource = dsFrom
+        DataController.Filter.Options = [fcoCaseInsensitive]
+        DataController.Filter.Active = True
+        DataController.Filter.AutoDataSetFilter = True
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
+        FilterRow.Visible = True
+        FilterRow.ApplyChanges = fracImmediately
         OptionsBehavior.PullFocusing = True
         OptionsSelection.CellSelect = False
         OptionsSelection.MultiSelect = True
@@ -156,11 +161,19 @@ object Form1: TForm1
         OnCustomDrawCell = tvDragToCustomDrawCell
         DataController.DataModeController.SyncMode = False
         DataController.DataSource = dsTo
+        DataController.Filter.Options = [fcoCaseInsensitive]
+        DataController.Filter.Active = True
+        DataController.Filter.AutoDataSetFilter = True
         DataController.KeyFieldNames = 'Codigo'
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
+        FilterRow.Visible = True
+        FilterRow.ApplyChanges = fracImmediately
         OptionsBehavior.PullFocusing = True
+        OptionsCustomize.ColumnGrouping = False
+        OptionsCustomize.ColumnMoving = False
+        OptionsCustomize.ColumnSorting = False
         OptionsSelection.CellSelect = False
         OptionsSelection.MultiSelect = True
         OptionsView.ColumnAutoWidth = True
@@ -213,6 +226,7 @@ object Form1: TForm1
         OptionsView.ColumnAutoWidth = True
         OptionsView.GroupByBox = False
         OptionsView.Header = False
+        OptionsView.BandHeaders = False
         Styles.Content = cxStyle2
         Styles.BandHeader = cxStyle3
         Bands = <
@@ -314,6 +328,7 @@ object Form1: TForm1
     Top = 296
   end
   object FDMemTableFrom: TFDMemTable
+    FilterOptions = [foCaseInsensitive]
     FetchOptions.AssignedValues = [evMode]
     FetchOptions.Mode = fmAll
     ResourceOptions.AssignedValues = [rvSilentMode]
@@ -348,6 +363,7 @@ object Form1: TForm1
     end
   end
   object FDMemTableTo: TFDMemTable
+    FilterOptions = [foCaseInsensitive]
     FetchOptions.AssignedValues = [evMode]
     FetchOptions.Mode = fmAll
     ResourceOptions.AssignedValues = [rvSilentMode]
