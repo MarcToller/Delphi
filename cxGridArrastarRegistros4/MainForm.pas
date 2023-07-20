@@ -90,6 +90,8 @@ type
     procedure cxViewAssociacoesDragOver(Sender, Source: TObject; X,
       Y: Integer; State: TDragState; var Accept: Boolean);
     procedure FormShow(Sender: TObject);
+    procedure tvDragToCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas:
+        TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
   private
     { Private declarations }
     FPrevHitTest: TcxCustomGridHitTest;
@@ -289,9 +291,12 @@ procedure TForm1.CopyRecords(ACodigo: integer; ARecordIndex: integer);
 var
   i : integer;
   vCount: Integer;
+  vRowIndex: Integer;
 begin
   vCount := 0;
-//  tvDragTo.DataController.CollapseDetails;
+
+(*  if ARecordIndex > 0 then
+    tvDragTo.DataController.CollapseDetails;*)
 
 
   if ARecordIndex = 0 then
@@ -334,7 +339,11 @@ begin
   FDMemTableAssociacoes.EnableControls;
 
   if ARecordIndex > 0 then
+  begin
+(*    vRowIndex := tvDragTo.DataController.GetRowIndexByRecordIndex(ARecordIndex, True);
+    tvDragTo.DataController.SelectRows(vRowIndex, vRowIndex);*)
     tvDragTo.DataController.ChangeDetailExpanding(ARecordIndex, True)
+  end;
 end;
 
 procedure TForm1.cxViewAssociacoesDragDrop(Sender, Source: TObject; X,
@@ -457,24 +466,6 @@ begin
   vEstruturalSelecionado := '';
   vFocusedRecordIndex := tvDragFrom.DataController.FocusedRecordIndex;
 
-(*  if tvDragFrom.DataController.Values[vFocusedRecordIndex, tvDragFromAnalitica.Index] = 'F' then
-  begin
-    vEstruturalSelecionado := tvDragFrom.DataController.Values[vFocusedRecordIndex, tvDragFromEstrututral.Index];
-    vFocusedRecordIndex1 := vFocusedRecordIndex;;
-
-    while True do
-    begin
-      vFocusedRecordIndex1 := vFocusedRecordIndex1 + 1;
-      vEstruturalFilho := tvDragFrom.DataController.Values[vFocusedRecordIndex1, tvDragFromEstrututral.Index];
-
-      if not TMascaraContabilidade.ContaPertence(vEstruturalFilho, vEstruturalSelecionado) then
-        Break;
-    end;
-    tvDragFrom.DataController.SelectRows(vFocusedRecordIndex, vFocusedRecordIndex1-1);
-  end;*)
-
-
-
   if Assigned(FDragObject) then
   begin
     FreeAndNil(FDragObject);
@@ -487,10 +478,6 @@ begin
   if (tvDragFrom.DataController.Values[tvDragFrom.DataController.FocusedRecordIndex, tvDragFromAnalitica.Index] = 'T') or (tvDragFrom.DataController.GetSelectedCount > 1) then
   begin
     //tvDragFrom.DataController.SelectRows(tvDragFrom.DataController.FocusedRowIndex, tvDragFrom.DataController.FocusedRowIndex+5);
-
-(*    tvDragTo.Styles.Selection := cxStyle1;
-    cxViewAssociacoes.Styles.Selection := cxStyle1;*)
-
 
     if (Sender is TWinControl) then
     begin
@@ -508,6 +495,32 @@ begin
     cxViewAssociacoes.Styles.Selection := cxStyle4;
   end;
 
+
+end;
+
+procedure TForm1.tvDragToCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+var
+  vQtd: string;
+begin
+  AViewInfo.RecordViewInfo.ExpandButtonBounds.Width := 0;
+  AViewInfo.RecordViewInfo.ExpandButtonBounds.Height := 0;
+
+  if AViewInfo.Item.Index = tvDragToQtdAssociacoes.Index then
+  begin
+    vQtd := AViewInfo.GridRecord.DisplayTexts[tvDragToQtdAssociacoes.Index];
+
+    if StrToIntDef(vQtd, 0) > 0 then
+    begin
+      AViewInfo.RecordViewInfo.ExpandButtonBounds.Width := 9;
+      AViewInfo.RecordViewInfo.ExpandButtonBounds.Height := 9;
+    end;
+  end;
+
+  if AViewInfo.RecordViewInfo.GridRecord.Expanded then
+  begin
+    ACanvas.Brush.Color := clHighlight;
+    ACanvas.Font.Color  := clWhite;
+  end;
 
 end;
 

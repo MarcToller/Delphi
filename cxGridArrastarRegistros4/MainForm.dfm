@@ -10,9 +10,11 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
+  OldCreateOrder = True
   Position = poScreenCenter
   WindowState = wsMaximized
   OnShow = FormShow
+  PixelsPerInch = 96
   TextHeight = 13
   object btnCopy: TButton
     Left = 288
@@ -47,7 +49,6 @@ object Form1: TForm1
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       ParentFont = False
-      ExplicitWidth = 165
     end
     object gDragFrom: TcxGrid
       AlignWithMargins = True
@@ -130,7 +131,6 @@ object Form1: TForm1
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       ParentFont = False
-      ExplicitWidth = 240
     end
     object gDragTo: TcxGrid
       AlignWithMargins = True
@@ -146,10 +146,10 @@ object Form1: TForm1
         OnDragDrop = tvDragToDragDrop
         OnDragOver = tvDragToDragOver
         Navigator.Buttons.CustomButtons = <>
+        OnCustomDrawCell = tvDragToCustomDrawCell
         DataController.DataModeController.SyncMode = False
         DataController.DataSource = dsTo
         DataController.KeyFieldNames = 'Codigo'
-        DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys]
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
@@ -158,6 +158,7 @@ object Form1: TForm1
         OptionsSelection.MultiSelect = True
         OptionsView.ColumnAutoWidth = True
         OptionsView.GroupByBox = False
+        OptionsView.Indicator = True
         object tvDragToCodigo: TcxGridDBColumn
           DataBinding.FieldName = 'Codigo'
           Visible = False
@@ -204,6 +205,7 @@ object Form1: TForm1
         OptionsView.ColumnAutoWidth = True
         OptionsView.GroupByBox = False
         OptionsView.Header = False
+        OptionsView.BandHeaders = False
         Styles.Content = cxStyle2
         Styles.BandHeader = cxStyle3
         Bands = <
