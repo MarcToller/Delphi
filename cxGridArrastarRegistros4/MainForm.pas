@@ -103,8 +103,9 @@ type
   private
     { Private declarations }
     FPrevHitTest: TcxCustomGridHitTest;
-    FDragObject : TDragControlObject;
-    FIsOnDragOver: Boolean;
+    //FDragObject : TDragControlObject;
+    //FIsOnDragOver: Boolean;
+    procedure LimparStyle(Sender : TObject);
   public
     procedure UmAfterStartDrag(var Message: TMessage); message UM_AFTERSTARTDRAG;
     procedure AfterConstruction; override;
@@ -131,11 +132,15 @@ type
   private
     FGridView : TcxGridDBTableView;
     FImageList: TDragImageList;
+    FMetodo: TNotifyEvent;
     function RetornaImagemAdicional(ATotalSelecionados: integer; ALinha: TRect): TBitmap;
   protected
     function GetDragCursor(Accepted: Boolean; X, Y: Integer): TCursor; override;
     function GetDragImages: TDragImageList; override;
+    procedure Finished(Target: TObject; X, Y: Integer; Accepted: Boolean); override;
+    procedure EndDrag(Target: TObject; X, Y: Integer); override;
   public
+    procedure SetMetodo(AMetodo: TNotifyEvent);
     constructor Create(AGridView: TcxGridDBTableView); reintroduce;
     destructor Destroy; override;
     procedure ShowDragImage1;
@@ -299,7 +304,7 @@ procedure TForm1.CopyRecords(ACodigo: integer; ARecordIndex: integer);
 var
   i : integer;
   vCount: Integer;
-  vRowIndex: Integer;
+  //vRowIndex: Integer;
   vCodigo: integer;
   vListaCodigos: IList<integer>;
   vDescricaoReferencial: string;
@@ -379,6 +384,12 @@ begin
     tvDragTo.DataController.SelectRows(vRowIndex, vRowIndex);*)
     tvDragTo.DataController.ChangeDetailExpanding(ARecordIndex, True)
   end;
+
+(*  tvDragTo.Styles.Selection := nil;
+  cxViewAssociacoes.Styles.Selection := nil;*)
+
+  //FreeAndNil(FDragObject);
+  LimparStyle(nil);
 end;
 
 procedure TForm1.cxViewAssociacoesDragDrop(Sender, Source: TObject; X,
@@ -408,6 +419,12 @@ end;
 procedure TForm1.FormShow(Sender: TObject);
 begin
   PanelFrom.Width := RoundDiv(Screen.Width, 2);
+end;
+
+procedure TForm1.LimparStyle(Sender : TObject);
+begin
+  tvDragTo.Styles.Selection := nil;
+  cxViewAssociacoes.Styles.Selection := nil;
 end;
 
 procedure TForm1.tvDragFromCustomDrawCell(Sender: TcxCustomGridTableView;  ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
@@ -441,7 +458,7 @@ var
   ARecIndex: Integer;
   vValue: Variant;
 begin
-  ARecIndex := 0;
+  //ARecIndex := 0;
   vValue := '';
 
   AHitTest := TcxGridSite(Sender).ViewInfo.GetHitTest(X, Y);
@@ -461,6 +478,7 @@ begin
   else
   begin
     tvDragTo.Styles.Selection := cxStyle4;
+    //cxViewAssociacoes.Styles.Selection := cxStyle4;
   end;
 end;
 
@@ -489,16 +507,13 @@ end;
 
 procedure TForm1.tvDragFromEndDrag(Sender, Target: TObject; X, Y: Integer);
 begin
+// não esta passando por aqui...
 (*  tvDragTo.Styles.Selection := nil;
   cxViewAssociacoes.Styles.Selection := nil;*)
 
-  tvDragTo.Styles.Selection.RestoreDefaults;
-  cxViewAssociacoes.Styles.Selection.RestoreDefaults;
-
-
-  FreeAndNil(FDragObject);
-  FIsOnDragOver := False;
-  Invalidate;
+  //FreeAndNil(FDragObject);
+  //FIsOnDragOver := False;
+  //Invalidate;
 end;
 
 
@@ -522,19 +537,19 @@ procedure TForm1.tvDragFromStartDrag(Sender: TObject; var DragObject: TDragObjec
 var
   vEstruturalSelecionado:string;
   vEstruturalFilho:string;
-  vFocusedRecordIndex: Integer;
+  //vFocusedRecordIndex: Integer;
   vEstaAssociada: Boolean;
   vQtdSelecionadas: Integer;
-  vAnalitica: Boolean;
+  //vAnalitica: Boolean;
 begin
   vEstruturalFilho := '';
   vEstruturalSelecionado := '';
-  vFocusedRecordIndex := tvDragFrom.DataController.FocusedRecordIndex;
+  //vFocusedRecordIndex := tvDragFrom.DataController.FocusedRecordIndex;
 
-  if Assigned(FDragObject) then
+(*  if Assigned(FDragObject) then
   begin
     FreeAndNil(FDragObject);
-  end;
+  end;*)
 
   tvDragTo.Styles.Selection := cxStyle1;
   cxViewAssociacoes.Styles.Selection := cxStyle1;
@@ -549,21 +564,20 @@ begin
 
     if (Sender is TWinControl) then
     begin
-      FDragObject := TMeuDragObject.Create(tvDragFrom);
-      DragObject  := FDragObject;
+      //FDragObject := TMeuDragObject.Create(tvDragFrom);
+      DragObject  := TMeuDragObject.Create(tvDragFrom);
+      (DragObject as TMeuDragObject).SetMetodo(LimparStyle);
       DragObject.ShowDragImage;
     end;
 
-    FIsOnDragOver := True;
-    Invalidate;
+    //FIsOnDragOver := True;
+    //Invalidate;
   end
   else
   begin
     tvDragTo.Styles.Selection := cxStyle4;
     cxViewAssociacoes.Styles.Selection := cxStyle4;
   end;
-
-
 end;
 
 procedure TForm1.tvDragToCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
@@ -626,6 +640,20 @@ destructor TMeuDragObject.Destroy;
 begin
   FreeAndNil(FImageList);
   inherited;
+end;
+
+procedure TMeuDragObject.EndDrag(Target: TObject; X, Y: Integer);
+begin
+  inherited;
+  if Assigned(FMetodo) then
+    FMetodo(nil);
+end;
+
+procedure TMeuDragObject.Finished(Target: TObject; X, Y: Integer;
+  Accepted: Boolean);
+begin
+  inherited;
+//
 end;
 
 function TMeuDragObject.GetDragCursor(Accepted: Boolean; X, Y: Integer): TCursor;
@@ -728,6 +756,11 @@ end;
 
 
 
+procedure TMeuDragObject.SetMetodo(AMetodo: TNotifyEvent);
+begin
+  FMetodo := AMetodo;
+end;
+
 procedure TMeuDragObject.ShowDragImage;
 var
   vBounds: TRect;
@@ -749,7 +782,6 @@ begin
   vAlturaAtual := 0;
 
   vLBitmap := TBitmap.Create;
-  vSBitmap := TBitmap.Create;
   vMergeImagens := TBitmap.Create;
   vSelectedBitmaps := TCollections.CreateList<TBitmap>; // Crie a lista de bitmaps selecionados
   try
