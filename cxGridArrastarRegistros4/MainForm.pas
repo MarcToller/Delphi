@@ -75,6 +75,8 @@ type
     cxStyle4: TcxStyle;
     FDMemTableToQtdAssociacoes: TIntegerField;
     tvDragToQtdAssociacoes: TcxGridDBColumn;
+    FDMemTableFromDescricaoReferencial: TStringField;
+    tvDragFromDescricaoReferencial: TcxGridDBColumn;
     procedure CopyRecords(ACodigo: integer; ARecordIndex: integer);
     procedure tvDragFromMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
@@ -90,6 +92,12 @@ type
     procedure cxViewAssociacoesDragOver(Sender, Source: TObject; X,
       Y: Integer; State: TDragState; var Accept: Boolean);
     procedure FormShow(Sender: TObject);
+    procedure tvDragFromCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas:
+        TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+    procedure tvDragFromDescricaoGetCellHint(Sender: TcxCustomGridTableItem;
+        ARecord: TcxCustomGridRecord; ACellViewInfo: TcxGridTableDataCellViewInfo;
+        const AMousePos: TPoint; var AHintText: TCaption; var AIsHintMultiLine:
+        Boolean; var AHintTextRect: TRect);
     procedure tvDragToCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas:
         TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
   private
@@ -292,12 +300,17 @@ var
   i : integer;
   vCount: Integer;
   vRowIndex: Integer;
+  vCodigo: integer;
+  vListaCodigos: IList<integer>;
+  vDescricaoReferencial: string;
+  vContaAssociada: Boolean;
 begin
   vCount := 0;
 
 (*  if ARecordIndex > 0 then
     tvDragTo.DataController.CollapseDetails;*)
 
+  vListaCodigos := TCollections.CreateList<integer>;
 
   if ARecordIndex = 0 then
     ARecordIndex := tvDragTo.DataController.FocusedRecordIndex;
@@ -313,11 +326,14 @@ begin
   begin
     if tvDragFrom.ViewData.Records[I].Selected then
     begin
-      if tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,4] = 'T' then
+      vContaAssociada := VarToStr(tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex, tvDragFromDescricaoReferencial.Index]) <> '';
+
+      if (tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,4] = 'T') and not vContaAssociada then
       begin
         FDMemTableAssociacoes.Append;
         FDMemTableAssociacoesCodigo.AsInteger       := ACodigo;
         FDMemTableAssociacoesCodigo_conta.AsInteger := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,0];
+        vListaCodigos.Add(FDMemTableAssociacoesCodigo_conta.AsInteger);
         FDMemTableAssociacoesDescricao.AsString     := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,1]+' - '+tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,2]+' - '+Trim(tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,3]);
         Inc(vCount);
         FDMemTableAssociacoes.Post;
@@ -327,6 +343,7 @@ begin
 
   if (vCount > 0) and FDMemTableTo.Locate('Codigo', ACodigo, []) then
   begin
+    vDescricaoReferencial := FDMemTableToEstrutural.AsString +' - '+Trim(FDMemTableToDescricao.AsString);
     FDMemTableTo.Edit;
     FDMemTableToQtdAssociacoes.AsInteger := FDMemTableToQtdAssociacoes.AsInteger + vCount;
     FDMemTableTo.Post;
@@ -338,7 +355,25 @@ begin
   FDMemTableTo.EnableControls;
   FDMemTableAssociacoes.EnableControls;
 
-  if ARecordIndex > 0 then
+  tvDragFrom.DataController.SaveDataSetPos;
+  tvDragFrom.DataController.BeginUpdate;
+  FDMemTableFrom.DisableControls;
+
+  for vCodigo in vListaCodigos do
+  begin
+    if FDMemTableFrom.Locate('Codigo', vCodigo, []) then
+    begin
+      FDMemTableFrom.Edit;
+      FDMemTableFromDescricaoReferencial.AsString := vDescricaoReferencial;
+      FDMemTableFrom.Post;
+    end;
+  end;
+  FDMemTableFrom.EnableControls;
+  tvDragFrom.DataController.RestoreDataSetPos;
+  tvDragFrom.DataController.EndUpdate;
+
+
+  if (ARecordIndex > 0) and (vCount > 0) then
   begin
 (*    vRowIndex := tvDragTo.DataController.GetRowIndexByRecordIndex(ARecordIndex, True);
     tvDragTo.DataController.SelectRows(vRowIndex, vRowIndex);*)
@@ -375,6 +410,30 @@ begin
   PanelFrom.Width := RoundDiv(Screen.Width, 2);
 end;
 
+procedure TForm1.tvDragFromCustomDrawCell(Sender: TcxCustomGridTableView;  ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+var
+  vDescricao: string;
+begin
+  vDescricao := AViewInfo.GridRecord.DisplayTexts[tvDragFromDescricaoReferencial.Index];
+
+  if vDescricao <> '' then
+  begin
+    ACanvas.Brush.Color := clSilver
+    //ACanvas.Font.Color  := clWhite;
+  end;
+
+end;
+
+procedure TForm1.tvDragFromDescricaoGetCellHint(Sender: TcxCustomGridTableItem;
+    ARecord: TcxCustomGridRecord; ACellViewInfo: TcxGridTableDataCellViewInfo;
+    const AMousePos: TPoint; var AHintText: TCaption; var AIsHintMultiLine:
+    Boolean; var AHintTextRect: TRect);
+begin
+  AHintText := VarToStr(ACellViewInfo.GridRecord.Values[tvDragFromDescricaoReferencial.Index]);
+
+  if AHintText <> '' then
+    AHintText := 'ASSOCIADA AO REFERENCIAL '+AHintText;
+end;
 
 procedure TForm1.tvDragToDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
 var
@@ -461,6 +520,7 @@ var
   vEstruturalFilho:string;
   vFocusedRecordIndex: Integer;
   vFocusedRecordIndex1: Integer;
+  vEstaAssociada: Boolean;
 begin
   vEstruturalFilho := '';
   vEstruturalSelecionado := '';
@@ -474,8 +534,9 @@ begin
   tvDragTo.Styles.Selection := cxStyle1;
   cxViewAssociacoes.Styles.Selection := cxStyle1;
 
+  vEstaAssociada := VarToStr(tvDragFrom.DataController.Values[tvDragFrom.DataController.FocusedRecordIndex, tvDragFromDescricaoReferencial.Index]) <> '';
 
-  if (tvDragFrom.DataController.Values[tvDragFrom.DataController.FocusedRecordIndex, tvDragFromAnalitica.Index] = 'T') or (tvDragFrom.DataController.GetSelectedCount > 1) then
+  if ((tvDragFrom.DataController.Values[tvDragFrom.DataController.FocusedRecordIndex, tvDragFromAnalitica.Index] = 'T') and not vEstaAssociada) or (tvDragFrom.DataController.GetSelectedCount > 1) then
   begin
     //tvDragFrom.DataController.SelectRows(tvDragFrom.DataController.FocusedRowIndex, tvDragFrom.DataController.FocusedRowIndex+5);
 
@@ -505,7 +566,7 @@ begin
   AViewInfo.RecordViewInfo.ExpandButtonBounds.Width := 0;
   AViewInfo.RecordViewInfo.ExpandButtonBounds.Height := 0;
 
-  if AViewInfo.Item.Index = tvDragToQtdAssociacoes.Index then
+  if (*AViewInfo.Item.Index = tvDragToQtdAssociacoes.Index*) true then
   begin
     vQtd := AViewInfo.GridRecord.DisplayTexts[tvDragToQtdAssociacoes.Index];
 

@@ -68,6 +68,7 @@ object Form1: TForm1
         OnMouseMove = tvDragFromMouseMove
         OnStartDrag = tvDragFromStartDrag
         Navigator.Buttons.CustomButtons = <>
+        OnCustomDrawCell = tvDragFromCustomDrawCell
         DataController.DataSource = dsFrom
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
@@ -85,20 +86,26 @@ object Form1: TForm1
         end
         object tvDragFromEstrututral: TcxGridDBColumn
           DataBinding.FieldName = 'Estrutural'
-          Width = 113
+          Width = 88
         end
         object tvDragFromReduzido: TcxGridDBColumn
           DataBinding.FieldName = 'Reduzido'
-          Width = 59
+          Width = 57
         end
         object tvDragFromDescricao: TcxGridDBColumn
           DataBinding.FieldName = 'Descricao'
-          Width = 281
+          OnGetCellHint = tvDragFromDescricaoGetCellHint
+          Width = 243
         end
         object tvDragFromAnalitica: TcxGridDBColumn
           Caption = 'Analitica'
           DataBinding.FieldName = 'ContaAnalitica'
           Visible = False
+        end
+        object tvDragFromDescricaoReferencial: TcxGridDBColumn
+          DataBinding.FieldName = 'DescricaoReferencial'
+          Visible = False
+          Width = 75
         end
       end
       object lvDragFrom: TcxGridLevel
@@ -178,6 +185,7 @@ object Form1: TForm1
         end
         object tvDragToQtdAssociacoes: TcxGridDBColumn
           DataBinding.FieldName = 'QtdAssociacoes'
+          Visible = False
           Width = 109
         end
       end
@@ -328,6 +336,10 @@ object Form1: TForm1
     object FDMemTableFromContaAnalitica: TStringField
       FieldName = 'ContaAnalitica'
       Size = 1
+    end
+    object FDMemTableFromDescricaoReferencial: TStringField
+      FieldName = 'DescricaoReferencial'
+      Size = 200
     end
   end
   object FDMemTableTo: TFDMemTable
