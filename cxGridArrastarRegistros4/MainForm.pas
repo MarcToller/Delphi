@@ -14,7 +14,7 @@ uses
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, cxGridBandedTableView,
-  cxGridDBBandedTableView;
+  cxGridDBBandedTableView, Vcl.Buttons;
 
 const
   UM_AFTERSTARTDRAG = WM_USER + 10000;
@@ -77,6 +77,7 @@ type
     tvDragToQtdAssociacoes: TcxGridDBColumn;
     FDMemTableFromDescricaoReferencial: TStringField;
     tvDragFromDescricaoReferencial: TcxGridDBColumn;
+    BitBtn1: TBitBtn;
     procedure CopyRecords(ACodigo: integer; ARecordIndex: integer);
     procedure tvDragFromMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
@@ -566,22 +567,22 @@ begin
   AViewInfo.RecordViewInfo.ExpandButtonBounds.Width := 0;
   AViewInfo.RecordViewInfo.ExpandButtonBounds.Height := 0;
 
-  if (*AViewInfo.Item.Index = tvDragToQtdAssociacoes.Index*) true then
-  begin
-    vQtd := AViewInfo.GridRecord.DisplayTexts[tvDragToQtdAssociacoes.Index];
+  vQtd := AViewInfo.GridRecord.DisplayTexts[tvDragToQtdAssociacoes.Index];
 
-    if StrToIntDef(vQtd, 0) > 0 then
-    begin
-      AViewInfo.RecordViewInfo.ExpandButtonBounds.Width := 9;
-      AViewInfo.RecordViewInfo.ExpandButtonBounds.Height := 9;
-    end;
+  if StrToIntDef(vQtd, 0) > 0 then
+  begin
+    AViewInfo.RecordViewInfo.ExpandButtonBounds.Width := 9;
+    AViewInfo.RecordViewInfo.ExpandButtonBounds.Height := 9;
+
+    ACanvas.Brush.Color := clSilver;
+    //ACanvas.Font.Color  := clWhite;
   end;
 
-  if AViewInfo.RecordViewInfo.GridRecord.Expanded then
+(*  if AViewInfo.RecordViewInfo.GridRecord.Expanded then
   begin
     ACanvas.Brush.Color := clHighlight;
     ACanvas.Font.Color  := clWhite;
-  end;
+  end;*)
 
 end;
 

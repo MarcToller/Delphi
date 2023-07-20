@@ -213,7 +213,7 @@ object Form1: TForm1
         OptionsView.ColumnAutoWidth = True
         OptionsView.GroupByBox = False
         OptionsView.Header = False
-        OptionsView.BandHeaders = False
+        OptionsView.BandHeaders = True
         Styles.Content = cxStyle2
         Styles.BandHeader = cxStyle3
         Bands = <
@@ -252,6 +252,14 @@ object Form1: TForm1
           GridView = cxViewAssociacoes
         end
       end
+    end
+    object BitBtn1: TBitBtn
+      Left = 352
+      Top = 16
+      Width = 75
+      Height = 25
+      Caption = 'BitBtn1'
+      TabOrder = 1
     end
   end
   object cxSplitter1: TcxSplitter
@@ -299,8 +307,14 @@ object Form1: TForm1
       Font.Style = [fsBold]
     end
     object cxStyle4: TcxStyle
-      AssignedValues = [svColor]
+      AssignedValues = [svColor, svFont, svTextColor]
       Color = clRed
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      TextColor = clWhite
     end
   end
   object DataSourceAssociacoes: TDataSource
