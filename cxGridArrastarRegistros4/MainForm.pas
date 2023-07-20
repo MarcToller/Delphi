@@ -18,7 +18,7 @@ uses
 
 const
   UM_AFTERSTARTDRAG = WM_USER + 10000;
-  cMaxSelecionadas = 3;
+  cMaxSelecionadas = 5;
 
 
 type
@@ -77,7 +77,6 @@ type
     tvDragToQtdAssociacoes: TcxGridDBColumn;
     FDMemTableFromDescricaoReferencial: TStringField;
     tvDragFromDescricaoReferencial: TcxGridDBColumn;
-    BitBtn1: TBitBtn;
     procedure CopyRecords(ACodigo: integer; ARecordIndex: integer);
     procedure tvDragFromMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
