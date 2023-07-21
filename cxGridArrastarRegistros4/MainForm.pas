@@ -190,7 +190,7 @@ begin
   FDMemTableFrom.Active := True;
   FDMemTableTo.Active := True;
   FDMemTableAssociacoes.Active := True;
-  FDMemTableAssociacoes.IndexFieldNames := 'Codigo;Codigo_conta';
+  FDMemTableAssociacoes.IndexFieldNames := 'ID_Referencial;ID_ContaContabil';
 
   AdicionarContaEmpresa('1.0.0.00.0000', '',     'ATIVO                                                        ', 'F');
   AdicionarContaEmpresa('1.1.0.00.0000', '',     '     CIRCULANTE                                              ', 'F');
@@ -351,7 +351,7 @@ begin
     end;
   end;
 
-  if (vCount > 0) and FDMemTableTo.Locate('Codigo', ACodigo, []) then
+  if (vCount > 0) and FDMemTableTo.Locate('ReferencialID', ACodigo, []) then
   begin
     vDescricaoReferencial := FDMemTableToEstrutural.AsString +' - '+Trim(FDMemTableToDescricao.AsString);
     FDMemTableTo.Edit;
@@ -371,7 +371,7 @@ begin
 
   for vCodigo in vListaCodigos do
   begin
-    if FDMemTableFrom.Locate('Codigo', vCodigo, []) then
+    if FDMemTableFrom.Locate('PlanoContasID', vCodigo, []) then
     begin
       FDMemTableFrom.Edit;
       FDMemTableFromDescricaoReferencial.AsString := vDescricaoReferencial;

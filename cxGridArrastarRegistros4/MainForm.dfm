@@ -85,7 +85,7 @@ object Form1: TForm1
         OptionsView.GroupByBox = False
         OptionsView.Indicator = True
         object tvDragFromCodigo: TcxGridDBColumn
-          DataBinding.FieldName = 'Codigo'
+          DataBinding.FieldName = 'PlanoContasID'
           Visible = False
           Width = 64
         end
@@ -161,10 +161,11 @@ object Form1: TForm1
         OnCustomDrawCell = tvDragToCustomDrawCell
         DataController.DataModeController.SyncMode = False
         DataController.DataSource = dsTo
+        DataController.DetailKeyFieldNames = 'ReferencialID'
         DataController.Filter.Options = [fcoCaseInsensitive]
         DataController.Filter.Active = True
         DataController.Filter.AutoDataSetFilter = True
-        DataController.KeyFieldNames = 'Codigo'
+        DataController.KeyFieldNames = 'ReferencialID'
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
@@ -182,8 +183,7 @@ object Form1: TForm1
         OptionsView.Indicator = True
         OnGroupRowExpanding = tvDragToGroupRowExpanding
         object tvDragToCodigo: TcxGridDBColumn
-          DataBinding.FieldName = 'Codigo'
-          Visible = False
+          DataBinding.FieldName = 'ReferencialID'
           Width = 50
         end
         object tvDragToEstrutural: TcxGridDBColumn
@@ -215,11 +215,10 @@ object Form1: TForm1
         OnDragDrop = cxViewAssociacoesDragDrop
         OnDragOver = cxViewAssociacoesDragOver
         Navigator.Buttons.CustomButtons = <>
-        DataController.DataModeController.SyncMode = False
         DataController.DataSource = DataSourceAssociacoes
-        DataController.DetailKeyFieldNames = 'Codigo'
-        DataController.KeyFieldNames = 'Codigo_conta'
-        DataController.MasterKeyFieldNames = 'Codigo'
+        DataController.DetailKeyFieldNames = 'ID_Referencial'
+        DataController.KeyFieldNames = 'ID_ContaContabil'
+        DataController.MasterKeyFieldNames = 'ReferencialID'
         DataController.Options = [dcoAssignGroupingValues, dcoAssignMasterDetailKeys]
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
@@ -240,12 +239,13 @@ object Form1: TForm1
           end>
         object cxViewAssociacoesCodigoDescricao: TcxGridDBBandedColumn
           DataBinding.FieldName = 'CodigoDescricao'
+          Options.Editing = False
           Position.BandIndex = 0
           Position.ColIndex = 0
           Position.RowIndex = 0
         end
         object cxViewAssociacoesCodigo: TcxGridDBBandedColumn
-          DataBinding.FieldName = 'Codigo'
+          DataBinding.FieldName = 'ID_Referencial'
           Visible = False
           VisibleForCustomization = False
           Position.BandIndex = 0
@@ -253,7 +253,7 @@ object Form1: TForm1
           Position.RowIndex = 0
         end
         object cxViewAssociacoesCodigoConta: TcxGridDBBandedColumn
-          DataBinding.FieldName = 'Codigo_Conta'
+          DataBinding.FieldName = 'ID_ContaContabil'
           Visible = False
           VisibleForCustomization = False
           Position.BandIndex = 0
@@ -341,7 +341,7 @@ object Form1: TForm1
     Left = 152
     Top = 320
     object FDMemTableFromCodigo: TIntegerField
-      FieldName = 'Codigo'
+      FieldName = 'PlanoContasID'
     end
     object FDMemTableFromEstrutural: TStringField
       FieldName = 'Estrutural'
@@ -376,7 +376,7 @@ object Form1: TForm1
     Left = 632
     Top = 384
     object FDMemTableToCodigo: TIntegerField
-      FieldName = 'Codigo'
+      FieldName = 'ReferencialID'
     end
     object FDMemTableToEstrutural: TStringField
       FieldName = 'Estrutural'
@@ -405,14 +405,14 @@ object Form1: TForm1
     Left = 648
     Top = 448
     object FDMemTableAssociacoesCodigo: TIntegerField
-      FieldName = 'Codigo'
+      FieldName = 'ID_Referencial'
     end
     object FDMemTableAssociacoesDescricao: TStringField
       FieldName = 'CodigoDescricao'
       Size = 200
     end
     object FDMemTableAssociacoesCodigo_conta: TIntegerField
-      FieldName = 'Codigo_conta'
+      FieldName = 'ID_ContaContabil'
     end
   end
 end
