@@ -100,6 +100,11 @@ type
         Boolean; var AHintTextRect: TRect);
     procedure tvDragToCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas:
         TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+    procedure tvDragToGroupRowExpanding(Sender: TcxGridTableView; AGroup:
+        TcxGridGroupRow; var AAllow: Boolean);
+    procedure tvDragToDataControllerDetailExpanding(
+      ADataController: TcxCustomDataController; ARecordIndex: Integer;
+      var AAllow: Boolean);
   private
     { Private declarations }
     FPrevHitTest: TcxCustomGridHitTest;
@@ -607,6 +612,11 @@ begin
 
 end;
 
+procedure TForm1.tvDragToDataControllerDetailExpanding(ADataController: TcxCustomDataController; ARecordIndex: Integer; var AAllow: Boolean);
+begin
+  AAllow := ADataController.GetRowValue(ADataController.GetRowInfo(ARecordIndex), tvDragToQtdAssociacoes.Index) > 0;
+end;
+
 procedure TForm1.tvDragToDragDrop(Sender, Source: TObject; X, Y: Integer);
 var
   AHitTest: TcxCustomGridHitTest;
@@ -624,6 +634,11 @@ begin
   end;
 
   CopyRecords(vValue, ARecIndex);
+end;
+
+procedure TForm1.tvDragToGroupRowExpanding(Sender: TcxGridTableView; AGroup: TcxGridGroupRow; var AAllow: Boolean);
+begin
+
 end;
 
 { TMeuDragObject }

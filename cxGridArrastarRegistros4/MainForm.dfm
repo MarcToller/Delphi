@@ -168,6 +168,7 @@ object Form1: TForm1
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
+        DataController.OnDetailExpanding = tvDragToDataControllerDetailExpanding
         FilterRow.Visible = True
         FilterRow.ApplyChanges = fracImmediately
         OptionsBehavior.PullFocusing = True
@@ -179,6 +180,7 @@ object Form1: TForm1
         OptionsView.ColumnAutoWidth = True
         OptionsView.GroupByBox = False
         OptionsView.Indicator = True
+        OnGroupRowExpanding = tvDragToGroupRowExpanding
         object tvDragToCodigo: TcxGridDBColumn
           DataBinding.FieldName = 'Codigo'
           Visible = False
