@@ -718,12 +718,15 @@ begin
     ShowMessage('aqui');
   end;
 
-
-
+  if AViewInfo.RecordViewInfo.GridRecord.Focused then
+  begin
+    ACanvas.Brush.Color := clHighlight;
+    ACanvas.Font.Color  := clWhite;
+  end;
 
   if AViewInfo.RecordViewInfo.GridRecord.Expanded then
   begin
-    ACanvas.Brush.Color := clHighlight;
+    ACanvas.Brush.Color := clTeal;
     ACanvas.Font.Color  := clWhite;
   end;
 
