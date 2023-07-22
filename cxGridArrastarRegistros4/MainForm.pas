@@ -77,7 +77,7 @@ type
     tvDragToQtdAssociacoes: TcxGridDBColumn;
     FDMemTableFromDescricaoReferencial: TStringField;
     tvDragFromDescricaoReferencial: TcxGridDBColumn;
-    tvDragToColumn1: TcxGridDBColumn;
+    tvDragToBotaoExcluir: TcxGridDBColumn;
     cxViewAssociacoesColumn1: TcxGridDBBandedColumn;
     procedure CopyRecords(ACodigo: integer; ARecordIndex: integer);
     procedure tvDragFromMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -610,8 +610,10 @@ end;
 procedure TForm1.tvDragToCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
 var
   vQtd: string;
+  vRect: TRect;
 begin
 
+  vRect := TcxCustomTextEditViewInfo(AViewInfo.EditViewInfo).TextRect;
   AViewInfo.RecordViewInfo.ExpandButtonBounds.Width := 0;
   AViewInfo.RecordViewInfo.ExpandButtonBounds.Height := 0;
 
@@ -621,16 +623,13 @@ begin
   begin
     AViewInfo.RecordViewInfo.ExpandButtonBounds.Width := 9;
     AViewInfo.RecordViewInfo.ExpandButtonBounds.Height := 9;
-
     ACanvas.Brush.Color := clSilver;
-
-    //ACanvas.Font.Color  := clWhite;
+  end
+  else if AViewInfo.Item.Index = tvDragToBotaoExcluir.Index then
+  begin
+    ADone := True;
+    ACanvas.DrawTexT(EmptyStr, vRect, taCenter, vaCenter, False, False);
   end;
-(*  else if AViewInfo.Selected then
-    ACanvas.Brush.Color := clHighlight;*)
-
-
-
 
 
 

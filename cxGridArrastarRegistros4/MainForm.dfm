@@ -212,7 +212,7 @@ object Form1: TForm1
           Options.Editing = False
           Width = 109
         end
-        object tvDragToColumn1: TcxGridDBColumn
+        object tvDragToBotaoExcluir: TcxGridDBColumn
           PropertiesClassName = 'TcxButtonEditProperties'
           Properties.AutoSelect = False
           Properties.Buttons = <
@@ -274,7 +274,6 @@ object Form1: TForm1
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
-        OptionsSelection.InvertSelect = False
         OptionsView.FocusRect = False
         OptionsView.ScrollBars = ssVertical
         OptionsView.ShowEditButtons = gsebAlways
