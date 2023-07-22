@@ -262,6 +262,7 @@ object Form1: TForm1
         DataController.Summary.FooterSummaryItems = <>
         DataController.Summary.SummaryGroups = <>
         OptionsView.ScrollBars = ssVertical
+        OptionsView.ShowEditButtons = gsebAlways
         OptionsView.ColumnAutoWidth = True
         OptionsView.GroupByBox = False
         OptionsView.Header = False
@@ -275,6 +276,19 @@ object Form1: TForm1
             Styles.Background = cxStyle3
             Styles.Header = cxStyle3
           end>
+        object cxViewAssociacoesColumn1: TcxGridDBBandedColumn
+          PropertiesClassName = 'TcxButtonEditProperties'
+          Properties.Buttons = <
+            item
+              Caption = 'Excluir'
+              Default = True
+              Kind = bkText
+            end>
+          Properties.OnButtonClick = cxViewAssociacoesColumn1PropertiesButtonClick
+          Position.BandIndex = 0
+          Position.ColIndex = 3
+          Position.RowIndex = 0
+        end
         object cxViewAssociacoesCodigoDescricao: TcxGridDBBandedColumn
           DataBinding.FieldName = 'CodigoDescricao'
           Options.Editing = False

@@ -78,6 +78,7 @@ type
     FDMemTableFromDescricaoReferencial: TStringField;
     tvDragFromDescricaoReferencial: TcxGridDBColumn;
     tvDragToColumn1: TcxGridDBColumn;
+    cxViewAssociacoesColumn1: TcxGridDBBandedColumn;
     procedure CopyRecords(ACodigo: integer; ARecordIndex: integer);
     procedure tvDragFromMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
@@ -111,6 +112,8 @@ type
     procedure tvDragToDataControllerFilterBeforeChange(
       Sender: TcxDBDataFilterCriteria; ADataSet: TDataSet;
       const AFilterText: string);
+    procedure cxViewAssociacoesColumn1PropertiesButtonClick(
+      Sender: TObject; AButtonIndex: Integer);
   private
     { Private declarations }
     FPrevHitTest: TcxCustomGridHitTest;
@@ -401,6 +404,12 @@ begin
 
   //FreeAndNil(FDragObject);
   LimparStyle(nil);
+end;
+
+procedure TForm1.cxViewAssociacoesColumn1PropertiesButtonClick(
+  Sender: TObject; AButtonIndex: Integer);
+begin
+ ShowMessage('teste 2')
 end;
 
 procedure TForm1.cxViewAssociacoesDragDrop(Sender, Source: TObject; X,
