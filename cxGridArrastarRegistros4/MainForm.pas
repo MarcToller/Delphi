@@ -14,7 +14,8 @@ uses
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, cxGridBandedTableView,
-  cxGridDBBandedTableView, Vcl.Buttons, cxButtonEdit;
+  cxGridDBBandedTableView, Vcl.Buttons, cxButtonEdit, Vcl.Menus,
+  System.ImageList, Vcl.ImgList;
 
 const
   UM_AFTERSTARTDRAG = WM_USER + 10000;
@@ -79,7 +80,11 @@ type
     tvDragFromDescricaoReferencial: TcxGridDBColumn;
     tvDragToBotaoExcluir: TcxGridDBColumn;
     cxViewAssociacoesColumn1: TcxGridDBBandedColumn;
-    Timer1: TTimer;
+    TimerExclusaoIndividual: TTimer;
+    PopupMenuFrom: TPopupMenu;
+    Excluirassociao1: TMenuItem;
+    localizarnoPlanoReferencial1: TMenuItem;
+    ImageListPopUpMenuFrom: TImageList;
     procedure CopyRecords(ACodigo: integer; ARecordIndex: integer);
     procedure tvDragFromMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
@@ -115,7 +120,9 @@ type
       const AFilterText: string);
     procedure cxViewAssociacoesColumn1PropertiesButtonClick(
       Sender: TObject; AButtonIndex: Integer);
-    procedure Timer1Timer(Sender: TObject);
+    procedure TimerExclusaoIndividualTimer(Sender: TObject);
+    procedure Excluirassociao1Click(Sender: TObject);
+    procedure PopupMenuFromPopup(Sender: TObject);
   private
     { Private declarations }
     FPrevHitTest: TcxCustomGridHitTest;
@@ -405,7 +412,7 @@ end;
 
 procedure TForm1.cxViewAssociacoesColumn1PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
 begin
-  Timer1.Enabled := True;
+  TimerExclusaoIndividual.Enabled := True;
 end;
 
 procedure TForm1.cxViewAssociacoesDragDrop(Sender, Source: TObject; X,
@@ -432,6 +439,11 @@ begin
 end;
 
 
+procedure TForm1.Excluirassociao1Click(Sender: TObject);
+begin
+//
+end;
+
 procedure TForm1.FormShow(Sender: TObject);
 begin
   PanelFrom.Width := RoundDiv(Screen.Width, 2);
@@ -443,9 +455,26 @@ begin
   cxViewAssociacoes.Styles.Selection := nil;
 end;
 
-procedure TForm1.Timer1Timer(Sender: TObject);
+procedure TForm1.PopupMenuFromPopup(Sender: TObject);
 begin
-  Timer1.Enabled := False;
+  if FDMemTableFromDescricaoReferencial.AsString <> '' then
+  begin
+    localizarnoPlanoReferencial1.Visible := True;
+    Excluirassociao1.Visible := True;
+    Excluirassociao1.Caption := 'Excluir associação com '+ Copy(FDMemTableFromDescricaoReferencial.AsString, 1, 40)+'..';
+  end
+  else
+  begin
+    localizarnoPlanoReferencial1.Visible := False;
+    Excluirassociao1.Visible := False;
+    //Excluirassociao1.Caption := 'Conta não está associada ao Plano Referencial'
+  end;
+
+end;
+
+procedure TForm1.TimerExclusaoIndividualTimer(Sender: TObject);
+begin
+  TimerExclusaoIndividual.Enabled := False;
   tvDragTo.DataController.BeginUpdate;
 
   tvDragFrom.DataController.SaveDataSetPos;
