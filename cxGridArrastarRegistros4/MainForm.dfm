@@ -10,11 +10,9 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
-  OldCreateOrder = True
   Position = poScreenCenter
   WindowState = wsMaximized
   OnShow = FormShow
-  PixelsPerInch = 96
   TextHeight = 13
   object btnCopy: TButton
     Left = 288
@@ -49,6 +47,7 @@ object Form1: TForm1
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       ParentFont = False
+      ExplicitWidth = 165
     end
     object gDragFrom: TcxGrid
       AlignWithMargins = True
@@ -143,6 +142,7 @@ object Form1: TForm1
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       ParentFont = False
+      ExplicitWidth = 240
     end
     object gDragTo: TcxGrid
       AlignWithMargins = True
@@ -159,12 +159,12 @@ object Form1: TForm1
         OnDragOver = tvDragToDragOver
         Navigator.Buttons.CustomButtons = <>
         OnCustomDrawCell = tvDragToCustomDrawCell
-        DataController.DataModeController.SyncMode = False
         DataController.DataSource = dsTo
         DataController.DetailKeyFieldNames = 'ReferencialID'
         DataController.Filter.Options = [fcoCaseInsensitive]
         DataController.Filter.Active = True
         DataController.Filter.AutoDataSetFilter = True
+        DataController.Filter.OnBeforeChange = tvDragToDataControllerFilterBeforeChange
         DataController.KeyFieldNames = 'ReferencialID'
         DataController.Summary.DefaultGroupSummaryItems = <>
         DataController.Summary.FooterSummaryItems = <>
@@ -176,32 +176,69 @@ object Form1: TForm1
         OptionsCustomize.ColumnGrouping = False
         OptionsCustomize.ColumnMoving = False
         OptionsCustomize.ColumnSorting = False
-        OptionsSelection.CellSelect = False
-        OptionsSelection.MultiSelect = True
+        OptionsData.CancelOnExit = False
+        OptionsData.Deleting = False
+        OptionsData.DeletingConfirmation = False
+        OptionsSelection.HideFocusRectOnExit = False
+        OptionsView.ShowEditButtons = gsebAlways
         OptionsView.ColumnAutoWidth = True
         OptionsView.GroupByBox = False
         OptionsView.Indicator = True
         OnGroupRowExpanding = tvDragToGroupRowExpanding
         object tvDragToCodigo: TcxGridDBColumn
           DataBinding.FieldName = 'ReferencialID'
+          Visible = False
+          Options.Editing = False
           Width = 50
         end
         object tvDragToEstrutural: TcxGridDBColumn
           DataBinding.FieldName = 'Estrutural'
+          Options.Editing = False
           Width = 99
         end
         object tvDragToDescricao: TcxGridDBColumn
           DataBinding.FieldName = 'Descricao'
+          Options.Editing = False
           Width = 290
         end
         object tvDragToContaAnalitica: TcxGridDBColumn
           DataBinding.FieldName = 'ContaAnalitica'
           Visible = False
+          Options.Editing = False
         end
         object tvDragToQtdAssociacoes: TcxGridDBColumn
           DataBinding.FieldName = 'QtdAssociacoes'
           Visible = False
+          Options.Editing = False
           Width = 109
+        end
+        object tvDragToColumn1: TcxGridDBColumn
+          PropertiesClassName = 'TcxButtonEditProperties'
+          Properties.AutoSelect = False
+          Properties.Buttons = <
+            item
+              Caption = 'Excluir'
+              Default = True
+              Kind = bkText
+            end>
+          Properties.ViewStyle = vsButtonsOnly
+          Properties.OnButtonClick = tvDragToColumn1PropertiesButtonClick
+          MinWidth = 64
+          Options.Filtering = False
+          Options.FilteringWithFindPanel = False
+          Options.IgnoreTimeForFiltering = False
+          Options.IncSearch = False
+          Options.FilteringAddValueItems = False
+          Options.FilteringFilteredItemsList = False
+          Options.FilteringMRUItemsList = False
+          Options.FilteringPopup = False
+          Options.FilteringPopupMultiSelect = False
+          Options.AutoWidthSizable = False
+          Options.GroupFooters = False
+          Options.Grouping = False
+          Options.HorzSizing = False
+          Options.Moving = False
+          Options.ShowCaption = False
         end
       end
       object gDragToDBTableView1: TcxGridDBTableView
@@ -215,6 +252,7 @@ object Form1: TForm1
         OnDragDrop = cxViewAssociacoesDragDrop
         OnDragOver = cxViewAssociacoesDragOver
         Navigator.Buttons.CustomButtons = <>
+        DataController.DataModeController.SyncMode = False
         DataController.DataSource = DataSourceAssociacoes
         DataController.DetailKeyFieldNames = 'ID_Referencial'
         DataController.KeyFieldNames = 'ID_ContaContabil'

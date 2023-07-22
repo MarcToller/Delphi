@@ -14,7 +14,7 @@ uses
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, cxGridBandedTableView,
-  cxGridDBBandedTableView, Vcl.Buttons;
+  cxGridDBBandedTableView, Vcl.Buttons, cxButtonEdit;
 
 const
   UM_AFTERSTARTDRAG = WM_USER + 10000;
@@ -77,6 +77,7 @@ type
     tvDragToQtdAssociacoes: TcxGridDBColumn;
     FDMemTableFromDescricaoReferencial: TStringField;
     tvDragFromDescricaoReferencial: TcxGridDBColumn;
+    tvDragToColumn1: TcxGridDBColumn;
     procedure CopyRecords(ACodigo: integer; ARecordIndex: integer);
     procedure tvDragFromMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
@@ -105,6 +106,11 @@ type
     procedure tvDragToDataControllerDetailExpanding(
       ADataController: TcxCustomDataController; ARecordIndex: Integer;
       var AAllow: Boolean);
+    procedure tvDragToColumn1PropertiesButtonClick(Sender: TObject;
+      AButtonIndex: Integer);
+    procedure tvDragToDataControllerFilterBeforeChange(
+      Sender: TcxDBDataFilterCriteria; ADataSet: TDataSet;
+      const AFilterText: string);
   private
     { Private declarations }
     FPrevHitTest: TcxCustomGridHitTest;
@@ -387,7 +393,7 @@ begin
   begin
 (*    vRowIndex := tvDragTo.DataController.GetRowIndexByRecordIndex(ARecordIndex, True);
     tvDragTo.DataController.SelectRows(vRowIndex, vRowIndex);*)
-    tvDragTo.DataController.ChangeDetailExpanding(ARecordIndex, True)
+    tvDragTo.DataController.ChangeDetailExpanding(ARecordIndex, True);
   end;
 
 (*  tvDragTo.Styles.Selection := nil;
@@ -586,10 +592,17 @@ begin
   end;
 end;
 
+procedure TForm1.tvDragToColumn1PropertiesButtonClick(Sender: TObject;
+  AButtonIndex: Integer);
+begin
+  ShowMessage('teste');
+end;
+
 procedure TForm1.tvDragToCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
 var
   vQtd: string;
 begin
+
   AViewInfo.RecordViewInfo.ExpandButtonBounds.Width := 0;
   AViewInfo.RecordViewInfo.ExpandButtonBounds.Height := 0;
 
@@ -601,8 +614,17 @@ begin
     AViewInfo.RecordViewInfo.ExpandButtonBounds.Height := 9;
 
     ACanvas.Brush.Color := clSilver;
+
     //ACanvas.Font.Color  := clWhite;
   end;
+(*  else if AViewInfo.Selected then
+    ACanvas.Brush.Color := clHighlight;*)
+
+
+
+
+
+
 
 (*  if AViewInfo.RecordViewInfo.GridRecord.Expanded then
   begin
@@ -615,6 +637,13 @@ end;
 procedure TForm1.tvDragToDataControllerDetailExpanding(ADataController: TcxCustomDataController; ARecordIndex: Integer; var AAllow: Boolean);
 begin
   AAllow := ADataController.GetRowValue(ADataController.GetRowInfo(ARecordIndex), tvDragToQtdAssociacoes.Index) > 0;
+end;
+
+procedure TForm1.tvDragToDataControllerFilterBeforeChange(
+  Sender: TcxDBDataFilterCriteria; ADataSet: TDataSet;
+  const AFilterText: string);
+begin
+  tvDragTo.DataController.CollapseDetails;
 end;
 
 procedure TForm1.tvDragToDragDrop(Sender, Source: TObject; X, Y: Integer);
