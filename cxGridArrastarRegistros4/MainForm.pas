@@ -79,6 +79,7 @@ type
     tvDragFromDescricaoReferencial: TcxGridDBColumn;
     tvDragToBotaoExcluir: TcxGridDBColumn;
     cxViewAssociacoesColumn1: TcxGridDBBandedColumn;
+    Timer1: TTimer;
     procedure CopyRecords(ACodigo: integer; ARecordIndex: integer);
     procedure tvDragFromMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
@@ -114,6 +115,7 @@ type
       const AFilterText: string);
     procedure cxViewAssociacoesColumn1PropertiesButtonClick(
       Sender: TObject; AButtonIndex: Integer);
+    procedure Timer1Timer(Sender: TObject);
   private
     { Private declarations }
     FPrevHitTest: TcxCustomGridHitTest;
@@ -326,20 +328,21 @@ var
 begin
   vCount := 0;
 
-(*  if ARecordIndex > 0 then
-    tvDragTo.DataController.CollapseDetails;*)
+(*  if ARecordIndex = 0 then
+    ARecordIndex := tvDragTo.DataController.FocusedRecordIndex;*)
 
   vListaCodigos := TCollections.CreateList<integer>;
 
-  if ARecordIndex = 0 then
-    ARecordIndex := tvDragTo.DataController.FocusedRecordIndex;
+  tvDragFrom.DataController.SaveDataSetPos;
+  tvDragTo.DataController.SaveDataSetPos;
 
   cxViewAssociacoes.DataController.BeginUpdate;
   tvDragTo.DataController.BeginUpdate;
-
+  tvDragFrom.DataController.BeginUpdate;
 
   FDMemTableAssociacoes.DisableControls;
   FDMemTableTo.DisableControls;
+  FDMemTableFrom.DisableControls;
 
   for i := 0 to tvDragFrom.ViewData.RecordCount -1 do
   begin
@@ -368,15 +371,6 @@ begin
     FDMemTableTo.Post;
   end;
 
-  cxViewAssociacoes.DataController.EndUpdate;
-  tvDragTo.DataController.EndUpdate;
-
-  FDMemTableTo.EnableControls;
-  FDMemTableAssociacoes.EnableControls;
-
-  tvDragFrom.DataController.SaveDataSetPos;
-  tvDragFrom.DataController.BeginUpdate;
-  FDMemTableFrom.DisableControls;
 
   for vCodigo in vListaCodigos do
   begin
@@ -387,29 +381,31 @@ begin
       FDMemTableFrom.Post;
     end;
   end;
-  FDMemTableFrom.EnableControls;
+
+
   tvDragFrom.DataController.RestoreDataSetPos;
+  tvDragTo.DataController.RestoreDataSetPos;
+
+  cxViewAssociacoes.DataController.EndUpdate;
+  tvDragTo.DataController.EndUpdate;
   tvDragFrom.DataController.EndUpdate;
 
+  FDMemTableAssociacoes.EnableControls;
+  FDMemTableTo.EnableControls;
+  FDMemTableFrom.EnableControls;
+
+  if ARecordIndex > 0 then
+    tvDragTo.DataController.CollapseDetails;
 
   if (ARecordIndex > 0) and (vCount > 0) then
-  begin
-(*    vRowIndex := tvDragTo.DataController.GetRowIndexByRecordIndex(ARecordIndex, True);
-    tvDragTo.DataController.SelectRows(vRowIndex, vRowIndex);*)
     tvDragTo.DataController.ChangeDetailExpanding(ARecordIndex, True);
-  end;
 
-(*  tvDragTo.Styles.Selection := nil;
-  cxViewAssociacoes.Styles.Selection := nil;*)
-
-  //FreeAndNil(FDragObject);
   LimparStyle(nil);
 end;
 
-procedure TForm1.cxViewAssociacoesColumn1PropertiesButtonClick(
-  Sender: TObject; AButtonIndex: Integer);
+procedure TForm1.cxViewAssociacoesColumn1PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
 begin
- ShowMessage('teste 2')
+  Timer1.Enabled := True;
 end;
 
 procedure TForm1.cxViewAssociacoesDragDrop(Sender, Source: TObject; X,
@@ -445,6 +441,35 @@ procedure TForm1.LimparStyle(Sender : TObject);
 begin
   tvDragTo.Styles.Selection := nil;
   cxViewAssociacoes.Styles.Selection := nil;
+end;
+
+procedure TForm1.Timer1Timer(Sender: TObject);
+begin
+  Timer1.Enabled := False;
+  tvDragTo.DataController.BeginUpdate;
+
+  tvDragFrom.DataController.SaveDataSetPos;
+  tvDragFrom.DataController.BeginUpdate;
+  cxViewAssociacoes.DataController.BeginUpdate;
+
+  FDMemTableTo.Edit;
+  FDMemTableToQtdAssociacoes.AsInteger := FDMemTableToQtdAssociacoes.AsInteger -1;
+  FDMemTableTo.Post;
+
+  if FDMemTableFrom.Locate('PlanoContasID', FDMemTableAssociacoesCodigo_conta.AsInteger, []) then
+  begin
+    FDMemTableFrom.Edit;
+    FDMemTableFromDescricaoReferencial.AsString := '';
+    FDMemTableFrom.Post;
+  end;
+
+  FDMemTableAssociacoes.Delete;
+
+  cxViewAssociacoes.DataController.EndUpdate;
+
+  tvDragFrom.DataController.RestoreDataSetPos;
+  tvDragFrom.DataController.EndUpdate;
+  tvDragTo.DataController.EndUpdate;
 end;
 
 procedure TForm1.tvDragFromCustomDrawCell(Sender: TcxCustomGridTableView;  ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
@@ -601,10 +626,39 @@ begin
   end;
 end;
 
-procedure TForm1.tvDragToColumn1PropertiesButtonClick(Sender: TObject;
-  AButtonIndex: Integer);
+procedure TForm1.tvDragToColumn1PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
+var
+  vPlanoReferencialID: Integer;
 begin
-  ShowMessage('teste');
+
+  vPlanoReferencialID := FDMemTableToCodigo.AsInteger;
+
+  tvDragTo.DataController.BeginUpdate;
+  tvDragFrom.DataController.SaveDataSetPos;
+  tvDragFrom.DataController.BeginUpdate;
+  cxViewAssociacoes.DataController.BeginUpdate;
+
+  FDMemTableTo.Edit;
+  FDMemTableToQtdAssociacoes.AsInteger := 0;
+  FDMemTableTo.Post;
+
+  while FDMemTableAssociacoes.Locate('ID_Referencial', vPlanoReferencialID, []) do
+  begin
+    if FDMemTableFrom.Locate('PlanoContasID', FDMemTableAssociacoesCodigo_conta.AsInteger, []) then
+    begin
+      FDMemTableFrom.Edit;
+      FDMemTableFromDescricaoReferencial.AsString := '';
+      FDMemTableFrom.Post;
+    end;
+
+    FDMemTableAssociacoes.Delete;
+  end;
+
+  cxViewAssociacoes.DataController.EndUpdate;
+
+  tvDragFrom.DataController.RestoreDataSetPos;
+  tvDragFrom.DataController.EndUpdate;
+  tvDragTo.DataController.EndUpdate;
 end;
 
 procedure TForm1.tvDragToCustomDrawCell(Sender: TcxCustomGridTableView; ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
@@ -613,32 +667,36 @@ var
   vRect: TRect;
 begin
 
-  vRect := TcxCustomTextEditViewInfo(AViewInfo.EditViewInfo).TextRect;
-  AViewInfo.RecordViewInfo.ExpandButtonBounds.Width := 0;
-  AViewInfo.RecordViewInfo.ExpandButtonBounds.Height := 0;
+  try
+    vRect := TcxCustomTextEditViewInfo(AViewInfo.EditViewInfo).TextRect;
+    AViewInfo.RecordViewInfo.ExpandButtonBounds.Width := 0;
+    AViewInfo.RecordViewInfo.ExpandButtonBounds.Height := 0;
 
-  vQtd := AViewInfo.GridRecord.DisplayTexts[tvDragToQtdAssociacoes.Index];
+    vQtd := AViewInfo.GridRecord.DisplayTexts[tvDragToQtdAssociacoes.Index];
 
-  if StrToIntDef(vQtd, 0) > 0 then
-  begin
-    AViewInfo.RecordViewInfo.ExpandButtonBounds.Width := 9;
-    AViewInfo.RecordViewInfo.ExpandButtonBounds.Height := 9;
-    ACanvas.Brush.Color := clSilver;
-  end
-  else if AViewInfo.Item.Index = tvDragToBotaoExcluir.Index then
-  begin
-    ADone := True;
-    ACanvas.DrawTexT(EmptyStr, vRect, taCenter, vaCenter, False, False);
+    if StrToIntDef(vQtd, 0) > 0 then
+    begin
+      AViewInfo.RecordViewInfo.ExpandButtonBounds.Width := 9;
+      AViewInfo.RecordViewInfo.ExpandButtonBounds.Height := 9;
+      ACanvas.Brush.Color := clSilver;
+    end
+    else if AViewInfo.Item.Index = tvDragToBotaoExcluir.Index then
+    begin
+      ADone := True;
+      ACanvas.DrawTexT(EmptyStr, vRect, taCenter, vaCenter, False, False);
+    end;
+  except
+    ShowMessage('aqui');
   end;
 
 
 
 
-(*  if AViewInfo.RecordViewInfo.GridRecord.Expanded then
+  if AViewInfo.RecordViewInfo.GridRecord.Expanded then
   begin
     ACanvas.Brush.Color := clHighlight;
     ACanvas.Font.Color  := clWhite;
-  end;*)
+  end;
 
 end;
 

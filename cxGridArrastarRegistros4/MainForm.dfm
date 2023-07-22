@@ -182,12 +182,12 @@ object Form1: TForm1
         OptionsSelection.HideFocusRectOnExit = False
         OptionsView.ShowEditButtons = gsebAlways
         OptionsView.ColumnAutoWidth = True
+        OptionsView.GridLines = glHorizontal
         OptionsView.GroupByBox = False
         OptionsView.Indicator = True
         OnGroupRowExpanding = tvDragToGroupRowExpanding
         object tvDragToCodigo: TcxGridDBColumn
           DataBinding.FieldName = 'ReferencialID'
-          Visible = False
           Options.Editing = False
           Width = 50
         end
@@ -207,10 +207,14 @@ object Form1: TForm1
           Options.Editing = False
         end
         object tvDragToQtdAssociacoes: TcxGridDBColumn
+          Caption = 'Qtd'
           DataBinding.FieldName = 'QtdAssociacoes'
           Visible = False
+          HeaderAlignmentHorz = taCenter
           Options.Editing = False
-          Width = 109
+          Options.ShowEditButtons = isebNever
+          VisibleForCustomization = False
+          Width = 30
         end
         object tvDragToBotaoExcluir: TcxGridDBColumn
           PropertiesClassName = 'TcxButtonEditProperties'
@@ -236,6 +240,19 @@ object Form1: TForm1
             end>
           Properties.ViewStyle = vsButtonsOnly
           Properties.OnButtonClick = tvDragToColumn1PropertiesButtonClick
+          HeaderAlignmentHorz = taCenter
+          HeaderGlyph.SourceDPI = 96
+          HeaderGlyph.Data = {
+            89504E470D0A1A0A0000000D49484452000000100000001008060000001FF3FF
+            61000000DD49444154384F6364A0103052A89F01C5804BC1C175BFBE7F5737D9
+            B62D1A9BC167BCBC96B27172DED45BBBB609260F3700A4594856B69C938FEFEF
+            FD336736A31B02D2AC6862E2FBFDD327E6778F1F77C20C811B0055E0C72528C8
+            F3EDFDFBCFC886C03473090AF27E7BFFFECBFD336736C12C40F1023643404E05
+            D98C4D33480E2310D10D0129C2A519AB0120416443407C7467230730D66844F6
+            33D4009430C16B007A8041BD8011B018D188E4749400830622D6D84109037C51
+            852F8AD11352053421C1E319E6549821D084D4819190400A294ACAE4662A8A73
+            2300BEBDD011B13740D10000000049454E44AE426082}
+          HeaderGlyphAlignmentHorz = taCenter
           MinWidth = 30
           Options.Filtering = False
           Options.FilteringWithFindPanel = False
@@ -278,9 +295,11 @@ object Form1: TForm1
         OptionsView.ScrollBars = ssVertical
         OptionsView.ShowEditButtons = gsebAlways
         OptionsView.ColumnAutoWidth = True
+        OptionsView.GridLines = glHorizontal
         OptionsView.GroupByBox = False
         OptionsView.Header = False
         OptionsView.BandHeaders = False
+        OptionsView.FixedBandSeparatorColor = clNone
         OptionsView.FixedBandSeparatorWidth = 0
         Styles.Content = cxStyle2
         Styles.BandHeader = cxStyle3
@@ -480,6 +499,7 @@ object Form1: TForm1
       Size = 1
     end
     object FDMemTableToQtdAssociacoes: TIntegerField
+      Alignment = taCenter
       FieldName = 'QtdAssociacoes'
     end
   end
@@ -503,5 +523,12 @@ object Form1: TForm1
     object FDMemTableAssociacoesCodigo_conta: TIntegerField
       FieldName = 'ID_ContaContabil'
     end
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 10
+    OnTimer = Timer1Timer
+    Left = 561
+    Top = 216
   end
 end
