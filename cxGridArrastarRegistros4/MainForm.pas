@@ -85,6 +85,8 @@ type
     Excluirassociao1: TMenuItem;
     localizarnoPlanoReferencial1: TMenuItem;
     ImageListPopUpMenuFrom: TImageList;
+    PopupMenuTo: TPopupMenu;
+    ExcluirtodasasassociaesdestaConta1: TMenuItem;
     procedure CopyRecords(ACodigo: integer; ARecordIndex: integer);
     procedure tvDragFromMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
@@ -123,6 +125,12 @@ type
     procedure TimerExclusaoIndividualTimer(Sender: TObject);
     procedure Excluirassociao1Click(Sender: TObject);
     procedure PopupMenuFromPopup(Sender: TObject);
+    procedure ExcluirtodasasassociaesdestaConta1Click(Sender: TObject);
+    procedure PopupMenuToPopup(Sender: TObject);
+    procedure localizarnoPlanoReferencial1Click(Sender: TObject);
+    procedure cxViewAssociacoesCustomDrawCell(
+      Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
+      AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
   private
     { Private declarations }
     FPrevHitTest: TcxCustomGridHitTest;
@@ -415,6 +423,23 @@ begin
   TimerExclusaoIndividual.Enabled := True;
 end;
 
+procedure TForm1.cxViewAssociacoesCustomDrawCell(
+  Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
+  AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+begin
+  if AViewInfo.RecordViewInfo.GridRecord.Focused then
+  begin
+    //ACanvas.Brush.Color := clHighlight;
+    ACanvas.Font.Style := [TFontStyle.fsBold];//  := clWhite;
+    //ACanvas.Font.Color := clTeal;
+  end;
+
+  if AViewInfo.Item.Index = cxViewAssociacoesColumn1.Index then
+    ACanvas.Brush.Color := cxViewAssociacoes.Styles.Content.Color;
+
+
+end;
+
 procedure TForm1.cxViewAssociacoesDragDrop(Sender, Source: TObject; X,
   Y: Integer);
 var
@@ -444,6 +469,40 @@ begin
 //
 end;
 
+procedure TForm1.ExcluirtodasasassociaesdestaConta1Click(Sender: TObject);
+var
+  vPlanoReferencialID: Integer;
+begin
+  vPlanoReferencialID := FDMemTableToCodigo.AsInteger;
+
+  tvDragTo.DataController.BeginUpdate;
+  tvDragFrom.DataController.SaveDataSetPos;
+  tvDragFrom.DataController.BeginUpdate;
+  cxViewAssociacoes.DataController.BeginUpdate;
+
+  FDMemTableTo.Edit;
+  FDMemTableToQtdAssociacoes.AsInteger := 0;
+  FDMemTableTo.Post;
+
+  while FDMemTableAssociacoes.Locate('ID_Referencial', vPlanoReferencialID, []) do
+  begin
+    if FDMemTableFrom.Locate('PlanoContasID', FDMemTableAssociacoesCodigo_conta.AsInteger, []) then
+    begin
+      FDMemTableFrom.Edit;
+      FDMemTableFromDescricaoReferencial.AsString := '';
+      FDMemTableFrom.Post;
+    end;
+
+    FDMemTableAssociacoes.Delete;
+  end;
+
+  cxViewAssociacoes.DataController.EndUpdate;
+
+  tvDragFrom.DataController.RestoreDataSetPos;
+  tvDragFrom.DataController.EndUpdate;
+  tvDragTo.DataController.EndUpdate;
+end;
+
 procedure TForm1.FormShow(Sender: TObject);
 begin
   PanelFrom.Width := RoundDiv(Screen.Width, 2);
@@ -453,6 +512,30 @@ procedure TForm1.LimparStyle(Sender : TObject);
 begin
   tvDragTo.Styles.Selection := nil;
   cxViewAssociacoes.Styles.Selection := nil;
+end;
+
+procedure TForm1.localizarnoPlanoReferencial1Click(Sender: TObject);
+var
+  vReferencialID: Integer;
+begin
+  if FDMemTableAssociacoes.Locate('ID_ContaContabil', FDMemTableFromCodigo.AsInteger, []) then
+  begin
+    vReferencialID := FDMemTableAssociacoesCodigo.AsInteger;
+
+    if FDMemTableTo.Locate('ReferencialID', vReferencialID, []) then
+    begin
+      tvDragTo.DataController.CollapseDetails;
+      tvDragTo.DataController.ChangeDetailExpanding(tvDragTo.DataController.FocusedRecordIndex, True);
+    end;
+  end;
+
+(*  FDMemTableAssociacoes.Locate('ID_ContaContabil', FDMemTableFromCodigo.AsInteger, []);
+  //cxViewAssociacoes.DataController.BeginUpdate;
+  cxViewAssociacoes.DataController.SetFocus;
+  cxViewAssociacoesColumn1.Selected := true;
+  cxViewAssociacoesColumn1.FocusWithSelection;
+  //cxViewAssociacoes.DataController.EndUpdate;*)
+
 end;
 
 procedure TForm1.PopupMenuFromPopup(Sender: TObject);
@@ -470,6 +553,11 @@ begin
     //Excluirassociao1.Caption := 'Conta não está associada ao Plano Referencial'
   end;
 
+end;
+
+procedure TForm1.PopupMenuToPopup(Sender: TObject);
+begin
+  ExcluirtodasasassociaesdestaConta1.Visible := FDMemTableToQtdAssociacoes.AsInteger > 0;
 end;
 
 procedure TForm1.TimerExclusaoIndividualTimer(Sender: TObject);
@@ -709,20 +797,20 @@ begin
       AViewInfo.RecordViewInfo.ExpandButtonBounds.Height := 9;
       ACanvas.Brush.Color := clSilver;
     end
-    else if AViewInfo.Item.Index = tvDragToBotaoExcluir.Index then
+(*    else if AViewInfo.Item.Index = tvDragToBotaoExcluir.Index then
     begin
       ADone := True;
       ACanvas.DrawTexT(EmptyStr, vRect, taCenter, vaCenter, False, False);
-    end;
+    end;*)
   except
     ShowMessage('aqui');
   end;
 
-  if AViewInfo.RecordViewInfo.GridRecord.Focused then
+(*  if AViewInfo.RecordViewInfo.GridRecord.Focused then
   begin
     ACanvas.Brush.Color := clHighlight;
     ACanvas.Font.Color  := clWhite;
-  end;
+  end;*)
 
   if AViewInfo.RecordViewInfo.GridRecord.Expanded then
   begin

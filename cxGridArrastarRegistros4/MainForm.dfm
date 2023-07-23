@@ -156,6 +156,7 @@ object Form1: TForm1
       DragKind = dkDock
       TabOrder = 0
       object tvDragTo: TcxGridDBTableView
+        PopupMenu = PopupMenuTo
         OnDragDrop = tvDragToDragDrop
         OnDragOver = tvDragToDragOver
         Navigator.Buttons.CustomButtons = <>
@@ -180,6 +181,7 @@ object Form1: TForm1
         OptionsData.CancelOnExit = False
         OptionsData.Deleting = False
         OptionsData.DeletingConfirmation = False
+        OptionsSelection.CellSelect = False
         OptionsSelection.HideFocusRectOnExit = False
         OptionsView.ShowEditButtons = gsebAlways
         OptionsView.ColumnAutoWidth = True
@@ -242,6 +244,7 @@ object Form1: TForm1
             end>
           Properties.ViewStyle = vsButtonsOnly
           Properties.OnButtonClick = tvDragToColumn1PropertiesButtonClick
+          Visible = False
           HeaderAlignmentHorz = taCenter
           HeaderGlyph.SourceDPI = 96
           HeaderGlyph.Data = {
@@ -285,6 +288,7 @@ object Form1: TForm1
         OnDragDrop = cxViewAssociacoesDragDrop
         OnDragOver = cxViewAssociacoesDragOver
         Navigator.Buttons.CustomButtons = <>
+        OnCustomDrawCell = cxViewAssociacoesCustomDrawCell
         DataController.DataSource = DataSourceAssociacoes
         DataController.DetailKeyFieldNames = 'ID_Referencial'
         DataController.KeyFieldNames = 'ID_ContaContabil'
@@ -300,6 +304,7 @@ object Form1: TForm1
         OptionsView.GridLines = glHorizontal
         OptionsView.GroupByBox = False
         OptionsView.Header = False
+        OptionsView.Indicator = True
         OptionsView.BandHeaders = False
         OptionsView.FixedBandSeparatorColor = clNone
         OptionsView.FixedBandSeparatorWidth = 0
@@ -545,13 +550,14 @@ object Form1: TForm1
     end
     object localizarnoPlanoReferencial1: TMenuItem
       Caption = 'localizar no Plano Referencial'
+      OnClick = localizarnoPlanoReferencial1Click
     end
   end
   object ImageListPopUpMenuFrom: TImageList
     Left = 240
     Top = 400
     Bitmap = {
-      494C010101000800040010001000FFFFFFFFFF00FFFFFFFFFFFFFFFF424D3600
+      494C010101000800040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       000000000000000000000000000000000000000000FF000000FF000000FF0000
       00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
@@ -687,6 +693,18 @@ object Form1: TForm1
       E7E7000000000000C3C3000000000000C183000000000000E007000000000000
       F00F000000000000F81F000000000000F81F000000000000F00F000000000000
       E007000000000000C183000000000000C3C3000000000000E7E7000000000000
-      FFFF000000000000FFFF000000000000}
+      FFFF000000000000FFFF00000000000000000000000000000000000000000000
+      000000000000}
+  end
+  object PopupMenuTo: TPopupMenu
+    Images = ImageListPopUpMenuFrom
+    OnPopup = PopupMenuToPopup
+    Left = 785
+    Top = 216
+    object ExcluirtodasasassociaesdestaConta1: TMenuItem
+      Caption = 'Excluir TODAS as associa'#231#245'es desta Conta Referencial'
+      ImageIndex = 0
+      OnClick = ExcluirtodasasassociaesdestaConta1Click
+    end
   end
 end
