@@ -465,8 +465,16 @@ end;
 
 
 procedure TForm1.Excluirassociao1Click(Sender: TObject);
+var
+  vReferencialID: Integer;
 begin
-//
+  if FDMemTableAssociacoes.Locate('ID_ContaContabil', FDMemTableFromCodigo.AsInteger, []) then
+  begin
+    vReferencialID := FDMemTableAssociacoesCodigo.AsInteger;
+
+    if FDMemTableTo.Locate('ReferencialID', vReferencialID, []) then
+      TimerExclusaoIndividual.Enabled := true;
+  end;
 end;
 
 procedure TForm1.ExcluirtodasasassociaesdestaConta1Click(Sender: TObject);
@@ -528,14 +536,6 @@ begin
       tvDragTo.DataController.ChangeDetailExpanding(tvDragTo.DataController.FocusedRecordIndex, True);
     end;
   end;
-
-(*  FDMemTableAssociacoes.Locate('ID_ContaContabil', FDMemTableFromCodigo.AsInteger, []);
-  //cxViewAssociacoes.DataController.BeginUpdate;
-  cxViewAssociacoes.DataController.SetFocus;
-  cxViewAssociacoesColumn1.Selected := true;
-  cxViewAssociacoesColumn1.FocusWithSelection;
-  //cxViewAssociacoes.DataController.EndUpdate;*)
-
 end;
 
 procedure TForm1.PopupMenuFromPopup(Sender: TObject);
@@ -545,6 +545,7 @@ begin
     localizarnoPlanoReferencial1.Visible := True;
     Excluirassociao1.Visible := True;
     Excluirassociao1.Caption := 'Excluir associação com '+ Copy(FDMemTableFromDescricaoReferencial.AsString, 1, 40)+'..';
+    localizarnoPlanoReferencial1.Caption := 'Localizar Conta Contábil no Plano Referencial';
   end
   else
   begin
