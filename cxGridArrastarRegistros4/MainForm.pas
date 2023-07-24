@@ -150,7 +150,7 @@ var
 implementation
 
 uses
-  Spring.Collections(*, MascaraContabilidade*);
+  Spring.Collections(*, MascaraContabilidade*), MascaraContabilidade;
 
 type
   TcxGridSiteAccess = class (TcxGridSite);
@@ -340,6 +340,19 @@ var
   vListaCodigos: IList<integer>;
   vDescricaoReferencial: string;
   vContaAssociada: Boolean;
+  vContaSintetica: string;
+
+  procedure Adicionar(ACodigoConta: Integer; AEstrutural: string; AReduzido: string; ADescricao: string);
+  begin
+    FDMemTableAssociacoes.Append;
+    FDMemTableAssociacoesCodigo.AsInteger       := ACodigo;
+    FDMemTableAssociacoesCodigo_conta.AsInteger := ACodigoConta;
+    vListaCodigos.Add(ACodigoConta);
+    FDMemTableAssociacoesDescricao.AsString     := AEstrutural+' - '+AReduzido+' - '+Trim(ADescricao);
+    Inc(vCount);
+    FDMemTableAssociacoes.Post;
+  end;
+
 begin
   vCount := 0;
 
@@ -359,21 +372,51 @@ begin
   FDMemTableTo.DisableControls;
   FDMemTableFrom.DisableControls;
 
-  for i := 0 to tvDragFrom.ViewData.RecordCount -1 do
+  if TMascaraContabilidade.ContaSintetica(FDMemTableFromEstrutural.AsString) then
   begin
-    if tvDragFrom.ViewData.Records[I].Selected then
-    begin
-      vContaAssociada := VarToStr(tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex, tvDragFromDescricaoReferencial.Index]) <> '';
+    vContaSintetica := FDMemTableFromEstrutural.AsString;
+    FDMemTableFrom.Next;
 
-      if (tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,4] = 'T') and not vContaAssociada then
+    while True do
+    begin
+      if TMascaraContabilidade.ContaPertence(FDMemTableFromEstrutural.AsString, vContaSintetica) and not FDMemTableFrom.Eof then
       begin
-        FDMemTableAssociacoes.Append;
-        FDMemTableAssociacoesCodigo.AsInteger       := ACodigo;
-        FDMemTableAssociacoesCodigo_conta.AsInteger := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,0];
-        vListaCodigos.Add(FDMemTableAssociacoesCodigo_conta.AsInteger);
-        FDMemTableAssociacoesDescricao.AsString     := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,1]+' - '+tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,2]+' - '+Trim(tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,3]);
-        Inc(vCount);
-        FDMemTableAssociacoes.Post;
+        if (FDMemTableFromContaAnalitica.AsString = 'T') and (FDMemTableFromDescricaoReferencial.AsString = '') then
+        begin
+          Adicionar(FDMemTableFromCodigo.AsInteger,
+                    FDMemTableFromEstrutural.AsString,
+                    FDMemTableFromReduzido.AsString,
+                    FDMemTableFromDescricao.AsString);
+        end;
+      end
+      else
+        Break;
+
+      FDMemTableFrom.Next;
+    end;
+  end
+  else
+  begin
+    for i := 0 to tvDragFrom.ViewData.RecordCount -1 do
+    begin
+      if tvDragFrom.ViewData.Records[I].Selected then
+      begin
+        vContaAssociada := VarToStr(tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex, tvDragFromDescricaoReferencial.Index]) <> '';
+
+        if (tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,4] = 'T') and not vContaAssociada then
+        begin
+          Adicionar(tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex, tvDragFromCodigo.Index],
+                    tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex, tvDragFromEstrututral.Index],
+                    tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex, tvDragFromReduzido.Index],
+                    tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex, tvDragFromDescricao.Index]);
+(*          FDMemTableAssociacoes.Append;
+          FDMemTableAssociacoesCodigo.AsInteger       := ACodigo;
+          FDMemTableAssociacoesCodigo_conta.AsInteger := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,0];
+          vListaCodigos.Add(FDMemTableAssociacoesCodigo_conta.AsInteger);
+          FDMemTableAssociacoesDescricao.AsString     := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,1]+' - '+tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,2]+' - '+Trim(tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,3]);
+          Inc(vCount);
+          FDMemTableAssociacoes.Post;*)
+        end;
       end;
     end;
   end;
