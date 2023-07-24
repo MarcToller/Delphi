@@ -88,6 +88,8 @@ type
     PopupMenuTo: TPopupMenu;
     ExcluirtodasasassociaesdestaConta1: TMenuItem;
     procedure CopyRecords(ACodigo: integer; ARecordIndex: integer);
+    procedure cxViewAssociacoesCanFocusRecord(Sender: TcxCustomGridTableView;
+        ARecord: TcxCustomGridRecord; var AAllow: Boolean);
     procedure tvDragFromMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
     procedure tvDragToDragOver(Sender, Source: TObject; X, Y: Integer;
@@ -131,9 +133,12 @@ type
     procedure cxViewAssociacoesCustomDrawCell(
       Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
       AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+    procedure tvDragToCanFocusRecord(Sender: TcxCustomGridTableView; ARecord:
+        TcxCustomGridRecord; var AAllow: Boolean);
   private
     { Private declarations }
     FPrevHitTest: TcxCustomGridHitTest;
+    FPodeAbrirPopUp : Boolean;
     //FDragObject : TDragControlObject;
     //FIsOnDragOver: Boolean;
     procedure LimparStyle(Sender : TObject);
@@ -212,6 +217,7 @@ var
 
 begin
   inherited;
+  FPodeAbrirPopUp := False;
   vInd := 0;
   FDMemTableFrom.Active := True;
   FDMemTableTo.Active := True;
@@ -461,6 +467,12 @@ begin
   LimparStyle(nil);
 end;
 
+procedure TForm1.cxViewAssociacoesCanFocusRecord(Sender:
+    TcxCustomGridTableView; ARecord: TcxCustomGridRecord; var AAllow: Boolean);
+begin
+  FPodeAbrirPopUp := False;
+end;
+
 procedure TForm1.cxViewAssociacoesColumn1PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);
 begin
   TimerExclusaoIndividual.Enabled := True;
@@ -601,7 +613,7 @@ end;
 
 procedure TForm1.PopupMenuToPopup(Sender: TObject);
 begin
-  ExcluirtodasasassociaesdestaConta1.Visible := FDMemTableToQtdAssociacoes.AsInteger > 0;
+  ExcluirtodasasassociaesdestaConta1.Visible := (FDMemTableToQtdAssociacoes.AsInteger > 0) and FPodeAbrirPopUp;
 end;
 
 procedure TForm1.TimerExclusaoIndividualTimer(Sender: TObject);
@@ -785,6 +797,12 @@ begin
     tvDragTo.Styles.Selection := cxStyle4;
     cxViewAssociacoes.Styles.Selection := cxStyle4;
   end;
+end;
+
+procedure TForm1.tvDragToCanFocusRecord(Sender: TcxCustomGridTableView;
+    ARecord: TcxCustomGridRecord; var AAllow: Boolean);
+begin
+  FPodeAbrirPopUp := True;
 end;
 
 procedure TForm1.tvDragToColumn1PropertiesButtonClick(Sender: TObject; AButtonIndex: Integer);

@@ -159,6 +159,7 @@ object Form1: TForm1
         OnDragDrop = tvDragToDragDrop
         OnDragOver = tvDragToDragOver
         Navigator.Buttons.CustomButtons = <>
+        OnCanFocusRecord = tvDragToCanFocusRecord
         OnCustomDrawCell = tvDragToCustomDrawCell
         DataController.DataSource = dsTo
         DataController.DetailKeyFieldNames = 'ReferencialID'
@@ -285,6 +286,7 @@ object Form1: TForm1
         OnDragDrop = cxViewAssociacoesDragDrop
         OnDragOver = cxViewAssociacoesDragOver
         Navigator.Buttons.CustomButtons = <>
+        OnCanFocusRecord = cxViewAssociacoesCanFocusRecord
         OnCustomDrawCell = cxViewAssociacoesCustomDrawCell
         DataController.DataSource = DataSourceAssociacoes
         DataController.DetailKeyFieldNames = 'ID_Referencial'
