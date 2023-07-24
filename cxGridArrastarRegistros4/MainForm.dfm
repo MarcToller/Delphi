@@ -83,7 +83,6 @@ object Form1: TForm1
         OptionsSelection.MultiSelect = True
         OptionsView.ColumnAutoWidth = True
         OptionsView.GroupByBox = False
-        OptionsView.Indicator = True
         object tvDragFromCodigo: TcxGridDBColumn
           DataBinding.FieldName = 'PlanoContasID'
           Visible = False
@@ -185,9 +184,7 @@ object Form1: TForm1
         OptionsSelection.HideFocusRectOnExit = False
         OptionsView.ShowEditButtons = gsebAlways
         OptionsView.ColumnAutoWidth = True
-        OptionsView.GridLines = glHorizontal
         OptionsView.GroupByBox = False
-        OptionsView.Indicator = True
         OnGroupRowExpanding = tvDragToGroupRowExpanding
         object tvDragToCodigo: TcxGridDBColumn
           DataBinding.FieldName = 'ReferencialID'
