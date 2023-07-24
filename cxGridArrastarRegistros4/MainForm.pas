@@ -378,7 +378,7 @@ begin
   FDMemTableTo.DisableControls;
   FDMemTableFrom.DisableControls;
 
-  if TMascaraContabilidade.ContaSintetica(FDMemTableFromEstrutural.AsString) then
+  if TMascaraContabilidade.ContaSintetica(FDMemTableFromEstrutural.AsString) and (tvDragFrom.DataController.GetSelectedCount = 1) then
   begin
     vContaSintetica := FDMemTableFromEstrutural.AsString;
     FDMemTableFrom.Next;
@@ -415,13 +415,6 @@ begin
                     tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex, tvDragFromEstrututral.Index],
                     tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex, tvDragFromReduzido.Index],
                     tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex, tvDragFromDescricao.Index]);
-(*          FDMemTableAssociacoes.Append;
-          FDMemTableAssociacoesCodigo.AsInteger       := ACodigo;
-          FDMemTableAssociacoesCodigo_conta.AsInteger := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,0];
-          vListaCodigos.Add(FDMemTableAssociacoesCodigo_conta.AsInteger);
-          FDMemTableAssociacoesDescricao.AsString     := tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,1]+' - '+tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,2]+' - '+Trim(tvDragFrom.DataController.Values[tvDragFrom.ViewData.Records[i].RecordIndex,3]);
-          Inc(vCount);
-          FDMemTableAssociacoes.Post;*)
         end;
       end;
     end;
@@ -491,7 +484,6 @@ begin
 
   if AViewInfo.Item.Index = cxViewAssociacoesColumn1.Index then
     ACanvas.Brush.Color := cxViewAssociacoes.Styles.Content.Color;
-
 
 end;
 
