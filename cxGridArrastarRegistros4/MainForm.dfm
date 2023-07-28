@@ -109,7 +109,6 @@ object Form1: TForm1
         end
         object tvDragFromDescricaoReferencial: TcxGridDBColumn
           DataBinding.FieldName = 'DescricaoReferencial'
-          Visible = False
           Width = 75
         end
       end
@@ -161,6 +160,7 @@ object Form1: TForm1
         Navigator.Buttons.CustomButtons = <>
         OnCanFocusRecord = tvDragToCanFocusRecord
         OnCustomDrawCell = tvDragToCustomDrawCell
+        DataController.DataModeController.SyncMode = False
         DataController.DataSource = dsTo
         DataController.DetailKeyFieldNames = 'ReferencialID'
         DataController.Filter.Options = [fcoCaseInsensitive]

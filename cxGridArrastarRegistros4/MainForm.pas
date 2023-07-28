@@ -143,7 +143,6 @@ type
     //FIsOnDragOver: Boolean;
     procedure LimparStyle(Sender : TObject);
   public
-    procedure UmAfterStartDrag(var Message: TMessage); message UM_AFTERSTARTDRAG;
     procedure AfterConstruction; override;
     procedure BeforeDestruction; override;
     { Public declarations }
@@ -156,9 +155,6 @@ implementation
 
 uses
   Spring.Collections(*, MascaraContabilidade*), MascaraContabilidade;
-
-type
-  TcxGridSiteAccess = class (TcxGridSite);
 
 
 {$R *.dfm}
@@ -493,8 +489,7 @@ begin
 
 end;
 
-procedure TForm1.cxViewAssociacoesDragDrop(Sender, Source: TObject; X,
-  Y: Integer);
+procedure TForm1.cxViewAssociacoesDragDrop(Sender, Source: TObject; X, Y: Integer);
 var
   AHitTest: TcxCustomGridHitTest;
   ARecIndex: Integer;
@@ -698,23 +693,6 @@ begin
   end;
 end;
 
-procedure TForm1.UmAfterStartDrag(var Message: TMessage);
-var
-  AGridSite: TcxGridSiteAccess;
-begin
-  if TObject(Message.WParam) is TcxGridSite then
-  begin
-    AGridSite := TcxGridSiteAccess(Message.WParam);
-    tvDragTo.Styles.Selection := cxStyle1;
-    cxViewAssociacoes.Styles.Selection := cxStyle1;
-
-    if tvDragFrom.DataController.GetSelectedCount > 1 then
-      AGridSite.DragCursor := crMultiDrag
-    else
-      AGridSite.DragCursor := crHandPoint;
-  end;
-end;
-
 procedure TForm1.tvDragFromDragOver(Sender, Source: TObject; X, Y: Integer;
   State: TDragState; var Accept: Boolean);
 begin
@@ -738,7 +716,7 @@ procedure TForm1.tvDragFromMouseMove(Sender: TObject; Shift: TShiftState; X, Y: 
 var
   AHitTest: TcxCustomGridHitTest;
 begin
-  AHitTest := TcxGridSite(Sender).ViewInfo.GetHitTest(X, Y);
+(*  AHitTest := TcxGridSite(Sender).ViewInfo.GetHitTest(X, Y);
   if AHitTest is TcxGridRecordCellHitTest then
   begin
     if TcxGridRecordCellHitTest(AHitTest).GridRecord.Selected then
@@ -747,20 +725,16 @@ begin
         TcxGridSite(Sender).BeginDrag(True);
       end;
   end;
-  FPrevHitTest := AHitTest;
+  FPrevHitTest := AHitTest;*)
 end;
 
 procedure TForm1.tvDragFromStartDrag(Sender: TObject; var DragObject: TDragObject);
 var
-  vEstruturalSelecionado:string;
-  vEstruturalFilho:string;
   //vFocusedRecordIndex: Integer;
   vEstaAssociada: Boolean;
   vQtdSelecionadas: Integer;
   //vAnalitica: Boolean;
 begin
-  vEstruturalFilho := '';
-  vEstruturalSelecionado := '';
   //vFocusedRecordIndex := tvDragFrom.DataController.FocusedRecordIndex;
 
 (*  if Assigned(FDragObject) then
@@ -1082,14 +1056,13 @@ begin
     FGridView.Control.PaintTo(vLBitmap.Canvas.Handle, 0, 0);
     vTotalSelecionados := FGridView.Controller.SelectedRecordCount;
 
-
     // Percorra a lista de registros selecionados e adicione os bitmaps à lista
     for i := 0 to vTotalSelecionados - 1 do
     begin
       if i = cMaxSelecionadas then
         Break;
 
-      vBounds := FGridView.ViewInfo.RecordsViewInfo[FGridView.Controller.SelectedRecords[i].RecordIndex].Bounds;
+      vBounds := FGridView.Controller.SelectedRecords[i].ViewInfo.GetAreaBoundsForPainting;//FGridView.ViewInfo.RecordsViewInfo[FGridView.Controller.SelectedRecords[i].RecordIndex].Bounds;
       vSBitmap := TBitmap.Create;
       try
         vSBitmap.Height := vBounds.Height;
